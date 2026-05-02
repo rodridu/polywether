@@ -54,7 +54,19 @@
     </section>
 
     <section class="section">
-        <div class="container" id="cases-list"></div>
+        <div class="container">
+            <h2>Summary table</h2>
+            <p style="color:#475569;margin-bottom:12px;font-size:0.92em;">Quick view of where each case sits. <em>Disputed</em> = at least one matched market is in the analysis sample. <em>Revised / Mismatch</em> = at least one matched disputed-sample row had that flag.</p>
+            <div id="cases-summary"></div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2>Case files</h2>
+            <p style="color:#475569;margin-bottom:18px;font-size:0.92em;">Per-case detail: why each one matters, all matched markets, and links to contract pages where in-sample.</p>
+            <div id="cases-list"></div>
+        </div>
     </section>
 
     <footer class="footer">
@@ -110,8 +122,70 @@
         '</li>';
     }
 
+    function yn(b) { return b ? '<span class="chip chip-warn">yes</span>' : '<span class="chip chip-ok">no</span>'; }
+    function dash() { return '<span class="muted">—</span>'; }
+
+    function renderSummary(cases) {
+        var rows = cases.map(function(c) {
+            var inPanel = c.n_market_matches > 0;
+            var inDisputed = c.n_disputed_matches > 0;
+            // Aggregate revised/mismatch from matches
+            var anyRevised = null, anyMismatch = null;
+            if (inDisputed) {
+                anyRevised = false; anyMismatch = false;
+                c.matches.forEach(function(m) {
+                    if (m.in_disputed_panel) {
+                        if (m.revised) anyRevised = true;
+                        if (m.candidate_mismatch) anyMismatch = true;
+                    }
+                });
+            }
+            // Issue type guess
+            var issue = c.why_matters ? c.why_matters.split(';')[0].split('—')[0].trim() : '—';
+            if (issue.length > 60) issue = issue.slice(0, 57) + '…';
+            return '<tr>' +
+                '<td><strong>' + escapeHtml(c.label) + '</strong></td>' +
+                '<td>' + (inPanel ? '<span class="chip chip-info">' + c.n_market_matches + '</span>' : dash()) + '</td>' +
+                '<td>' + (inDisputed ? '<span class="chip chip-warn">' + c.n_disputed_matches + '</span>' : dash()) + '</td>' +
+                '<td>' + (anyRevised === null ? dash() : yn(anyRevised)) + '</td>' +
+                '<td>' + (anyMismatch === null ? dash() : yn(anyMismatch)) + '</td>' +
+                '<td class="muted" style="font-size:0.85em;">' + escapeHtml(issue) + '</td>' +
+                '</tr>';
+        }).join('');
+        return '<table class="explorer-table">' +
+            '<thead><tr>' +
+                '<th>Case</th>' +
+                '<th>In market panel</th>' +
+                '<th>In disputed sample</th>' +
+                '<th>Any revised?</th>' +
+                '<th>Any candidate mismatch?</th>' +
+                '<th>Main issue</th>' +
+            '</tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+
     fetch('data/public_cases.json').then(r => r.json()).then(d => {
-        var box = document.getElementById('cases-list');
+        // First, fetch disputed_contracts to enrich match data with revised/mismatch flags
+        return fetch('data/disputed_contracts.json').then(r => r.json()).then(function(dc) {
+            // Build lookup
+            var contractById = {};
+            dc.rows.forEach(function(r) { contractById[r.id] = r; });
+            // Enrich matches
+            d.cases.forEach(function(c) {
+                c.matches.forEach(function(m) {
+                    var rec = contractById[m.id];
+                    if (rec) {
+                        m.revised = rec.revised;
+                        m.candidate_mismatch = rec.candidate_mismatch;
+                        m.settlement_risk_tier = rec.settlement_risk_tier;
+                    }
+                });
+            });
+
+            // Render summary table at top
+            document.getElementById('cases-summary').innerHTML = renderSummary(d.cases);
+
+            // Render existing case-file cards
+            var box = document.getElementById('cases-list');
         var html = d.cases.map(function(c) {
             return '<article class="case-locator-card">' +
                 '<header class="case-locator-header">' +
@@ -130,7 +204,8 @@
                     : '<p class="muted">No matches found in current data export.</p>') +
             '</article>';
         }).join('');
-        box.innerHTML = html;
+            box.innerHTML = html;
+        });
     }).catch(function(err) {
         console.error('public_cases.json load failed:', err);
         document.getElementById('cases-list').innerHTML = '<p style="color:#ef4444;">Could not load public_cases.json.</p>';

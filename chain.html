@@ -58,6 +58,8 @@
                 <button class="chain-tab-btn" data-filter="Repeated adapter-routed request">Repeated adapter-routed request</button>
             </div>
 
+            <div id="chain-stats" class="chain-stats-banner"></div>
+
             <div id="chain-list"></div>
 
             <p style="margin-top: 32px; font-size: 0.88em; color: #64748b; font-style: italic;">
@@ -151,14 +153,53 @@
     }
 
     var allExamples = [];
+    var chainStats = null;
+
+    function fmtPct(x) { return (100*x).toFixed(1) + '%'; }
+
+    function renderStatsBanner(filter) {
+        var box = document.getElementById('chain-stats');
+        if (!chainStats || !chainStats.chain_type_summary) { box.innerHTML = ''; return; }
+        var ct = chainStats.chain_type_summary;
+        var all = ct.find(function(s) { return s.chain_type.indexOf('All disputed') === 0; });
+        var voiding = ct.find(function(s) { return s.chain_type === 'Request-voiding chain'; });
+        var repeated = ct.find(function(s) { return s.chain_type === 'Repeated adapter-routed request'; });
+
+        var headlineRow;
+        if (filter === 'Request-voiding chain' && voiding) {
+            headlineRow = '<strong>' + voiding.n_revised + ' of ' + voiding.n_contracts.toLocaleString() + '</strong> request-voiding-chain contracts revise — <strong>' + fmtPct(voiding.revision_rate) + '</strong> revision rate. Examples below are hand-curated sports cases drawn from this population.';
+        } else if (filter === 'Repeated adapter-routed request' && repeated) {
+            headlineRow = '<strong>' + repeated.n_revised + ' of ' + repeated.n_contracts.toLocaleString() + '</strong> repeated-adapter-routed contracts revise — <strong>' + fmtPct(repeated.revision_rate) + '</strong> revision rate. Examples below are hand-curated sports cases drawn from this population.';
+        } else {
+            // All
+            headlineRow = '';
+            if (all) headlineRow += '<div><strong>Disputed sample (with observed final payoff):</strong> ' + all.n_revised + ' of ' + all.n_contracts.toLocaleString() + ' revise — <strong>' + fmtPct(all.revision_rate) + '</strong></div>';
+            if (voiding && repeated) {
+                headlineRow += '<div style="margin-top:6px;">Split: <strong>' + fmtPct(voiding.revision_rate) + '</strong> for request-voiding chains (n=' + voiding.n_contracts.toLocaleString() + '), <strong>' + fmtPct(repeated.revision_rate) + '</strong> for repeated adapter-routed (n=' + repeated.n_contracts.toLocaleString() + ').</div>';
+            }
+        }
+
+        box.innerHTML =
+            '<div class="chain-stats-card">' +
+                '<div class="chain-stats-label">Population context</div>' +
+                '<div class="chain-stats-body">' + headlineRow + '</div>' +
+                '<div class="chain-stats-cta"><a href="explorer.html' + (filter === 'all' ? '' : '?chain=' + encodeURIComponent(filter)) + '">' + (filter === 'all' ? 'See all disputed contracts in Lookup →' : 'See all ' + filter.toLowerCase() + ' contracts in Lookup →') + '</a></div>' +
+            '</div>';
+    }
+
     function applyFilter(filter) {
         var list = document.getElementById('chain-list');
         var rows = filter === 'all' ? allExamples : allExamples.filter(function(e) { return e.chain_type === filter; });
         list.innerHTML = rows.map(renderExample).join('');
+        renderStatsBanner(filter);
     }
 
-    fetch('data/chain_examples.json').then(r => r.json()).then(d => {
-        allExamples = d.examples;
+    Promise.all([
+        fetch('data/chain_examples.json').then(r => r.json()),
+        fetch('data/chain_signatures.json').then(r => r.json()).catch(() => null),
+    ]).then(function(arr) {
+        allExamples = arr[0].examples;
+        chainStats = arr[1];
         applyFilter('all');
         document.querySelectorAll('.chain-tab-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -168,8 +209,8 @@
             });
         });
     }).catch(function(err) {
-        console.error('chain_examples.json load failed:', err);
-        document.getElementById('chain-list').innerHTML = '<p style="color:#ef4444;">Could not load chain_examples.json (try serving over http://, not file://).</p>';
+        console.error('chain page load failed:', err);
+        document.getElementById('chain-list').innerHTML = '<p style="color:#ef4444;">Could not load chain data (try serving over http://, not file://).</p>';
     });
     </script>
 </body>

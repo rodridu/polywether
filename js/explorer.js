@@ -35,6 +35,22 @@
         return '<span class="tier-badge ' + cls + '">' + tier + '</span>';
     }
 
+    function riskFlagChips(r) {
+        // Compact reasons: missing source / fallback / edge / mismatch / multi-episode / no-text
+        var a = r.audit || {};
+        var chips = [];
+        if (!a.rule_text_present) chips.push('<span class="riskflag riskflag-warn">no rule text</span>');
+        else {
+            if (!a.named_source_present) chips.push('<span class="riskflag riskflag-warn">no source</span>');
+            if (!a.fallback_present) chips.push('<span class="riskflag riskflag-mild">no fallback</span>');
+            if (!a.edge_cases_present) chips.push('<span class="riskflag riskflag-mild">no edge cases</span>');
+        }
+        if (r.candidate_mismatch) chips.push('<span class="riskflag riskflag-warn">mismatch</span>');
+        if (r.chain_type === 'Repeated adapter-routed request') chips.push('<span class="riskflag riskflag-info">repeated</span>');
+        if (chips.length === 0) chips.push('<span class="riskflag riskflag-ok">clean</span>');
+        return chips.slice(0, 4).join(' ');
+    }
+
     function renderRow(r) {
         var qHtml = r.question_text
             ? escapeHtml(r.question_text)
@@ -48,6 +64,7 @@
             '<td class="exp-col-tier">' + tierBadge(r.settlement_risk_tier || '—') + '</td>' +
             '<td class="exp-col-id mono">' + r.id + '</td>' +
             '<td class="exp-col-q">' + qHtml + '</td>' +
+            '<td class="exp-col-flags">' + riskFlagChips(r) + '</td>' +
             '<td class="exp-col-cat">' + escapeHtml(r.category || '—') + '</td>' +
             '<td class="exp-col-prop"><strong>' + escapeHtml(r.first_proposal || '—') + '</strong></td>' +
             '<td class="exp-col-final"><strong>' + escapeHtml(r.final_payoff || '—') + '</strong></td>' +
