@@ -53,6 +53,17 @@
         </div>
     </section>
 
+    <!-- Design philosophy -->
+    <section class="section section-alt">
+        <div class="container container-narrow">
+            <h2 id="bp-philosophy">Design philosophy</h2>
+            <p>Each numeric threshold below (4-hour custody, 12-hour incursion, battalion-strength, 100 paying customers) is a <strong>market-design choice, not legal truth.</strong> A different platform may pick different thresholds and still write a settlement-safe blueprint.</p>
+            <p>The thresholds are written narrowly to make the "did the event happen?" question answerable from a single named source within a fixed window. Wider thresholds (e.g. "any U.S. forces crossing the border" rather than "battalion-strength for ≥12 hours") are also valid, but require more elaborate edge-case handling.</p>
+            <p>If you use one of these on a platform, treat the body of the blueprint as a starting point. Adjust thresholds to the question your market is actually about, and document <em>why</em> you chose them. The eight-field structure (event / source / fallback / edge cases / time zone / settlement timing / invalid rules / examples) is what carries the settlement-safety guarantee. The specific thresholds are local choices.</p>
+            <p style="font-style:italic;color:#64748b;">Short version: the structure is universal, the thresholds are not.</p>
+        </div>
+    </section>
+
     <section class="section">
         <div class="container">
             <h2 id="bp-template">The Blueprint template</h2>

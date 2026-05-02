@@ -51,8 +51,8 @@
 
             <!-- Lookup search -->
             <form class="hero-search" onsubmit="return doLookup(event)">
-                <input type="search" id="lookup-input" placeholder="Paste Polymarket URL, condition ID (0x…), or question text" autocomplete="off">
-                <button type="submit" class="btn btn-primary">Look up</button>
+                <input type="search" id="lookup-input" placeholder="Paste Polymarket URL, condition ID (0x…), slug, or question text" autocomplete="off">
+                <button type="submit" class="btn btn-primary">Analyze market</button>
                 <div id="lookup-suggestions" class="lookup-suggestions"></div>
             </form>
         </div>
@@ -86,7 +86,10 @@
     <section class="section">
         <div class="container">
             <h2>High settlement-risk contracts <span class="muted" style="font-weight:normal;font-size:0.8em;">— sample of disputed contracts flagged High by the screening tier</span></h2>
-            <p style="color:#475569;margin-bottom:16px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a></p>
+            <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a></p>
+            <p class="data-status">
+                <strong>Data status:</strong> historical disputed-contract panel, not live market surveillance. Aggregate refresh runs weekly via <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">GitHub Actions</a>; per-contract data refreshes manually when the paper's analysis pipeline regenerates the panel. <a href="docs.html#refresh">Refresh cadence →</a>
+            </p>
             <div id="watchlist-table"></div>
             <p style="margin-top:16px;"><a href="explorer.html?tier=High" class="btn btn-secondary">See all High-risk contracts in Lookup →</a></p>
         </div>
