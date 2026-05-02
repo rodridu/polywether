@@ -37,16 +37,51 @@ Prediction-Market Contracts."*
 
 ## Refresh data
 
+Two refresh paths, by what changed:
+
+### A. Aggregate refresh (auto, weekly + on push)
+
+The aggregate JSONs (`settlement_funnel`, `chain_signatures`, `candidate_mismatches`)
+regenerate automatically via the GitHub Actions workflow
+[`.github/workflows/refresh-aggregates.yml`](.github/workflows/refresh-aggregates.yml).
+
+Triggers:
+- **Weekly cron:** Mondays 8am UTC
+- **On push:** any change to `data-source/**` or the workflow itself
+- **Manual:** the *Run workflow* button on the Actions tab
+
+The workflow runs `pipelines/refresh_aggregates.py`, which reads the small
+source CSVs in `data-source/` and writes the regenerated JSONs to `data/`.
+If anything changed, it commits as `github-actions[bot]`.
+
+To push fresh source data:
+```bash
+cp /path/to/oracle_gov/analysis_output/rev3_*.csv data-source/
+# (skip rev3_contract_level_table.csv — 87 MB, not needed for aggregates)
+git add data-source/
+git commit -m "Refresh source CSVs"
+git push
+# workflow runs automatically; site updates within ~1 min
+```
+
+### B. Per-contract / DuckDB refresh (manual, when disputed panel grows)
+
+These need the production DuckDB (19 GB), so they don't fit in a workflow.
+Run locally:
+
 ```bash
 python pipelines/build_settlement_explorer_data.py
 python pipelines/build_settlement_explorer_duckdb.py
+git add data/disputed_contracts.json data/chain_examples.json data/settlement_explorer.duckdb data/headline_statistics.json
+git commit -m "Refresh per-contract data + DuckDB"
+git push
 ```
 
 Both scripts read from `oracle_gov/data/oraclepm.duckdb` (production research DB)
 and `oracle_gov/analysis_output/rev3_*.csv`. Output paths are hard-coded; edit
 the `Path(...)` constants at the top of each script if the paper repo is elsewhere.
 
-The `build_settlement_explorer_data.py` script also writes a data-audit memo to
+`build_settlement_explorer_data.py` also writes a data-audit memo to
 `oracle_gov/scripts/paper/data_audit_memo.md` documenting paper-consistency
 checks, join coverage, public-label mappings, and per-flag distributions.
 
