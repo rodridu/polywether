@@ -19,6 +19,7 @@
                     <a href="chain.html">Chain View</a>
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
+                    <a href="rates.html">Rates</a>
                     <a href="query.html">Query</a>
                     <a href="about.html">About</a>
                 </div>
@@ -45,15 +46,15 @@
             <p class="hero-eyebrow">Working Paper &middot; Settlement-Path Observability</p>
             <h1>How Polymarket settles its disputed contracts</h1>
             <p class="hero-description">
-                Prediction-market prices are usually read as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. This explorer walks through how that mapping is produced for the disputed Polymarket-UMA panel.
+                Prediction-market prices are usually read as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. This explorer reconstructs that mapping for the disputed Polymarket-UMA panel.
             </p>
-            <div class="cta-row" style="margin-top: 32px;">
-                <a href="chain.html" class="btn btn-primary">See the chain examples</a>
-                <a href="about.html" class="btn btn-secondary">About this project</a>
-            </div>
-            <p style="margin-top: 28px; font-size: 0.9em; color: #64748b; font-style: italic;">
-                This is a settlement-path explorer, not a truth oracle. We locate where a contract sits in the settlement funnel; we do not adjudicate the underlying event.
-            </p>
+
+            <!-- Lookup search -->
+            <form class="hero-search" onsubmit="return doLookup(event)">
+                <input type="search" id="lookup-input" placeholder="Search a market — question text or short id (e.g. Trump, F1, government shutdown)…" autocomplete="off">
+                <button type="submit" class="btn btn-primary">Look up</button>
+                <div id="lookup-suggestions" class="lookup-suggestions"></div>
+            </form>
         </div>
     </section>
 
@@ -61,26 +62,26 @@
     <section class="section">
         <div class="container">
             <div class="insights-row">
-                <div class="insight-card">
+                <a class="insight-card insight-card-link" href="explorer.html">
                     <div class="insight-value" id="stat-total">661,949</div>
                     <div class="insight-label">Settlement conditions</div>
                     <div class="insight-context">Polymarket panel via UMA</div>
-                </div>
-                <div class="insight-card">
+                </a>
+                <a class="insight-card insight-card-link" href="explorer.html">
                     <div class="insight-value" id="stat-disputed">2,221</div>
                     <div class="insight-label">Disputed contracts</div>
                     <div class="insight-context">At least one counter-bond posted</div>
-                </div>
-                <div class="insight-card">
+                </a>
+                <a class="insight-card insight-card-link" href="explorer.html?revised=true">
                     <div class="insight-value" id="stat-revised">530</div>
                     <div class="insight-label">Proposal-to-final revisions</div>
-                    <div class="insight-context"><span id="stat-revrate">24.1%</span> of disputed with observed final payoff</div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-value" id="stat-mismatch">64</div>
-                    <div class="insight-label">Agreed candidate mismatches</div>
-                    <div class="insight-context">Diagnostic, not error count</div>
-                </div>
+                    <div class="insight-context"><span id="stat-revrate">24.1%</span> of disputed (with observed final payoff)</div>
+                </a>
+                <a class="insight-card insight-card-link" href="explorer.html?mismatch=candidate">
+                    <div class="insight-value" id="stat-mismatch">94</div>
+                    <div class="insight-label">Candidate mismatches</div>
+                    <div class="insight-context">Diagnostic, not error count (64 agreed at category level)</div>
+                </a>
             </div>
         </div>
     </section>
@@ -99,17 +100,17 @@
                 <li><strong>Settlement state.</strong> The label the mechanism actually delivers as the payoff.</li>
             </ul>
             <p style="margin-top: 16px;">
-                These three objects can coincide, but they need not. Settlement is part of prediction-market microstructure, not merely a back-office recording step.
+                These three can coincide, but they need not. Settlement is part of prediction-market microstructure, not merely a back-office recording step.
             </p>
         </div>
     </section>
 
-    <!-- Settlement Funnel -->
+    <!-- Settlement Funnel (clickable) -->
     <section class="section">
         <div class="container">
             <h2>The settlement funnel</h2>
             <p style="margin-bottom: 24px; color: #475569;">
-                Of 661,949 settlement conditions, 2,221 are disputed. Of the 2,197 disputed contracts with an observed final payoff, 530 (24.1%) end with a final payoff different from the first proposed outcome.
+                Of 661,949 settlement conditions, 2,221 are disputed. Of the 2,197 disputed contracts with an observed final payoff, 530 (24.1%) end with a final payoff different from the first proposed outcome. <span class="muted">Click any row to filter the Explorer.</span>
             </p>
             <div class="funnel-cascade" id="funnel"></div>
         </div>
@@ -119,50 +120,54 @@
     <section class="section section-alt">
         <div class="container">
             <h2>Where revisions come from</h2>
-            <p>
-                Of the 530 proposal-to-final revisions:
-            </p>
+            <p>Of the 530 proposal-to-final revisions:</p>
             <div class="chain-split-grid" id="chain-split"></div>
             <p style="margin-top: 24px; color: #475569; font-size: 0.92em;">
-                A "request-voiding chain" is one in which UMA's Data Verification Mechanism voids the request on a prior episode, forcing the adapter to re-file. A "repeated adapter-routed request" is one in which the adapter files multiple requests against the same contract without any DVM voiding.
+                "Request-voiding chain" = UMA's Data Verification Mechanism voids a request on a prior episode, forcing the adapter to re-file. "Repeated adapter-routed request" = the adapter files multiple requests against the same contract without any DVM voiding.
             </p>
         </div>
     </section>
 
-    <!-- Tour the dashboard -->
+    <!-- Conditional rates teaser -->
     <section class="section">
+        <div class="container">
+            <h2>Where revisions concentrate</h2>
+            <p style="color: #475569; margin-bottom: 16px;">
+                The 24.1% headline obscures large conditional gaps. Two of the strongest splits:
+            </p>
+            <div class="rates-teaser-grid" id="rates-teaser"></div>
+            <p style="margin-top: 16px;"><a href="rates.html" class="btn btn-secondary">Open all conditional rates →</a></p>
+        </div>
+    </section>
+
+    <!-- Tour the dashboard -->
+    <section class="section section-alt">
         <div class="container">
             <h2>Tour the dashboard</h2>
             <div class="feature-grid">
                 <a href="explorer.html" class="feature-card feature-card-link">
                     <h3>Contract Explorer →</h3>
-                    <p>
-                        Filterable table of all 2,221 disputed contracts: question, category, first proposal, final payoff, chain type, candidate-mismatch flag.
-                    </p>
+                    <p>Filterable table of all 2,221 disputed contracts. Click any row for the full record.</p>
                 </a>
                 <a href="chain.html" class="feature-card feature-card-link">
                     <h3>Chain View →</h3>
-                    <p>
-                        Per-contract request-by-request timelines for ten hand-curated examples spanning both chain types.
-                    </p>
+                    <p>Per-contract request-by-request timelines for ten hand-curated examples spanning both chain types.</p>
                 </a>
                 <a href="audit.html" class="feature-card feature-card-link">
                     <h3>Settlement Auditability →</h3>
-                    <p>
-                        Eight transparent flags per contract: rule text, named source, fallback, edge cases, chain completeness, repeated-request, final payoff, benchmark agreement.
-                    </p>
+                    <p>Nine flags grouped into four categories: text availability, contract clarity, chain observability, diagnostic disagreement.</p>
                 </a>
                 <a href="cases.html" class="feature-card feature-card-link">
                     <h3>Public Case Locator →</h3>
-                    <p>
-                        Where named cases (Zelenskyy, Venezuela, Iran, Trump Bitcoin, Tesla, Lebanon, shutdown) sit in the funnel. Locate, do not adjudicate.
-                    </p>
+                    <p>Where named cases (Zelenskyy, Venezuela, Iran, Trump Bitcoin, Tesla, Lebanon, shutdown) sit in the funnel.</p>
+                </a>
+                <a href="rates.html" class="feature-card feature-card-link">
+                    <h3>Conditional Rates →</h3>
+                    <p>Revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.</p>
                 </a>
                 <a href="query.html" class="feature-card feature-card-link">
                     <h3>Live SQL Query →</h3>
-                    <p>
-                        Run arbitrary SQL against the disputed panel in your browser via duckdb-wasm. Tables: <code>contracts</code>, <code>episodes</code>, <code>funnel</code>, <code>chain_signatures</code>.
-                    </p>
+                    <p>Run arbitrary SQL against the disputed panel in your browser via duckdb-wasm. Tables: <code>contracts</code>, <code>episodes</code>, <code>funnel</code>, <code>chain_signatures</code>.</p>
                 </a>
             </div>
         </div>
@@ -181,6 +186,7 @@
                 <a href="chain.html">Chain View</a>
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
+                <a href="rates.html">Rates</a>
                 <a href="query.html">Query</a>
                 <a href="about.html">About</a>
             </nav>
@@ -190,9 +196,7 @@
                 &copy; 2026 Hongzhen Du
             </div>
             <div class="footer-sources">
-                <span class="footer-sources-label">Data:</span>
-                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
-                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+                <span class="footer-sources-label">Locate, do not adjudicate.</span>
             </div>
         </div>
     </footer>
@@ -213,7 +217,6 @@
             }
             requestAnimationFrame(step);
         }
-
         var observed = false;
         var observer = new IntersectionObserver(function(entries) {
             if (entries[0].isIntersecting && !observed) {
@@ -221,21 +224,22 @@
                 animateValue(document.getElementById('stat-total'), 0, 661949, 1400);
                 animateValue(document.getElementById('stat-disputed'), 0, 2221, 1200);
                 animateValue(document.getElementById('stat-revised'), 0, 530, 1000);
-                animateValue(document.getElementById('stat-mismatch'), 0, 64, 800);
+                animateValue(document.getElementById('stat-mismatch'), 0, 94, 800);
             }
         }, { threshold: 0.3 });
         observer.observe(document.querySelector('.insights-row'));
     })();
 
-    // ---- load funnel data ----
+    // ---- Funnel + chain-split (click-through) ----
     fetch('data/settlement_funnel.json').then(r => r.json()).then(d => {
         var c = document.getElementById('funnel');
         c.innerHTML = '';
-        d.steps.forEach(function(s, i) {
-            var node = document.createElement('div');
-            node.className = 'funnel-row';
+        d.steps.forEach(function(s) {
             var indent = (s.step.indexOf('  ') === 0) ? ' funnel-row-indent' : '';
-            node.className += indent;
+            var href = funnelHref(s.step);
+            var node = document.createElement(href ? 'a' : 'div');
+            node.className = 'funnel-row' + indent + (href ? ' funnel-row-link' : '');
+            if (href) node.href = href;
             node.innerHTML =
                 '<div class="funnel-row-label">' + s.step + '</div>' +
                 '<div class="funnel-row-count">' + s.n_contracts.toLocaleString() + '</div>' +
@@ -243,24 +247,96 @@
             c.appendChild(node);
         });
 
-        // chain split summary cards
         var sum = d.summary;
-        var split = document.getElementById('chain-split');
-        split.innerHTML =
-            '<div class="chain-split-card">' +
+        document.getElementById('chain-split').innerHTML =
+            '<a class="chain-split-card chain-split-card-link" href="explorer.html?chain=' + encodeURIComponent('Repeated adapter-routed request') + '&revised=true">' +
               '<div class="chain-split-value">' + sum.repeated_adapter_routed_revisions + '</div>' +
               '<div class="chain-split-label">via Repeated adapter-routed requests</div>' +
-              '<div class="chain-split-context">' + (100 * sum.repeated_adapter_routed_revisions / sum.proposal_to_final_revisions).toFixed(0) + '% of revisions &middot; chain has no DVM voiding</div>' +
-            '</div>' +
-            '<div class="chain-split-card">' +
+              '<div class="chain-split-context">' + (100 * sum.repeated_adapter_routed_revisions / sum.proposal_to_final_revisions).toFixed(0) + '% &middot; chain has no DVM voiding &middot; <em>open in Explorer →</em></div>' +
+            '</a>' +
+            '<a class="chain-split-card chain-split-card-link" href="explorer.html?chain=' + encodeURIComponent('Request-voiding chain') + '&revised=true">' +
               '<div class="chain-split-value">' + sum.request_voiding_revisions + '</div>' +
               '<div class="chain-split-label">via Request-voiding chains</div>' +
-              '<div class="chain-split-context">' + (100 * sum.request_voiding_revisions / sum.proposal_to_final_revisions).toFixed(0) + '% of revisions &middot; DVM voids on prior episode</div>' +
-            '</div>';
+              '<div class="chain-split-context">' + (100 * sum.request_voiding_revisions / sum.proposal_to_final_revisions).toFixed(0) + '% &middot; DVM voids on prior episode &middot; <em>open in Explorer →</em></div>' +
+            '</a>';
     }).catch(function(err) {
         console.error('settlement_funnel.json load failed:', err);
-        document.getElementById('funnel').innerHTML = '<p style="color: #ef4444;">Could not load settlement_funnel.json (try serving over http://, not file://).</p>';
+        document.getElementById('funnel').innerHTML = '<p style="color:#ef4444;">Could not load settlement_funnel.json (try serving over http://, not file://).</p>';
     });
+
+    function funnelHref(label) {
+        if (label.indexOf('Disputed contracts') !== -1) return 'explorer.html';
+        if (label.indexOf('Disputed with observed final payoff') !== -1) return 'explorer.html';
+        if (label.indexOf('Proposal-to-final revisions') !== -1) return 'explorer.html?revised=true';
+        return null;
+    }
+
+    // ---- Conditional rates teaser ----
+    fetch('data/conditional_rates.json').then(r => r.json()).then(d => {
+        var teaser = document.getElementById('rates-teaser');
+        var cards = [];
+        // Card 1: by chain type
+        var ct = d.by_chain_type.items;
+        if (ct.length >= 2) {
+            cards.push(
+                '<div class="rates-teaser-card">' +
+                    '<div class="rates-teaser-title">By chain type</div>' +
+                    '<div class="rates-teaser-row"><span>' + ct[0].key + '</span><strong>' + (100*ct[0].revision_rate).toFixed(1) + '%</strong></div>' +
+                    '<div class="rates-teaser-row"><span>' + ct[1].key + '</span><strong>' + (100*ct[1].revision_rate).toFixed(1) + '%</strong></div>' +
+                '</div>'
+            );
+        }
+        // Card 2: by named source
+        var ns = d.by_named_source.items;
+        if (ns.length) {
+            cards.push(
+                '<div class="rates-teaser-card">' +
+                    '<div class="rates-teaser-title">By named-source presence</div>' +
+                    ns.slice(0, 3).map(function(it) {
+                        return '<div class="rates-teaser-row"><span>' + it.key + '</span><strong>' + (100*it.revision_rate).toFixed(1) + '%</strong></div>';
+                    }).join('') +
+                '</div>'
+            );
+        }
+        teaser.innerHTML = cards.join('');
+    }).catch(function(err) { console.error('conditional_rates.json load failed:', err); });
+
+    // ---- Lookup ----
+    var lookupRows = null;
+    function ensureLookup() {
+        if (lookupRows) return Promise.resolve(lookupRows);
+        return fetch('data/disputed_contracts.json').then(r => r.json()).then(d => { lookupRows = d.rows; return lookupRows; });
+    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    document.getElementById('lookup-input').addEventListener('input', function(e) {
+        var q = e.target.value.toLowerCase().trim();
+        var box = document.getElementById('lookup-suggestions');
+        if (q.length < 2) { box.innerHTML = ''; return; }
+        ensureLookup().then(function(rows) {
+            var matches = rows.filter(function(r) {
+                var hay = ((r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
+                return hay.indexOf(q) !== -1;
+            }).slice(0, 8);
+            box.innerHTML = matches.map(function(r) {
+                return '<a class="lookup-suggest" href="contract.html?id=' + encodeURIComponent(r.id) + '">' +
+                    '<span class="mono">' + r.id + '</span> ' +
+                    '<span>' + escapeHtml(r.question_text || '[question text missing]') + '</span>' +
+                    '</a>';
+            }).join('');
+        });
+    });
+    function doLookup(e) {
+        e.preventDefault();
+        var q = document.getElementById('lookup-input').value.trim();
+        if (!q) return false;
+        // If exact 8-char id, jump direct
+        if (/^[0-9a-f]{8}$/.test(q)) { window.location.href = 'contract.html?id=' + encodeURIComponent(q); return false; }
+        // Otherwise route to Explorer with search
+        window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
+        return false;
+    }
+    window.doLookup = doLookup;
     </script>
 </body>
 </html>

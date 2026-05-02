@@ -6,7 +6,7 @@
     <title>Settlement Auditability &mdash; Settlement Explorer</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20260502">
-    <meta name="description" content="Settlement Auditability checklist — eight binary items per disputed contract.">
+    <meta name="description" content="Settlement Auditability checklist — nine binary flags grouped into four categories.">
 </head>
 <body>
     <nav class="nav">
@@ -19,6 +19,7 @@
                     <a href="chain.html">Chain View</a>
                     <a href="audit.html" class="active">Audit</a>
                     <a href="cases.html">Cases</a>
+                    <a href="rates.html">Rates</a>
                     <a href="query.html">Query</a>
                     <a href="about.html">About</a>
                 </div>
@@ -42,48 +43,73 @@
     <section class="hero hero-compact">
         <div class="hero-inner">
             <p class="hero-eyebrow">Settlement Auditability</p>
-            <h1>An eight-item transparency checklist</h1>
+            <h1>Nine flags grouped into four categories</h1>
             <p class="hero-description">
-                For each disputed contract we report eight binary flags. The list is deliberately a transparent checklist, not a black-box score. Each flag has a one-sentence operational definition that maps to a single field in the underlying data.
+                For each disputed contract, nine binary flags grouped into four categories that map to different kinds of failure. Transparent checklist, not a black-box score.
             </p>
         </div>
     </section>
 
-    <!-- Definitions block -->
     <section class="section section-alt">
         <div class="container">
-            <h2>The eight items</h2>
-            <ol class="audit-defs">
-                <li><strong>Rule text available</strong> — Some recoverable natural-language statement of the resolution criteria exists, joined from <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, or UMA <code>ancillary_data_decoded</code>.</li>
-                <li><strong>Named source specified</strong> — The recoverable text contains an external authority pattern: a URL, "according to / official(ly) / reported by / determined by / will resolve based on / sourced from", etc. Heuristic regex; not a hand-coded ground truth.</li>
-                <li><strong>Fallback specified</strong> — The text contains a fallback or contingency pattern: "if the source / fallback / in the event / if unavailable / otherwise".</li>
-                <li><strong>Edge cases specified</strong> — The text contains edge-case language: "edge case / N/A / cancelled / postponed / tied / abandoned / if not resolved".</li>
-                <li><strong>Settlement chain complete</strong> — A non-pending final payoff state is observed (<code>final_payoff ≠ "Pending"</code>).</li>
-                <li><strong>Repeated-request flag</strong> — Chain type is classified as either Request-voiding chain or Repeated adapter-routed request (always true for this disputed sample by construction).</li>
-                <li><strong>Final payoff observed</strong> — Final payoff is non-null (Yes / No / Other / Invalid).</li>
-                <li><strong>Benchmark agreement</strong> — Final payoff agrees with the LLM-coded benchmark, OR the contract is not flagged as a candidate mismatch. Disagreement = the contract is in the 64-agreed candidate-mismatch set. <em>This is a diagnostic flag, not an externally validated error count.</em></li>
-            </ol>
-            <p style="margin-top: 16px; font-style: italic; color: #64748b;">
-                Items 1–4 are heuristic regex over a noisy text corpus. They tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed. Treat the flags as scaffolding for manual inspection, not as a quality grade.
+            <h2>The categories</h2>
+
+            <div class="audit-cat-block">
+                <h3>A. Text availability</h3>
+                <p class="muted">Data we can see. Tells you whether anyone can audit the contract at all.</p>
+                <ol class="audit-defs">
+                    <li><strong>Rule text recovered.</strong> Question text non-null in any of <code>pm_markets.question</code> / <code>episode_panel.question_text</code> / <code>pm_resolution_events.ancillary_data_decoded</code>.</li>
+                    <li><strong>Description recovered.</strong> Polymarket's <code>description</code> field (longer resolution criteria) is non-null.</li>
+                    <li><strong>UMA ancillary data recovered.</strong> The decoded ancillary data string from the on-chain UMA event is non-null.</li>
+                </ol>
+            </div>
+
+            <div class="audit-cat-block">
+                <h3>B. Contract clarity (heuristic regex)</h3>
+                <p class="muted">What the contract says about resolution. Items 4–6 fire if the relevant language <em>appears</em> in the recovered text — they don't certify correctness.</p>
+                <ol start="4" class="audit-defs">
+                    <li><strong>Named external source language.</strong> Text contains "according to / official(ly) / determined by / verified by / sourced from / will resolve based on" or a URL.</li>
+                    <li><strong>Fallback / contingency language.</strong> Text contains "if the source / fallback / in the event / if unavailable / otherwise".</li>
+                    <li><strong>Edge-case language.</strong> Text contains "edge case / N/A / cancelled / postponed / tied / abandoned / if not resolved".</li>
+                </ol>
+            </div>
+
+            <div class="audit-cat-block">
+                <h3>C. Settlement-chain observability</h3>
+                <p class="muted">What the mechanism actually did. Deterministic from on-chain data.</p>
+                <ol start="7" class="audit-defs">
+                    <li><strong>Final payoff observed.</strong> Final payoff state non-null and not Pending. ~99.5% of disputed sample.</li>
+                    <li><strong>Multi-episode chain.</strong> Contract has at least two settlement requests against it.</li>
+                </ol>
+            </div>
+
+            <div class="audit-cat-block">
+                <h3>D. Diagnostic disagreement</h3>
+                <p class="muted">Where the LLM-coded benchmark disagrees with the final payoff. <strong>Diagnostic, not an externally validated error count.</strong></p>
+                <ol start="9" class="audit-defs">
+                    <li><strong>Candidate mismatch.</strong> Final payoff appears to disagree with a rule-implied label coded from contract text. 94 of 2,221 (4.2%). Flag for inspection, not a verdict.</li>
+                </ol>
+            </div>
+
+            <p style="margin-top: 24px; font-style: italic; color: #64748b;">
+                Removed from earlier version: separate "Settlement chain complete" flag (collapsed into Final payoff observed), and "Repeated-request flag" (always true for disputed sample by construction, non-informative).
             </p>
         </div>
     </section>
 
-    <!-- Aggregate share -->
     <section class="section">
         <div class="container">
-            <h2>Aggregate share by item</h2>
-            <p style="color: #475569; margin-bottom: 24px;">Share of the 2,221 disputed contracts where each flag is true.</p>
+            <h2>Aggregate share by flag</h2>
+            <p style="color: #475569; margin-bottom: 24px;">Share of 2,221 disputed contracts where each flag is true.</p>
             <div id="audit-aggregate" class="audit-aggregate"></div>
         </div>
     </section>
 
-    <!-- Per-contract picker -->
     <section class="section section-alt">
         <div class="container">
             <h2>Per-contract checklist</h2>
             <p style="color: #475569; margin-bottom: 16px;">
-                Pick a contract or use random. The checklist below shows the eight items for that contract.
+                Pick a contract or use random. All nine flags grouped by category, plus link to full contract detail.
             </p>
             <div class="audit-picker">
                 <input type="search" id="audit-search" placeholder="Search by question text, id, category…" class="explorer-search">
@@ -106,6 +132,7 @@
                 <a href="chain.html">Chain View</a>
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
+                <a href="rates.html">Rates</a>
                 <a href="query.html">Query</a>
                 <a href="about.html">About</a>
             </nav>
@@ -113,9 +140,7 @@
         <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
-                <span class="footer-sources-label">Data:</span>
-                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
-                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+                <span class="footer-sources-label">Locate, do not adjudicate.</span>
             </div>
         </div>
     </footer>

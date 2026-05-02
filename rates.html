@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditional rates &mdash; Settlement Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <div class="nav-links">
+                    <a href="index.html">Funnel</a>
+                    <a href="explorer.html">Explorer</a>
+                    <a href="chain.html">Chain View</a>
+                    <a href="audit.html">Audit</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="rates.html" class="active">Rates</a>
+                    <a href="query.html">Query</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Conditional rates</p>
+            <h1>Where revisions and candidate mismatches concentrate</h1>
+            <p class="hero-description">
+                The headline 24.1% revision rate is for the disputed sample as a whole. Conditional rates show where settlement rewriting actually concentrates: by category, by chain type, by whether the contract names a source, and by whether it specifies a fallback. All numbers are conditional on D=1 (disputed).
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div id="rates-overall" class="rates-overall"></div>
+            <div id="rates-tables"></div>
+            <p style="margin-top: 32px; font-size: 0.9em; color: #64748b; font-style: italic;">
+                Source: <code>data/conditional_rates.json</code>, derived from the same 2,221-disputed-contract panel feeding the Explorer. Rates are sample shares, not estimates with uncertainty intervals — small-N buckets should be read with that in mind.
+            </p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Funnel</a>
+                <a href="explorer.html">Explorer</a>
+                <a href="chain.html">Chain View</a>
+                <a href="audit.html">Audit</a>
+                <a href="cases.html">Cases</a>
+                <a href="rates.html">Rates</a>
+                <a href="query.html">Query</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Locate, do not adjudicate.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    function fmtPct(x) { return (100*x).toFixed(1) + '%'; }
+
+    function renderTable(table) {
+        var rows = table.items.map(function(it) {
+            return '<tr>' +
+                '<td>' + escapeHtml(it.key) + '</td>' +
+                '<td class="exp-col-final mono">' + it.n_disputed.toLocaleString() + '</td>' +
+                '<td class="exp-col-final mono">' + it.n_revised.toLocaleString() + '</td>' +
+                '<td class="exp-col-final mono"><strong>' + fmtPct(it.revision_rate) + '</strong></td>' +
+                '<td class="exp-col-final mono">' + it.n_candidate_mismatch.toLocaleString() + '</td>' +
+                '<td class="exp-col-final mono">' + fmtPct(it.candidate_mismatch_rate) + '</td>' +
+                '</tr>';
+        }).join('');
+        return '<div class="rates-block">' +
+            '<h2>' + escapeHtml(table.label) + '</h2>' +
+            '<table class="explorer-table">' +
+              '<thead><tr><th>Bucket</th><th>n disputed</th><th>n revised</th><th>revision rate</th><th>n cand. mismatch</th><th>mismatch rate</th></tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+            '</div>';
+    }
+
+    fetch('data/conditional_rates.json').then(r => r.json()).then(d => {
+        var o = d.overall;
+        document.getElementById('rates-overall').innerHTML =
+            '<div class="rates-overall-grid">' +
+                '<div class="rates-overall-card"><div class="rates-overall-label">Overall (disputed sample)</div><div class="rates-overall-value">' + o.n_disputed.toLocaleString() + '</div></div>' +
+                '<div class="rates-overall-card"><div class="rates-overall-label">Revisions</div><div class="rates-overall-value">' + o.n_revised.toLocaleString() + ' (' + fmtPct(o.revision_rate) + ')</div></div>' +
+                '<div class="rates-overall-card"><div class="rates-overall-label">Candidate mismatches</div><div class="rates-overall-value">' + o.n_candidate_mismatch.toLocaleString() + '</div></div>' +
+            '</div>';
+
+        var html = '';
+        ['by_chain_type', 'by_category', 'by_named_source', 'by_fallback', 'by_first_proposal'].forEach(function(k) {
+            if (d[k]) html += renderTable(d[k]);
+        });
+        document.getElementById('rates-tables').innerHTML = html;
+    }).catch(function(err) {
+        console.error('conditional_rates.json load failed:', err);
+        document.getElementById('rates-tables').innerHTML = '<p style="color:#ef4444;">Could not load conditional_rates.json.</p>';
+    });
+    </script>
+</body>
+</html>

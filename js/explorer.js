@@ -1,5 +1,6 @@
 // Settlement Explorer — Contract Explorer table
 // Loads disputed_contracts.json, renders filterable / searchable table.
+// Row click → contract.html?id=...
 
 (function() {
     var ROWS_PER_PAGE = 50;
@@ -7,7 +8,14 @@
     var filtered = [];
     var page = 0;
 
-    var filters = { revised: 'all', chain: 'all', mismatch: 'all', hasq: 'all', search: '' };
+    var filters = { revised: 'all', chain: 'all', mismatch: 'all', hasq: 'all', src: 'all', search: '' };
+
+    // Read ?search= from URL on first load
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('search')) filters.search = urlParams.get('search');
+    if (urlParams.get('chain')) filters.chain = urlParams.get('chain');
+    if (urlParams.get('revised')) filters.revised = urlParams.get('revised');
+    if (urlParams.get('mismatch')) filters.mismatch = urlParams.get('mismatch');
 
     function chip(label, cls) {
         cls = cls || 'chip';
@@ -51,6 +59,8 @@
             if (filters.mismatch === 'candidate' && !r.candidate_mismatch) return false;
             if (filters.hasq === 'true' && !r.question_text) return false;
             if (filters.hasq === 'false' && r.question_text) return false;
+            if (filters.src === 'present' && !(r.audit && r.audit.named_source_present)) return false;
+            if (filters.src === 'missing' && r.audit && r.audit.named_source_present) return false;
             if (s) {
                 var hay = ((r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
                 if (hay.indexOf(s) === -1) return false;
@@ -65,6 +75,14 @@
         var tbody = document.getElementById('explorer-tbody');
         var slice = filtered.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
         tbody.innerHTML = slice.map(renderRow).join('');
+
+        // Wire row clicks → contract.html?id=...
+        tbody.querySelectorAll('.exp-row').forEach(function(tr) {
+            tr.style.cursor = 'pointer';
+            tr.addEventListener('click', function() {
+                window.location.href = 'contract.html?id=' + encodeURIComponent(tr.dataset.id);
+            });
+        });
 
         var meta = document.getElementById('explorer-meta');
         meta.textContent = filtered.length + ' contracts match (showing ' +
@@ -92,20 +110,27 @@
         });
     }
 
+    function setActiveChips() {
+        Object.keys(filters).forEach(function(f) {
+            if (f === 'search') return;
+            document.querySelectorAll('.explorer-chip[data-filter="' + f + '"]').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.value === filters[f]);
+            });
+        });
+    }
+
     function wireFilters() {
         document.querySelectorAll('.explorer-chip').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var f = btn.dataset.filter;
-                document.querySelectorAll('.explorer-chip[data-filter="' + f + '"]').forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
                 filters[f] = btn.dataset.value;
+                setActiveChips();
                 applyFilters();
             });
         });
-        // default: "All" buttons active
-        document.querySelectorAll('.explorer-chip[data-value="all"]').forEach(function(b) { b.classList.add('active'); });
 
         var searchEl = document.getElementById('search');
+        searchEl.value = filters.search;
         var debounce;
         searchEl.addEventListener('input', function() {
             clearTimeout(debounce);
@@ -119,6 +144,7 @@
     fetch('data/disputed_contracts.json').then(r => r.json()).then(d => {
         allRows = d.rows;
         wireFilters();
+        setActiveChips();
         applyFilters();
     }).catch(function(err) {
         console.error('disputed_contracts.json load failed:', err);

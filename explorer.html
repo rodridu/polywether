@@ -19,6 +19,7 @@
                     <a href="chain.html">Chain View</a>
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
+                    <a href="rates.html">Rates</a>
                     <a href="query.html">Query</a>
                     <a href="about.html">About</a>
                 </div>
@@ -44,10 +45,10 @@
             <p class="hero-eyebrow">Contract Explorer</p>
             <h1>All 2,221 disputed contracts</h1>
             <p class="hero-description">
-                Filterable table of every disputed contract in the Polymarket-via-UMA panel: first proposal, final payoff, chain type, and the candidate-mismatch diagnostic. Click a row to expand the full record.
+                Filterable table of every disputed contract in the Polymarket-via-UMA panel. Click any row for the full record (rule text, description, UMA ancillary data, audit checklist, settlement chain).
             </p>
-            <p style="margin-top: 16px; font-size: 0.88em; color: #92400e; background: #fef3c7; border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 4px;">
-                <strong>Coverage note:</strong> 1,756 of 2,221 contracts (79.1%) have recoverable question text from on-chain or platform sources. Rows without question text show <code>[question text missing]</code> &mdash; the chain type and final payoff are still observed.
+            <p style="margin-top: 12px; font-size: 0.86em; color: #64748b;">
+                Question-text coverage is 79.1% (1,756 / 2,221). Rows without question text show <code>[question text missing]</code>; chain type and final payoff are still observed.
             </p>
         </div>
     </section>
@@ -57,7 +58,7 @@
 
             <!-- Filters -->
             <div class="explorer-filters">
-                <input type="search" id="search" placeholder="Search question text, category, id..." class="explorer-search">
+                <input type="search" id="search" placeholder="Search question text, category, id…" class="explorer-search">
 
                 <div class="explorer-chip-row">
                     <span class="explorer-chip-label">Revised:</span>
@@ -84,6 +85,13 @@
                     <button class="explorer-chip" data-filter="hasq" data-value="all">All</button>
                     <button class="explorer-chip" data-filter="hasq" data-value="true">Present</button>
                     <button class="explorer-chip" data-filter="hasq" data-value="false">Missing</button>
+                </div>
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Named source:</span>
+                    <button class="explorer-chip" data-filter="src" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="src" data-value="present">Specified</button>
+                    <button class="explorer-chip" data-filter="src" data-value="missing">Missing</button>
                 </div>
             </div>
 
@@ -121,6 +129,7 @@
                 <a href="chain.html">Chain View</a>
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
+                <a href="rates.html">Rates</a>
                 <a href="query.html">Query</a>
                 <a href="about.html">About</a>
             </nav>
@@ -128,9 +137,7 @@
         <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
-                <span class="footer-sources-label">Data:</span>
-                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
-                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+                <span class="footer-sources-label">Locate, do not adjudicate.</span>
             </div>
         </div>
     </footer>

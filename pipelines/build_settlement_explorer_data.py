@@ -238,26 +238,33 @@ def main():
     FALLBACK_PAT = _re.compile(r'\b(if (?:the )?source|in the event|fallback|in case|alternat(?:e|ive)|backup source|if unavailable|otherwise|should the (?:primary )?source|if no (?:reliable |credible )?source|if not(?:hing)? (?:is )?(?:available|reported|published))\b', _re.I)
     EDGECASE_PAT = _re.compile(r'\b(edge case|n/?a|N\.A\.|invalid|cancel(?:l?ed|lation)?|postpon(?:e|ed|ement)|delay(?:ed)?|tied|tie-breaker|abandon(?:ed)?|forfeit|disput(?:e|ed) resolution|in the case (?:where|that)|if .{1,40} (?:is|are) (?:not )?(?:resolved|determined|finalized|known)|deadline.{1,40}(?:passes|expires|missed))\b', _re.I)
 
-    def audit_flags(rule_text: str | None, description: str | None) -> dict:
+    def audit_flags(rule_text: str | None, description: str | None, ancillary: str | None) -> dict:
         # Combine rule text candidates for richer matching
-        body = ' '.join(filter(None, [rule_text or '', description or '']))
-        if not body.strip():
-            return {
-                "rule_text_present": False,
-                "named_source_present": False,
-                "fallback_present": False,
-                "edge_cases_present": False,
-            }
+        body = ' '.join(filter(None, [rule_text or '', description or '', ancillary or '']))
+        has_text = bool(body.strip())
         return {
-            "rule_text_present": True,
-            "named_source_present": bool(SOURCE_PAT.search(body)),
-            "fallback_present": bool(FALLBACK_PAT.search(body)),
-            "edge_cases_present": bool(EDGECASE_PAT.search(body)),
+            # Text availability
+            "rule_text_present": bool(rule_text),
+            "description_present": bool(description),
+            "ancillary_present": bool(ancillary),
+            # Contract clarity (regex over combined body; only meaningful if some text exists)
+            "named_source_present": bool(has_text and SOURCE_PAT.search(body)),
+            "fallback_present": bool(has_text and FALLBACK_PAT.search(body)),
+            "edge_cases_present": bool(has_text and EDGECASE_PAT.search(body)),
         }
 
     rows_out = []
-    coverage = {"total": 0, "with_question_text": 0, "with_category": 0, "with_final_payoff": 0, "with_chain_type": 0, "with_description": 0}
-    audit_counts = {"rule_text_present": 0, "named_source_present": 0, "fallback_present": 0, "edge_cases_present": 0}
+    coverage = {"total": 0, "with_question_text": 0, "with_category": 0, "with_final_payoff": 0, "with_chain_type": 0, "with_description": 0, "with_ancillary": 0}
+    audit_counts = {
+        # Text availability
+        "rule_text_present": 0, "description_present": 0, "ancillary_present": 0,
+        # Contract clarity
+        "named_source_present": 0, "fallback_present": 0, "edge_cases_present": 0,
+        # Chain observability
+        "final_payoff_observed": 0, "multi_episode": 0,
+        # Diagnostic
+        "candidate_mismatch": 0,
+    }
     for row in disputed:
         d = dict(zip(cols, row))
         coverage["total"] += 1
@@ -265,33 +272,35 @@ def main():
         # final_payoff: prefer S_i (Yes/No/Other), else terminal_state_type decoded
         final_payoff = d["S_i"] if d["S_i"] in ("Yes", "No", "Other") else decode_terminal_state(d["terminal_state_type"])
         chain_type = decode_episode_sequence(d["episode_sequence"])
-        flags = audit_flags(d["question_text"] or d["ancillary_text"], d["description"])
+        flags = audit_flags(d["question_text"], d["description"], d["ancillary_text"])
+        is_mismatch = cid in mismatch_ids
         out = {
             "id": short_id(cid),
             "question_text": d["question_text"] if d["question_text"] else None,
+            "description": d["description"] if d["description"] else None,
+            "ancillary_text": d["ancillary_text"] if d["ancillary_text"] else None,
             "category": d["category"] if d["category"] else None,
             "first_proposal": d["P_i1"],
             "final_payoff": final_payoff,
             "revised": bool(d["Flip_i"]),
             "multi_episode": bool(d["MultiEpisode_i"]),
             "chain_type": chain_type,
-            "candidate_mismatch": cid in mismatch_ids,
-            "mismatch_agreed": (cid in agreed_ids) if cid in mismatch_ids else None,
+            "candidate_mismatch": is_mismatch,
+            "mismatch_agreed": None,  # per-row not exposed; aggregate at category level only
             "first_proposal_time": int(d["first_proposal_time"]) if d["first_proposal_time"] else None,
             "final_settlement_time": int(d["final_settlement_time"]) if d["final_settlement_time"] else None,
-            # Auditability checklist (Phase 2): 8 binary items derived per rules in audit.html
+            # Audit grouped into 4 categories (per peer review):
+            #   text_availability: data we can see
+            #   contract_clarity:  what the contract says (heuristic)
+            #   chain_observability: what the mechanism did
+            #   diagnostic_disagreement: candidate-mismatch flag
             "audit": {
-                **flags,
-                "settlement_chain_complete": final_payoff is not None and final_payoff != "Pending",
-                "repeated_request_flag": chain_type in ("Request-voiding chain", "Repeated adapter-routed request"),
-                "final_payoff_observed": final_payoff is not None,
-                "benchmark_agreed": (cid in agreed_ids) if cid in mismatch_ids else (None if cid in mismatch_ids else True),
+                **flags,                                     # 6 boolean flags
+                "final_payoff_observed": final_payoff is not None and final_payoff != "Pending",
+                "multi_episode": bool(d["MultiEpisode_i"]),
+                "candidate_mismatch": is_mismatch,
             },
         }
-        # benchmark_agreed semantics:
-        #   - if candidate_mismatch  -> False (final payoff disagrees with rule-implied benchmark)
-        #   - else                   -> True (no candidate mismatch flagged)
-        out["audit"]["benchmark_agreed"] = (cid not in mismatch_ids)
 
         if out["question_text"]:
             coverage["with_question_text"] += 1
@@ -303,10 +312,64 @@ def main():
             coverage["with_chain_type"] += 1
         if d["description"]:
             coverage["with_description"] += 1
+        if d["ancillary_text"]:
+            coverage["with_ancillary"] += 1
         for k in audit_counts:
             if out["audit"].get(k):
                 audit_counts[k] += 1
         rows_out.append(out)
+
+    # ---------- conditional revision/mismatch rates ----------
+    # Pre-compute rates by (a) category, (b) chain_type, (c) first_proposal,
+    # (d) named_source presence, (e) fallback presence
+    def rate_table(group_fn, label):
+        groups = {}
+        for r in rows_out:
+            key = group_fn(r)
+            if key is None:
+                continue
+            g = groups.setdefault(str(key), {"n": 0, "n_revised": 0, "n_candidate_mismatch": 0})
+            g["n"] += 1
+            if r["revised"]:
+                g["n_revised"] += 1
+            if r["candidate_mismatch"]:
+                g["n_candidate_mismatch"] += 1
+        items = []
+        for k, v in sorted(groups.items(), key=lambda kv: -kv[1]["n"]):
+            items.append({
+                "key": k,
+                "n_disputed": v["n"],
+                "n_revised": v["n_revised"],
+                "revision_rate": v["n_revised"] / v["n"] if v["n"] else 0,
+                "n_candidate_mismatch": v["n_candidate_mismatch"],
+                "candidate_mismatch_rate": v["n_candidate_mismatch"] / v["n"] if v["n"] else 0,
+            })
+        return {"label": label, "items": items}
+
+    conditional = {
+        "by_category": rate_table(lambda r: r["category"] or "uncategorized", "By category"),
+        "by_chain_type": rate_table(lambda r: r["chain_type"], "By chain type"),
+        "by_first_proposal": rate_table(lambda r: r["first_proposal"], "By first proposal"),
+        "by_named_source": rate_table(
+            lambda r: "named source present" if r["audit"]["named_source_present"]
+                      else ("rule text present, no named source" if r["audit"]["rule_text_present"]
+                            else "rule text missing"),
+            "By named-source presence",
+        ),
+        "by_fallback": rate_table(
+            lambda r: "fallback specified" if r["audit"]["fallback_present"]
+                      else ("rule text present, no fallback" if r["audit"]["rule_text_present"]
+                            else "rule text missing"),
+            "By fallback specification",
+        ),
+        "overall": {
+            "n_disputed": len(rows_out),
+            "n_revised": sum(1 for r in rows_out if r["revised"]),
+            "revision_rate": sum(1 for r in rows_out if r["revised"]) / len(rows_out),
+            "n_candidate_mismatch": sum(1 for r in rows_out if r["candidate_mismatch"]),
+        },
+    }
+    write_json(DATA_OUT / "conditional_rates.json", conditional)
 
     # internal sidecar with raw condition_ids (for replication, NOT public)
     sidecar = [{"id": short_id(d["condition_id"]), "condition_id": d["condition_id"]} for d in (dict(zip(cols, r)) for r in disputed)]
