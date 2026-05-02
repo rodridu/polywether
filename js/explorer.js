@@ -8,7 +8,7 @@
     var filtered = [];
     var page = 0;
 
-    var filters = { revised: 'all', chain: 'all', mismatch: 'all', hasq: 'all', src: 'all', search: '' };
+    var filters = { revised: 'all', chain: 'all', mismatch: 'all', hasq: 'all', src: 'all', tier: 'all', search: '' };
 
     // Read ?search= from URL on first load
     var urlParams = new URLSearchParams(window.location.search);
@@ -16,6 +16,7 @@
     if (urlParams.get('chain')) filters.chain = urlParams.get('chain');
     if (urlParams.get('revised')) filters.revised = urlParams.get('revised');
     if (urlParams.get('mismatch')) filters.mismatch = urlParams.get('mismatch');
+    if (urlParams.get('tier')) filters.tier = urlParams.get('tier');
 
     function chip(label, cls) {
         cls = cls || 'chip';
@@ -29,6 +30,11 @@
         });
     }
 
+    function tierBadge(tier) {
+        var cls = tier === 'High' ? 'tier-high' : tier === 'Caution' ? 'tier-caution' : 'tier-low';
+        return '<span class="tier-badge ' + cls + '">' + tier + '</span>';
+    }
+
     function renderRow(r) {
         var qHtml = r.question_text
             ? escapeHtml(r.question_text)
@@ -39,6 +45,7 @@
             : (r.chain_type === 'Repeated adapter-routed request' ? chip('repeated', 'chip chip-info') : chip(r.chain_type, 'chip'));
         var mmChip = r.candidate_mismatch ? chip('candidate', 'chip chip-warn') : '<span class="muted">—</span>';
         return '<tr class="exp-row" data-id="' + r.id + '">' +
+            '<td class="exp-col-tier">' + tierBadge(r.settlement_risk_tier || '—') + '</td>' +
             '<td class="exp-col-id mono">' + r.id + '</td>' +
             '<td class="exp-col-q">' + qHtml + '</td>' +
             '<td class="exp-col-cat">' + escapeHtml(r.category || '—') + '</td>' +
@@ -53,6 +60,7 @@
     function applyFilters() {
         var s = filters.search.toLowerCase().trim();
         filtered = allRows.filter(function(r) {
+            if (filters.tier !== 'all' && r.settlement_risk_tier !== filters.tier) return false;
             if (filters.revised === 'true' && !r.revised) return false;
             if (filters.revised === 'false' && r.revised) return false;
             if (filters.chain !== 'all' && r.chain_type !== filters.chain) return false;

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docs &mdash; Settlement Risk Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502c">
+    <meta name="description" content="Settlement Risk Monitor data fields, JSON endpoints, refresh cadence, internal tools.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
+                <div class="nav-links">
+                    <a href="index.html">Monitor</a>
+                    <a href="explorer.html">Lookup</a>
+                    <a href="rates.html">Rates</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="blueprints.html">Blueprints</a>
+                    <a href="research.html">Research</a>
+                    <a href="docs.html" class="active">Docs</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Docs</p>
+            <h1>Data, fields, endpoints, internals</h1>
+            <p class="hero-description">
+                What's in the data. How to read it programmatically. How often it refreshes. Plus links to the in-browser SQL interface and the per-contract drill-downs.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container container-narrow">
+
+            <h2 id="risk-tier">Settlement-risk tier</h2>
+            <p>The screening tier on each disputed contract is a rules-based v0. Computed from existing audit flags + chain-type×category revision rates:</p>
+            <table class="blueprint-table">
+                <tr><th>High</th><td>Broad candidate mismatch flagged, OR rule text not recoverable, OR (rule text present but no named source AND no fallback). 616 of 2,221 contracts (28%).</td></tr>
+                <tr><th>Caution</th><td>No fallback language, OR no edge-case language, OR same chain-type × category bucket has revision rate above the sample median. 1,513 of 2,221 (68%).</td></tr>
+                <tr><th>Low</th><td>Source, fallback, edge-case language all present, and bucket revision rate at or below sample median. 92 of 2,221 (4%).</td></tr>
+            </table>
+            <p style="margin-top:12px;color:#475569;">
+                The tier is a <strong>screening flag</strong>, not a prediction of correct/incorrect settlement. It says: <em>the payoff depends on discretionary or ambiguous interpretation rather than a clean event-to-label mapping.</em>
+            </p>
+
+            <h2 id="data-files">Static JSON endpoints</h2>
+            <p>All data files live under <code>/data/</code> and are committed to the repo. Treat them as a static API: paths and field names are stable; refresh cadence is documented below.</p>
+
+            <table class="blueprint-table">
+                <tr><th><code>/data/disputed_contracts.json</code></th><td>One row per disputed contract (n=2,221). Reader-facing fields: <code>id</code>, <code>raw_condition_id</code>, <code>slug</code>, <code>question_text</code>, <code>description</code>, <code>ancillary_text</code>, <code>category</code>, <code>first_proposal</code>, <code>final_payoff</code>, <code>revised</code>, <code>multi_episode</code>, <code>chain_type</code>, <code>candidate_mismatch</code>, <code>settlement_risk_tier</code>, <code>risk_reasons</code>, <code>first_proposal_time</code>, <code>final_settlement_time</code>, <code>audit{ rule_text_present, description_present, ancillary_present, named_source_present, fallback_present, edge_cases_present, final_payoff_observed, multi_episode, candidate_mismatch }</code></td></tr>
+                <tr><th><code>/data/settlement_funnel.json</code></th><td>9-step funnel ladder + summary numbers (paper Table 1).</td></tr>
+                <tr><th><code>/data/chain_signatures.json</code></th><td>23 raw chain-pattern aggregates + 3-row chain_type_summary.</td></tr>
+                <tr><th><code>/data/candidate_mismatches.json</code></th><td>94 broad mismatches; 64 agreed at category level. Per-row agreement not exposed.</td></tr>
+                <tr><th><code>/data/conditional_rates.json</code></th><td>Pre-computed revision + candidate-mismatch rates by 5 dimensions (chain_type, category, first_proposal, named_source presence, fallback presence) + overall.</td></tr>
+                <tr><th><code>/data/public_cases.json</code></th><td>7 named cases with status, market matches, and disputed-sample matches. Locate, do not adjudicate.</td></tr>
+                <tr><th><code>/data/chain_examples.json</code></th><td>10 hand-curated example contracts for Chain View, sports-only, with full request-by-request timelines.</td></tr>
+                <tr><th><code>/data/headline_statistics.json</code></th><td>Paper-level headline statistics (richer schema than the funnel summary).</td></tr>
+                <tr><th><code>/data/settlement_explorer.duckdb</code></th><td>Stripped DuckDB (10 MB) for in-browser queries via duckdb-wasm. Tables: <code>contracts</code> (2,221 rows), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.</td></tr>
+            </table>
+
+            <h2 id="lookup-by-id">Look up a single contract by ID</h2>
+            <p>Settlement Risk Monitor doesn't currently host a query API. Two ways to look up a contract programmatically:</p>
+            <ol style="line-height:1.8;">
+                <li><strong>Direct URL.</strong> <code>https://rodridu.github.io/polywether/contract.html?id={short_id}</code> renders the per-contract page. Short IDs are 8-char hex (sha256 prefix of the raw <code>condition_id</code>).</li>
+                <li><strong>Fetch JSON, filter client-side.</strong> Pull <code>disputed_contracts.json</code> once (~5 MB) and filter by <code>id</code>, <code>raw_condition_id</code> (full 0x… 64-hex), <code>slug</code>, or substring of <code>question_text</code>.</li>
+            </ol>
+            <p>Example: filter for High-tier contracts in JS:</p>
+            <pre class="query-schema">const rows = (await (await fetch('/data/disputed_contracts.json')).json()).rows;
+const highRisk = rows.filter(r =&gt; r.settlement_risk_tier === 'High');
+console.log(highRisk.length, 'High-risk contracts');</pre>
+
+            <h2 id="refresh">Refresh cadence</h2>
+            <p>Data refreshes via two paths:</p>
+            <ol style="line-height:1.8;">
+                <li><strong>Aggregate refresh — automatic, weekly.</strong> Mondays 8am UTC + on push to <code>data-source/**</code>. The <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">refresh-aggregates</a> workflow regenerates <code>settlement_funnel.json</code>, <code>chain_signatures.json</code>, <code>candidate_mismatches.json</code> from committed source CSVs.</li>
+                <li><strong>Per-contract refresh — manual.</strong> Disputed-contract details, chain examples, and the duckdb-wasm DB are refreshed when the paper's analysis pipeline regenerates the rev3 panel. The pipeline lives in <a href="https://github.com/rodridu/polywether/tree/main/pipelines" target="_blank" rel="noopener">pipelines/</a>.</li>
+            </ol>
+
+            <h2 id="internal-tools">Internal tools</h2>
+            <ul style="line-height:1.8;">
+                <li><a href="query.html"><strong>SQL Lab</strong></a> — duckdb-wasm in the browser. Query the stripped DuckDB locally.</li>
+                <li><a href="audit.html"><strong>Audit</strong></a> — eight-flag per-contract checklist, grouped into four categories.</li>
+                <li><a href="chain.html"><strong>Chain View</strong></a> — request-by-request timelines for ten hand-curated example contracts.</li>
+                <li><a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener"><strong>Source repo</strong></a> — full codebase, pipelines, data-source CSVs.</li>
+            </ul>
+
+            <h2 id="versioning">Versioning</h2>
+            <p>
+                JSON schemas are stable in additive sense: new fields may be added; existing field names will not change without a deprecation note in the repo CHANGELOG. The <code>settlement_risk_tier</code> rule is v0; future versions may incorporate continuous risk scores rather than three buckets.
+            </p>
+
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Risk Monitor</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Monitor</a>
+                <a href="explorer.html">Lookup</a>
+                <a href="rates.html">Rates</a>
+                <a href="cases.html">Cases</a>
+                <a href="blueprints.html">Blueprints</a>
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

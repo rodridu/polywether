@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Explorer &mdash; Settlement Explorer</title>
+    <title>Contract Explorer &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20260502">
     <meta name="description" content="Filterable table of 2,221 disputed Polymarket-UMA contracts.">
@@ -12,16 +12,15 @@
     <nav class="nav">
         <div class="nav-inner">
             <div class="nav-left">
-                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
                 <div class="nav-links">
-                    <a href="index.html">Funnel</a>
-                    <a href="explorer.html" class="active">Explorer</a>
-                    <a href="chain.html">Chain View</a>
-                    <a href="audit.html">Audit</a>
-                    <a href="cases.html">Cases</a>
+                    <a href="index.html">Monitor</a>
+                    <a href="explorer.html" class="active">Lookup</a>
                     <a href="rates.html">Rates</a>
-                    <a href="query.html">SQL Lab</a>
-                    <a href="about.html">About</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="blueprints.html">Blueprints</a>
+                    <a href="research.html">Research</a>
+                    <a href="docs.html">Docs</a>
                 </div>
             </div>
             <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
@@ -42,20 +41,20 @@
 
     <section class="hero hero-compact">
         <div class="hero-inner">
-            <p class="hero-eyebrow">Contract Explorer</p>
-            <h1>All 2,221 disputed contracts</h1>
+            <p class="hero-eyebrow">Lookup</p>
+            <h1>Look up a market</h1>
             <p class="hero-description">
-                Filterable table of every disputed contract in the Polymarket-via-UMA panel. Click any row for the full record (rule text, description, UMA ancillary data, audit checklist, "markets like this" base rates, settlement chain).
+                Paste a Polymarket URL, condition ID, or market question to see settlement risk, rule clarity, settlement path, and base rates from "markets like this." Or filter the full disputed-contract panel below.
             </p>
 
-            <!-- Prominent search bar (lookup) -->
+            <!-- Prominent search bar -->
             <form class="hero-search" onsubmit="return doExplorerLookup(event)">
-                <input type="search" id="search" placeholder="Search question text, category, id… (e.g. Trump, F1, government shutdown, or paste a short id like 37b32e72)" autocomplete="off">
+                <input type="search" id="search" placeholder="Polymarket URL, condition ID (0x…), short id, or question text — e.g. Trump, F1, government shutdown" autocomplete="off">
                 <button type="submit" class="btn btn-primary">Find</button>
             </form>
 
             <p style="margin-top: 12px; font-size: 0.86em; color: #64748b;">
-                Question-text coverage is 79.1% (1,756 / 2,221). Rows without question text show <code>[question text missing]</code>; chain type and final payoff are still observed.
+                Question-text coverage is 79.1% (1,756 / 2,221). Rows without question text show <code>[question text missing]</code>; chain type, final payoff, and risk tier are still observed.
             </p>
         </div>
     </section>
@@ -79,6 +78,14 @@
 
             <!-- Filters -->
             <div class="explorer-filters">
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Risk tier:</span>
+                    <button class="explorer-chip" data-filter="tier" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="tier" data-value="High">High (616)</button>
+                    <button class="explorer-chip" data-filter="tier" data-value="Caution">Caution (1,513)</button>
+                    <button class="explorer-chip" data-filter="tier" data-value="Low">Low (92)</button>
+                </div>
 
                 <div class="explorer-chip-row">
                     <span class="explorer-chip-label">Revised:</span>
@@ -120,6 +127,7 @@
             <table class="explorer-table" id="explorer-table">
                 <thead>
                     <tr>
+                        <th class="exp-col-tier">Risk</th>
                         <th class="exp-col-id">id</th>
                         <th class="exp-col-q">Question</th>
                         <th class="exp-col-cat">Category</th>
@@ -140,24 +148,23 @@
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-brand">
-                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-title">Settlement Risk Monitor</div>
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
             <nav class="footer-nav">
-                <a href="index.html">Funnel</a>
-                <a href="explorer.html">Explorer</a>
-                <a href="chain.html">Chain View</a>
-                <a href="audit.html">Audit</a>
-                <a href="cases.html">Cases</a>
+                <a href="index.html">Monitor</a>
+                <a href="explorer.html">Lookup</a>
                 <a href="rates.html">Rates</a>
-                <a href="query.html">SQL Lab</a>
-                <a href="about.html">About</a>
+                <a href="cases.html">Cases</a>
+                <a href="blueprints.html">Blueprints</a>
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
             </nav>
         </div>
         <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
-                <span class="footer-sources-label">Locate, do not adjudicate.</span>
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
             </div>
         </div>
     </footer>

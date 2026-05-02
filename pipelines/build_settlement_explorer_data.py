@@ -254,6 +254,9 @@ def main():
             "edge_cases_present": bool(has_text and EDGECASE_PAT.search(body)),
         }
 
+    # First pass: collect rows with audit + chain_type, then compute the sample-median revision rate
+    # by (chain_type, category) bucket, then assign risk_tier on second pass.
+
     rows_out = []
     coverage = {"total": 0, "with_question_text": 0, "with_category": 0, "with_final_payoff": 0, "with_chain_type": 0, "with_description": 0, "with_ancillary": 0}
     audit_counts = {
@@ -321,6 +324,63 @@ def main():
             if out["audit"].get(k):
                 audit_counts[k] += 1
         rows_out.append(out)
+
+    # ---------- settlement_risk_tier (rules-based v0) ----------
+    # Pre-compute revision rate by (chain_type, category) for the "above-sample-median" rule.
+    bucket_counts = {}
+    for r in rows_out:
+        key = (r["chain_type"], r["category"] or "uncategorized")
+        b = bucket_counts.setdefault(key, [0, 0])
+        b[0] += 1
+        if r["revised"]:
+            b[1] += 1
+    bucket_rates = {k: (v[1]/v[0] if v[0] else 0) for k, v in bucket_counts.items()}
+    rates_sorted = sorted(bucket_rates.values())
+    sample_median = rates_sorted[len(rates_sorted)//2] if rates_sorted else 0
+
+    def compute_tier(r):
+        """Return (tier, list-of-reasons). Rules:
+           HIGH:    candidate_mismatch
+                   OR (no rule_text)
+                   OR (rule_text present, but no named_source AND no fallback)
+           CAUTION: missing fallback
+                   OR missing edge_cases
+                   OR same-bucket revision_rate above sample median
+           LOW:     otherwise (all of named_source/fallback/edge_cases present, low-rate bucket)
+        """
+        a = r["audit"]
+        reasons = []
+        if a.get("candidate_mismatch"):
+            reasons.append("Broad candidate mismatch flagged")
+        if not a.get("rule_text_present"):
+            reasons.append("Rule text not recoverable")
+        elif (not a.get("named_source_present")) and (not a.get("fallback_present")):
+            reasons.append("Rule text present but no named source AND no fallback")
+        if reasons:
+            return ("High", reasons)
+
+        cautions = []
+        if not a.get("fallback_present"):
+            cautions.append("No fallback language")
+        if not a.get("edge_cases_present"):
+            cautions.append("No edge-case language")
+        bucket_rate = bucket_rates.get((r["chain_type"], r["category"] or "uncategorized"), 0)
+        if bucket_rate > sample_median:
+            cautions.append(f"Revision rate {100*bucket_rate:.0f}% in this chain-type×category bucket (above sample median {100*sample_median:.0f}%)")
+        if cautions:
+            return ("Caution", cautions)
+
+        return ("Low", ["Source, fallback, edge-case language all present; low-rate bucket"])
+
+    for r in rows_out:
+        tier, reasons = compute_tier(r)
+        r["settlement_risk_tier"] = tier
+        r["risk_reasons"] = reasons
+
+    # tier distribution for memo
+    tier_dist = {"Low": 0, "Caution": 0, "High": 0}
+    for r in rows_out:
+        tier_dist[r["settlement_risk_tier"]] += 1
 
     # ---------- conditional revision/mismatch rates ----------
     # Pre-compute rates by (a) category, (b) chain_type, (c) first_proposal,

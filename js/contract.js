@@ -126,11 +126,18 @@
 
         // hero
         document.getElementById('contract-title').textContent = rec.question_text || '[question text missing]';
-        var meta = '<span class="mono">id ' + rec.id + '</span>' +
+        var tierCls = rec.settlement_risk_tier === 'High' ? 'tier-high' : rec.settlement_risk_tier === 'Caution' ? 'tier-caution' : 'tier-low';
+        var tierBadgeHtml = '<span class="tier-badge tier-badge-large ' + tierCls + '">Settlement risk: ' + escapeHtml(rec.settlement_risk_tier || '—') + '</span>';
+        var reasonsHtml = (rec.risk_reasons && rec.risk_reasons.length)
+            ? '<div class="contract-risk-reasons">' + rec.risk_reasons.map(function(rsn) { return '<span class="contract-risk-reason">' + escapeHtml(rsn) + '</span>'; }).join('') + '</div>'
+            : '';
+        var meta = tierBadgeHtml + reasonsHtml +
+            '<div style="margin-top:10px;"><span class="mono">id ' + rec.id + '</span>' +
             ' &middot; ' + escapeHtml(rec.category || 'uncategorized') +
             ' &middot; ' + chip(rec.chain_type, rec.chain_type === 'Request-voiding chain' ? 'chip-warn' : 'chip-info');
         if (rec.revised) meta += ' ' + chip('revised', 'chip-warn');
         if (rec.candidate_mismatch) meta += ' ' + chip('candidate mismatch', 'chip-warn');
+        meta += '</div>';
         document.getElementById('contract-meta').innerHTML = meta;
 
         // body

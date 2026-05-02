@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research &mdash; Settlement Risk Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502c">
+    <meta name="description" content="Research backing the Settlement Risk Monitor — working paper, methodology, sample construction, limitations.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
+                <div class="nav-links">
+                    <a href="index.html">Monitor</a>
+                    <a href="explorer.html">Lookup</a>
+                    <a href="rates.html">Rates</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="blueprints.html">Blueprints</a>
+                    <a href="research.html" class="active">Research</a>
+                    <a href="docs.html">Docs</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Research</p>
+            <h1>The paper behind the monitor</h1>
+            <p class="hero-description">
+                The Settlement Risk Monitor is built on the working paper "Settlement-State Construction in Prediction-Market Contracts." This page documents the paper, the sample, the methodology, and what the data does and does not support.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container container-narrow">
+
+            <h2>Working paper</h2>
+            <p>
+                <strong>"Settlement-State Construction in Prediction-Market Contracts."</strong> Hongzhen Du, Northwestern University. Working paper, 2026.
+            </p>
+            <p>
+                Prediction-market prices are usually interpreted as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. The paper distinguishes three objects: realized world facts <em>W</em>, the rule-implied label <em>G</em> under the contract's text and source hierarchy, and the settlement state <em>S</em> delivered by the mechanism. It reconstructs this mapping for disputed Polymarket contracts resolved through UMA.
+            </p>
+
+            <h2>Headline empirical results</h2>
+            <ul style="line-height:1.8;">
+                <li><strong>661,949</strong> total settlement conditions in the Polymarket-via-UMA panel.</li>
+                <li><strong>2,221</strong> are disputed (at least one counter-bond posted).</li>
+                <li><strong>2,197</strong> disputed contracts have an observed final payoff state — the analysis sample.</li>
+                <li><strong>530 (24.1%)</strong> end with a final payoff different from the first proposed outcome.</li>
+                <li>Of those revisions, <strong>352 (66%)</strong> occur through repeated adapter-routed requests; <strong>178 (34%)</strong> through DVM request-voiding.</li>
+                <li><strong>94</strong> broad candidate mismatches identified by a two-pass LLM-coded benchmark; <strong>64</strong> agreed across both passes (category-level).</li>
+            </ul>
+
+            <h2>Methodology</h2>
+            <p>
+                Polymarket markets and UMA Optimistic Oracle resolution events are ingested into a research database. The disputed-contract sample is the union of contracts with at least one counter-bond posted. Episode-level chains are reconstructed from the UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code> event sequence.
+            </p>
+            <p>
+                Question text comes from a COALESCE over <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, and <code>pm_resolution_events.ancillary_data_decoded</code>. Description (resolution criteria) comes from <code>pm_markets.raw.description</code>. Category from <code>episode_panel.category</code>.
+            </p>
+            <p>
+                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. <strong>94 broad candidate mismatches</strong> are identified by the first pass; <strong>64</strong> are <strong>agreed</strong> across both passes (category-level aggregate; per-row agreement is not exposed in this dashboard).
+            </p>
+
+            <h2>What the paper does NOT claim</h2>
+            <ul style="line-height:1.8;">
+                <li>The unconditional rate at which a randomly selected market receives an erroneous final payoff.</li>
+                <li>Whether any specific contract's final payoff is correct in real-world terms.</li>
+                <li>UMA tokenholder voter identity, vote concentration, or turnout.</li>
+                <li>Causal effects of any UMA policy change.</li>
+            </ul>
+
+            <h2>Limitations carried into the dashboard</h2>
+            <ul style="line-height:1.8;">
+                <li><strong>Question-text coverage is 79.1%.</strong> 1,756 of 2,221 disputed contracts have recoverable question text. The other 465 are visible in the rev3 settlement panel but absent from Polymarket-side metadata.</li>
+                <li><strong>Auditability flags 4–6</strong> (named source / fallback / edge cases) are heuristic regex over a noisy text corpus. They tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed.</li>
+                <li><strong>The settlement-risk tier is a screening flag, not a prediction.</strong> It identifies contracts whose payoff depends on discretionary or ambiguous interpretation. It does not predict whether the final payoff is correct.</li>
+                <li><strong>Public Case Locator</strong> uses keyword matching. Three of seven curated cases match the market panel but not the disputed-analysis sample.</li>
+            </ul>
+
+            <h2>Companion tools</h2>
+            <p>For the in-browser SQL interface and full data schema, see <a href="docs.html">Docs</a>. For the public-case locator, see <a href="cases.html">Cases</a>. For the per-contract chain timelines used in the paper's appendix, see <a href="chain.html">Chain View</a>. For the eight-item per-contract auditability checklist, see <a href="audit.html">Audit</a>.</p>
+
+            <h2>Researcher</h2>
+            <p>
+                <strong>Hongzhen Du</strong>, Northwestern University. Contact via the paper repository.
+            </p>
+
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Risk Monitor</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Monitor</a>
+                <a href="explorer.html">Lookup</a>
+                <a href="rates.html">Rates</a>
+                <a href="cases.html">Cases</a>
+                <a href="blueprints.html">Blueprints</a>
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

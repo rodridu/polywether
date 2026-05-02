@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprints &mdash; Settlement Risk Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502c">
+    <meta name="description" content="Dispute-derived settlement-safe contract templates for prediction markets.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
+                <div class="nav-links">
+                    <a href="index.html">Monitor</a>
+                    <a href="explorer.html">Lookup</a>
+                    <a href="rates.html">Rates</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="blueprints.html" class="active">Blueprints</a>
+                    <a href="research.html">Research</a>
+                    <a href="docs.html">Docs</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Blueprints</p>
+            <h1>Settlement-safe contract templates</h1>
+            <p class="hero-description">
+                Templates derived from observed dispute and revision patterns. Each blueprint specifies the contract fields most often missing or ambiguous on the markets that ended up disputed: <strong>event definition, primary source, secondary source / fallback, edge cases, time zone, settlement timing, invalid/N/A rules, and worked examples.</strong>
+            </p>
+            <p style="margin-top: 12px; font-size: 0.92em; color: #475569;">
+                These are not platform-issued specifications. They are research-grade templates documenting which fields, if specified ex ante, would have prevented the most common settlement disputes in the panel.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 id="bp-template">The Blueprint template</h2>
+            <p>Every blueprint below uses the same eight fields:</p>
+            <ol class="audit-defs" style="margin-top:12px;">
+                <li><strong>Event definition.</strong> The world-state question, written to eliminate semantic ambiguity. Must specify scope, agent, action, object.</li>
+                <li><strong>Primary source.</strong> Named external authority. Never the platform itself. URL or registry.</li>
+                <li><strong>Secondary source / fallback.</strong> What happens if the primary source is unavailable, delayed, or itself disputed.</li>
+                <li><strong>Edge cases.</strong> Pre-specified handling for cancellation, postponement, ties, ambiguous timing, partial events.</li>
+                <li><strong>Time zone.</strong> Explicit zone for cutoff times. Avoid relative phrases ("today", "this week").</li>
+                <li><strong>Settlement timing.</strong> Window within which the resolution is evaluated after the event.</li>
+                <li><strong>Invalid / N/A rules.</strong> When the contract resolves Invalid (50/50) rather than Yes or No.</li>
+                <li><strong>Worked examples.</strong> Three examples spanning Yes / No / Invalid, derived from real or hypothetical world-states.</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 id="bp-shutdown">Blueprint 1 — U.S. government shutdown</h2>
+            <p class="muted">Failure mode observed in panel: cutoff date inserted after trading began; "shutdown" defined inconsistently across markets.</p>
+
+            <div class="blueprint-card">
+                <table class="blueprint-table">
+                    <tr><th>Event definition</th><td>Resolves YES if a federal funding lapse begins on or before <strong>{deadline}</strong> AT <strong>{time} {tz}</strong>, defined as the U.S. federal government failing to enact appropriations covering at least one of the 12 standard appropriations bills. The event triggers regardless of duration.</td></tr>
+                    <tr><th>Primary source</th><td><a href="https://www.whitehouse.gov/omb/" target="_blank" rel="noopener">Office of Management and Budget</a> shutdown memo, OR <a href="https://www.opm.gov/" target="_blank" rel="noopener">OPM</a> furlough guidance.</td></tr>
+                    <tr><th>Secondary / fallback</th><td>If neither OMB nor OPM publishes within 24h: Associated Press wire confirming federal agencies have begun furloughing non-essential employees.</td></tr>
+                    <tr><th>Edge cases</th><td>(a) Continuing Resolution passed after midnight but retroactive to midnight: NO. (b) Partial shutdown affecting one agency: YES. (c) Shutdown begins ≤30 minutes after deadline due to administrative delay: YES if a CR was not signed by 11:59pm {tz}. (d) Government open but selected agencies closed for unrelated reasons: NO.</td></tr>
+                    <tr><th>Time zone</th><td>Eastern Time. Cutoff is 11:59:59 PM ET on {deadline}.</td></tr>
+                    <tr><th>Settlement timing</th><td>Resolves within 48 hours of the cutoff time.</td></tr>
+                    <tr><th>Invalid / N/A</th><td>Resolves Invalid only if both primary and fallback sources are unavailable for &gt; 7 days.</td></tr>
+                    <tr><th>Worked examples</th><td>YES: Oct 1 2013 shutdown. NO: 2018 Mar CR signed at 11:30 PM. INVALID (hypothetical): both OMB and AP unavailable due to crisis.</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 id="bp-incursion">Blueprint 2 — Military ground incursion</h2>
+            <p class="muted">Failure mode observed in panel: "ground incursion" / "invasion" defined too loosely; oracle vote can override widely-reported reality if rule is silent on territorial control.</p>
+
+            <div class="blueprint-card">
+                <table class="blueprint-table">
+                    <tr><th>Event definition</th><td>Resolves YES if regular forces of <strong>{actor}</strong> physically cross the internationally-recognized border into <strong>{target territory}</strong> with at least one ground unit (battalion-strength or larger) and remain inside that territory for at least 12 hours, before <strong>{deadline}</strong>.</td></tr>
+                    <tr><th>Primary source</th><td>Joint statement from the actor's defense ministry AND the target government's defense ministry confirming the incursion. If only one confirms: secondary source applies.</td></tr>
+                    <tr><th>Secondary / fallback</th><td>Two of: <a href="https://www.reuters.com/" target="_blank" rel="noopener">Reuters</a>, <a href="https://apnews.com/" target="_blank" rel="noopener">Associated Press</a>, <a href="https://www.bbc.com/news" target="_blank" rel="noopener">BBC News</a> reporting confirmed ground presence. UN Secretary-General statement also counts.</td></tr>
+                    <tr><th>Edge cases</th><td>(a) Special-forces raid &lt;12h: NO. (b) Air or naval action only: NO. (c) Local proxy forces, not regular military: NO. (d) Cross-border artillery without ground troops: NO. (e) Disputed border with active third-party claim: applies to the most recent UN-recognized line of control.</td></tr>
+                    <tr><th>Time zone</th><td>UTC.</td></tr>
+                    <tr><th>Settlement timing</th><td>Resolves within 7 days of confirmation.</td></tr>
+                    <tr><th>Invalid / N/A</th><td>Resolves Invalid only if conflicting authoritative reports persist for &gt; 14 days.</td></tr>
+                    <tr><th>Worked examples</th><td>YES: 2003 Iraq invasion. NO: 2024 Lebanon strikes prior to ground deployment. INVALID (hypothetical): authoritative sources disagree on whether troops crossed.</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 id="bp-arrested">Blueprint 3 — "Will X be arrested by Y?"</h2>
+            <p class="muted">Failure mode observed in panel: ambiguity over what counts as "arrest" (booking, indictment, custody, detention).</p>
+
+            <div class="blueprint-card">
+                <table class="blueprint-table">
+                    <tr><th>Event definition</th><td>Resolves YES if <strong>{person}</strong> is taken into formal custody by <strong>{jurisdiction}</strong> law-enforcement personnel and held for at least one continuous period of 4 hours, before <strong>{deadline} {time} {tz}</strong>. Voluntary surrender to authorities counts. Issuance of an arrest warrant alone does not.</td></tr>
+                    <tr><th>Primary source</th><td>Official press release from the arresting agency (e.g., FBI, DOJ, foreign equivalent).</td></tr>
+                    <tr><th>Secondary / fallback</th><td>Two of: Reuters, AP, BBC reporting custody confirmed by the agency or by counsel.</td></tr>
+                    <tr><th>Edge cases</th><td>(a) Indictment without arrest: NO. (b) Brief detention &lt;4h then released: NO. (c) Voluntary surrender at agency office: YES. (d) Arrest abroad but extradition pending: YES. (e) House arrest under formal court order: YES.</td></tr>
+                    <tr><th>Time zone</th><td>{tz} of arresting jurisdiction.</td></tr>
+                    <tr><th>Settlement timing</th><td>Resolves within 48 hours of confirmed custody.</td></tr>
+                    <tr><th>Invalid / N/A</th><td>Resolves Invalid only if no authoritative source confirms or denies within 14 days of deadline.</td></tr>
+                    <tr><th>Worked examples</th><td>YES: defendant booked at federal courthouse. NO: warrant issued but defendant in another country and not in custody. INVALID: rumored arrest but no agency confirmation by deadline.</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 id="bp-launched">Blueprint 4 — "Will X launch product Y?"</h2>
+            <p class="muted">Failure mode observed in panel: "launch" can mean announce, demo, beta, or generally available. Brand-vs-functional ambiguity (e.g., "robotaxi" vs general autonomous vehicle).</p>
+
+            <div class="blueprint-card">
+                <table class="blueprint-table">
+                    <tr><th>Event definition</th><td>Resolves YES if <strong>{company}</strong> makes <strong>{product}</strong> commercially available to non-employees in <strong>{geography}</strong>, with paid usage by at least 100 distinct customers, before <strong>{deadline}</strong>. Announcements, demos, beta programs limited to employees, and waitlist openings do NOT count.</td></tr>
+                    <tr><th>Primary source</th><td>Company SEC filing or press release stating commercial availability with a launch date.</td></tr>
+                    <tr><th>Secondary / fallback</th><td>App-store listing showing public availability + at least one independent media confirmation (Reuters / AP / Bloomberg / Wall Street Journal).</td></tr>
+                    <tr><th>Edge cases</th><td>(a) Beta with public access but waitlist: NO. (b) Available in select cities only: YES if any geography listed is covered. (c) Re-branded existing product: NO unless feature set materially changes per company release. (d) Launched then withdrawn within 7 days: still YES.</td></tr>
+                    <tr><th>Time zone</th><td>UTC of company's primary listing exchange.</td></tr>
+                    <tr><th>Settlement timing</th><td>Resolves within 14 days of confirmed launch.</td></tr>
+                    <tr><th>Invalid / N/A</th><td>Resolves Invalid if the product is launched in name only with no working software / hardware delivered.</td></tr>
+                    <tr><th>Worked examples</th><td>YES: paid app launches in App Store. NO: "Cybertruck announced" without delivery. NO: closed-beta available to 1,000 employees only. INVALID: demo at conference with no product behind it.</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 id="bp-sports">Blueprint 5 — Sports result</h2>
+            <p class="muted">Sports contracts already settle relatively cleanly in the panel (37% revision rate among repeated-adapter chains is the main pattern, often from re-filing requests rather than ambiguous rules). This blueprint targets the residual pathology: cancellations, ties, and abandoned games.</p>
+
+            <div class="blueprint-card">
+                <table class="blueprint-table">
+                    <tr><th>Event definition</th><td>Resolves YES if <strong>{team A}</strong> wins <strong>{event}</strong> as defined by the <strong>{official body}</strong>'s posted final result. A "win" requires meeting the body's definition (e.g., higher score after regulation + any tiebreaker).</td></tr>
+                    <tr><th>Primary source</th><td>Official body's posted final result page (URL).</td></tr>
+                    <tr><th>Secondary / fallback</th><td>Two of: ESPN, official broadcast partner, two major wire services.</td></tr>
+                    <tr><th>Edge cases</th><td>(a) Cancelled before start: Invalid. (b) Abandoned mid-game: rules of the body apply (typically counts if &gt; X minutes played). (c) Tied per body rules: NO. (d) Team forfeits: opposing team wins. (e) Result reversed by appeal &gt; 7 days after settlement: original settlement stands.</td></tr>
+                    <tr><th>Time zone</th><td>UTC.</td></tr>
+                    <tr><th>Settlement timing</th><td>Resolves within 24 hours of result posting.</td></tr>
+                    <tr><th>Invalid / N/A</th><td>Cancellation; abandonment without applicable body rules.</td></tr>
+                    <tr><th>Worked examples</th><td>YES: team A wins per league standings. NO: team A loses or draws. INVALID: weather-cancelled match.</td></tr>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 id="bp-howto">How to use these</h2>
+            <ol style="line-height:1.8;">
+                <li><strong>Before listing a market</strong>, find the closest blueprint and copy the eight fields.</li>
+                <li><strong>Replace placeholders</strong> with the specific event ({deadline}, {actor}, {company}). Do not skip fields.</li>
+                <li><strong>Run the lookup tool</strong> on similar historical contracts (<a href="explorer.html">Lookup</a>) to see whether the corresponding markets had revisions or candidate mismatches. If revision rates are high in this category × chain type, tighten the edge-case section.</li>
+                <li><strong>Publish the full spec</strong> as part of the market's resolution criteria — not just the summary question. Most disputes in the panel start because the resolution criteria field is shorter than this blueprint.</li>
+            </ol>
+            <p style="margin-top:24px;font-style:italic;color:#64748b;">
+                These blueprints are research output, not platform-issued specs. They are released so platforms, journalists, and traders can compare a proposed contract against a settlement-safer version derived from observed dispute patterns. <a href="research.html">Research →</a> documents the dispute panel that grounds these patterns.
+            </p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Risk Monitor</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Monitor</a>
+                <a href="explorer.html">Lookup</a>
+                <a href="rates.html">Rates</a>
+                <a href="cases.html">Cases</a>
+                <a href="blueprints.html">Blueprints</a>
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
