@@ -213,7 +213,8 @@ def main():
             ) AS question_text,
             (SELECT e.category FROM episode_panel e WHERE e.condition_id = r.condition_id AND e.category IS NOT NULL AND e.category != '' LIMIT 1) AS category,
             (SELECT json_extract_string(m.raw, '$.description') FROM pm_markets m WHERE m.condition_id = r.condition_id LIMIT 1) AS description,
-            (SELECT pe.ancillary_data_decoded FROM pm_resolution_events pe WHERE pe.condition_id = r.condition_id AND pe.ancillary_data_decoded IS NOT NULL AND pe.ancillary_data_decoded != '' LIMIT 1) AS ancillary_text
+            (SELECT pe.ancillary_data_decoded FROM pm_resolution_events pe WHERE pe.condition_id = r.condition_id AND pe.ancillary_data_decoded IS NOT NULL AND pe.ancillary_data_decoded != '' LIMIT 1) AS ancillary_text,
+            (SELECT m.slug FROM pm_markets m WHERE m.condition_id = r.condition_id AND m.slug IS NOT NULL AND m.slug != '' LIMIT 1) AS slug
           FROM rev3 r WHERE r.D_i = 1
         )
         SELECT * FROM base
@@ -276,6 +277,8 @@ def main():
         is_mismatch = cid in mismatch_ids
         out = {
             "id": short_id(cid),
+            "raw_condition_id": cid,
+            "slug": d["slug"] if d["slug"] else None,
             "question_text": d["question_text"] if d["question_text"] else None,
             "description": d["description"] if d["description"] else None,
             "ancillary_text": d["ancillary_text"] if d["ancillary_text"] else None,

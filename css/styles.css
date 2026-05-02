@@ -2173,3 +2173,80 @@ a.chain-split-card-link:hover {
 @media (max-width: 720px) {
     .base-rate-row { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* Three-path CTA on homepage */
+.three-path-section {
+    padding: 32px 32px 16px;
+}
+.three-path-eyebrow {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78em;
+    color: var(--gray-500);
+    margin-bottom: 18px;
+}
+.three-path-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+.three-path-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    position: relative;
+}
+.three-path-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-color: var(--primary);
+}
+.three-path-icon {
+    font-size: 1.8rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.three-path-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--gray-900);
+    margin: 0 0 8px 0;
+}
+.three-path-card p {
+    color: var(--gray-700);
+    font-size: 0.92em;
+    line-height: 1.5;
+}
+
+/* Rates "What to notice" card */
+.rates-notice-card {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 0 0 28px 0;
+}
+.rates-notice-card h3 {
+    margin: 0 0 12px 0;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: #78350f;
+}
+.rates-notice-list {
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.7;
+}
+.rates-notice-list li {
+    color: #78350f;
+    margin-bottom: 8px;
+    font-size: 0.94em;
+}
+.rates-notice-list li strong { color: #92400e; }

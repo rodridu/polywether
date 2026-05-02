@@ -51,10 +51,34 @@
 
             <!-- Lookup search -->
             <form class="hero-search" onsubmit="return doLookup(event)">
-                <input type="search" id="lookup-input" placeholder="Search a market — question text or short id (e.g. Trump, F1, government shutdown)…" autocomplete="off">
+                <input type="search" id="lookup-input" placeholder="Paste a Polymarket URL, condition ID (0x…), or question text — e.g. https://polymarket.com/event/will-trump-… or F1 or shutdown" autocomplete="off">
                 <button type="submit" class="btn btn-primary">Look up</button>
                 <div id="lookup-suggestions" class="lookup-suggestions"></div>
             </form>
+        </div>
+    </section>
+
+    <!-- Three-path CTA -->
+    <section class="section three-path-section">
+        <div class="container">
+            <p class="three-path-eyebrow">Where to start</p>
+            <div class="three-path-grid">
+                <a class="three-path-card" href="#funnel-section">
+                    <div class="three-path-icon">①</div>
+                    <h3>Look up a specific market</h3>
+                    <p>Paste a Polymarket URL or condition ID into the search above. Get its first proposal, final payoff, chain type, audit flags, and "markets like this" base rates.</p>
+                </a>
+                <a class="three-path-card" href="rates.html">
+                    <div class="three-path-icon">②</div>
+                    <h3>Explore conditional rates</h3>
+                    <p>How often do disputed contracts revise — by category, chain type, named-source presence, fallback presence? Where do candidate mismatches concentrate?</p>
+                </a>
+                <a class="three-path-card" href="query.html">
+                    <div class="three-path-icon">③</div>
+                    <h3>Query the data directly</h3>
+                    <p>Run SQL against the disputed panel in your browser via duckdb-wasm. Tables: <code>contracts</code>, <code>episodes</code>, <code>funnel</code>, <code>chain_signatures</code>.</p>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -106,7 +130,7 @@
     </section>
 
     <!-- Settlement Funnel (clickable) -->
-    <section class="section">
+    <section class="section" id="funnel-section">
         <div class="container">
             <h2>The settlement funnel</h2>
             <p style="margin-bottom: 24px; color: #475569;">
@@ -330,9 +354,24 @@
         e.preventDefault();
         var q = document.getElementById('lookup-input').value.trim();
         if (!q) return false;
-        // If exact 8-char id, jump direct
+        // 1. Exact 8-char id → contract detail
         if (/^[0-9a-f]{8}$/.test(q)) { window.location.href = 'contract.html?id=' + encodeURIComponent(q); return false; }
-        // Otherwise route to Explorer with search
+        // 2. Polymarket URL → extract slug, search Explorer for that slug
+        var pmMatch = q.match(/polymarket\.com\/event\/([a-z0-9-]+)/i);
+        if (pmMatch) {
+            window.location.href = 'explorer.html?search=' + encodeURIComponent(pmMatch[1]);
+            return false;
+        }
+        // 3. Polymarket condition ID (0x... 64 hex) → look up via raw_condition_id
+        if (/^0x[0-9a-f]{64}$/i.test(q)) {
+            ensureLookup().then(function(rows) {
+                var found = rows.find(function(r) { return r.raw_condition_id && r.raw_condition_id.toLowerCase() === q.toLowerCase(); });
+                if (found) window.location.href = 'contract.html?id=' + encodeURIComponent(found.id);
+                else window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
+            });
+            return false;
+        }
+        // 4. Free text → Explorer with search filter
         window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
         return false;
     }

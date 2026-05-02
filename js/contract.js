@@ -135,6 +135,7 @@
 
         // body
         var elapsed = fmtElapsed(rec.first_proposal_time, rec.final_settlement_time);
+        var pmHref = rec.slug ? 'https://polymarket.com/event/' + rec.slug : null;
         var summary = '<div class="contract-summary">' +
             '<div class="contract-summary-row"><span class="muted">First proposal</span><strong>' + escapeHtml(rec.first_proposal || '—') + '</strong></div>' +
             '<div class="contract-summary-row"><span class="muted">Final payoff</span><strong>' + escapeHtml(rec.final_payoff || '—') + '</strong></div>' +
@@ -143,6 +144,8 @@
             '<div class="contract-summary-row"><span class="muted">Multi-episode</span>' + (rec.multi_episode ? chip('yes', 'chip-info') : chip('no')) + '</div>' +
             '<div class="contract-summary-row"><span class="muted">First proposal</span><span>' + fmtTime(rec.first_proposal_time) + '</span></div>' +
             '<div class="contract-summary-row"><span class="muted">Final settlement</span><span>' + fmtTime(rec.final_settlement_time) + (elapsed ? ' (' + elapsed + ' after first proposal)' : '') + '</span></div>' +
+            (pmHref ? '<div class="contract-summary-row"><span class="muted">Polymarket slug</span><a href="' + pmHref + '" target="_blank" rel="noopener" class="mono">' + escapeHtml(rec.slug) + ' ↗</a></div>' : '') +
+            '<div class="contract-summary-row"><span class="muted">Condition ID</span><span class="mono" style="font-size:0.78em;word-break:break-all;">' + escapeHtml(rec.raw_condition_id || '—') + '</span></div>' +
             '</div>';
 
         // Episodes (if found in chain_examples or via on-fly query)
@@ -178,13 +181,28 @@
         var rates = computeBaseRates(rec, allRows);
         var ratesHtml = renderBaseRates(rates);
 
+        var pmUrl = rec.slug ? 'https://polymarket.com/event/' + rec.slug : null;
         var actionsHtml = '<div class="contract-actions">' +
             '<a class="btn btn-secondary" href="explorer.html?search=' + encodeURIComponent(rec.id) + '">↩ Back to Explorer</a> ' +
-            '<a class="btn btn-secondary" href="query.html">Open in SQL Lab</a>' +
+            '<a class="btn btn-secondary" href="query.html">Open in SQL Lab</a> ' +
+            (pmUrl ? '<a class="btn btn-secondary" href="' + pmUrl + '" target="_blank" rel="noopener">View on Polymarket ↗</a> ' : '') +
+            (rec.raw_condition_id ? '<button class="btn btn-secondary" data-copy="' + rec.raw_condition_id + '">Copy condition ID</button> ' : '') +
+            (rec.slug ? '<button class="btn btn-secondary" data-copy="' + rec.slug + '">Copy slug</button> ' : '') +
             '</div>';
 
         document.getElementById('contract-body').innerHTML =
             summary + ratesHtml + episodesHtml + textsHtml + auditHtml + actionsHtml;
+
+        // Wire copy buttons
+        document.querySelectorAll('.contract-actions button[data-copy]').forEach(function(b) {
+            b.addEventListener('click', function() {
+                navigator.clipboard.writeText(b.dataset.copy).then(function() {
+                    var orig = b.textContent;
+                    b.textContent = 'Copied ✓';
+                    setTimeout(function() { b.textContent = orig; }, 1500);
+                });
+            });
+        });
     }
 
     var params = new URLSearchParams(window.location.search);
