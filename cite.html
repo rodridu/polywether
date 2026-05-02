@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cite check &mdash; Settlement Risk Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502d">
+    <meta name="description" content="Should you cite this prediction-market price as a probability? Check whether the contract behind the price is clean enough for the number to mean what readers think it means.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
+                <div class="nav-links">
+                    <a href="index.html">Monitor</a>
+                    <a href="explorer.html">Lookup</a>
+                    <a href="rates.html">Rates</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="blueprints.html">Blueprints</a>
+                    <a href="cite.html" class="active">Cite</a>
+                    <a href="research.html">Research</a>
+                    <a href="docs.html">Docs</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Cite check &middot; for journalists</p>
+            <h1>Should you cite this prediction-market price?</h1>
+            <p class="hero-description">
+                Reporters often write "the prediction market puts the chance at X%." That number is only as meaningful as the contract behind it. This page checks whether a market's <em>contract</em> is clean enough that the price means what readers will think it means.
+            </p>
+            <p style="margin-top:14px;font-size:0.92em;color:#475569;">
+                <strong>Two layers:</strong> price robustness (is the price liquid enough to cite?) and settlement robustness (is the contract clear enough for the price to mean what readers assume?). We answer the second. For the first, see <a href="https://bellwethermetrics.com/" target="_blank" rel="noopener">Bellwether</a>.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Look up a market</h2>
+            <p style="color:#475569;margin-bottom:12px;">Paste a Polymarket URL, condition ID, or question text. The risk profile below populates from the disputed-contract panel; for un-disputed markets we can't yet check rule clarity.</p>
+            <form class="hero-search" onsubmit="return doCiteLookup(event)">
+                <input type="search" id="cite-input" placeholder="Polymarket URL, condition ID (0x…), or question text" autocomplete="off">
+                <button type="submit" class="btn btn-primary">Cite check</button>
+                <div id="cite-suggestions" class="lookup-suggestions"></div>
+            </form>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2>The 6-question check</h2>
+            <p style="color:#475569;margin-bottom:24px;">Before quoting a prediction-market probability in a story, run a market through these six questions. We pull what we can from the panel; you fill in the rest.</p>
+
+            <ol class="cite-checklist">
+                <li>
+                    <h3>① Is the resolution rule recoverable?</h3>
+                    <p>Question text + description + UMA ancillary data, ideally all three. If only the question is recoverable, the contract may resolve under terms readers can't see.</p>
+                    <p class="muted"><strong>From the panel:</strong> 79.1% of disputed contracts have any recoverable rule text. The other 21% are essentially un-auditable from the buyer side.</p>
+                </li>
+                <li>
+                    <h3>② Does the rule name an external source?</h3>
+                    <p>"Resolves according to {ESPN / OMB / Reuters / official certification}". Without a named source, the resolution depends on whoever is asked.</p>
+                    <p class="muted"><strong>From the panel:</strong> contracts with rule text but no named source revise <strong>45%</strong> of the time among disputed cases. With a named source, the rate drops to <strong>18%</strong>.</p>
+                </li>
+                <li>
+                    <h3>③ Does the rule specify a fallback?</h3>
+                    <p>What happens if the primary source is unavailable, delayed, or itself disputed? "If the official source has not announced by {date}, AP wire confirmation suffices."</p>
+                    <p class="muted"><strong>From the panel:</strong> only 49% of disputed contracts have any detectable fallback language.</p>
+                </li>
+                <li>
+                    <h3>④ Does the rule handle edge cases?</h3>
+                    <p>Cancellation, postponement, ties, partial events, time-zone ambiguity. Edge-case silence shifts decisions to the oracle ex post.</p>
+                    <p class="muted"><strong>From the panel:</strong> only 24% of disputed contracts have detectable edge-case language.</p>
+                </li>
+                <li>
+                    <h3>⑤ Has this contract already been disputed or revised?</h3>
+                    <p>If the chain shows a prior dispute, repeated adapter-routed request, or DVM voiding, the price may already reflect settlement-risk discounting rather than pure event probability.</p>
+                    <p class="muted"><strong>From the panel:</strong> 24.1% of disputed contracts revise from first proposal to final payoff. <a href="rates.html">Conditional rates →</a></p>
+                </li>
+                <li>
+                    <h3>⑥ Is this contract in a category with high historical revision?</h3>
+                    <p>Repeated adapter-routed requests revise <strong>37%</strong> of the time. Request-voiding chains revise <strong>14%</strong>. Same disputed sample; same observation; the mechanism path matters.</p>
+                    <p class="muted">When citing, name the category and indicate uncertainty: <em>"Polymarket put the chance at X%, on a contract whose category historically revises ~37% of disputes."</em></p>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Suggested citation language</h2>
+            <p>If a market is <strong>Low</strong> tier and undisputed:</p>
+            <pre class="cite-quote">As of {date}, Polymarket implied a {X}% chance that {event}. Contract specifies {source}, with {fallback}; resolution rule is recoverable in full.</pre>
+
+            <p>If a market is <strong>Caution</strong> tier:</p>
+            <pre class="cite-quote">As of {date}, Polymarket implied a {X}% chance that {event}. The contract's resolution rule is recoverable, but does not specify a fallback if the named source is unavailable; readers should treat the price as conditional on a clean event-to-source mapping.</pre>
+
+            <p>If a market is <strong>High</strong> tier or has been disputed:</p>
+            <pre class="cite-quote">As of {date}, Polymarket implied a {X}% chance that {event}. The contract has been disputed, and similar contracts historically revise from first proposal to final payoff at {Y}%. Readers should treat the price as a market view conditional on the resolution mechanism — not as an unconditional probability.</pre>
+
+            <p style="font-style:italic;color:#64748b;margin-top:16px;">
+                These are starting templates, not house style. Newsroom standards vary. The point is to acknowledge that a quoted price depends on settlement infrastructure, not only on world events.
+            </p>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2>What this page does not do</h2>
+            <ul style="line-height:1.8;">
+                <li>It does not measure liquidity, depth, or price manipulation. For that, use <a href="https://bellwethermetrics.com/" target="_blank" rel="noopener">Bellwether</a>'s reportability and cost-to-move metrics.</li>
+                <li>It does not predict settlement outcomes. The risk tier is a screening flag based on rule clarity and historical chain patterns.</li>
+                <li>It does not adjudicate whether a final payoff was correct in real-world terms.</li>
+                <li>For most live, un-disputed markets we do not yet have a per-contract risk profile. The panel currently covers disputed Polymarket contracts (n=2,221).</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Risk Monitor</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Monitor</a>
+                <a href="explorer.html">Lookup</a>
+                <a href="rates.html">Rates</a>
+                <a href="cases.html">Cases</a>
+                <a href="blueprints.html">Blueprints</a>
+                <a href="cite.html">Cite</a>
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    var lookupRows = null;
+    function ensureLookup() {
+        if (lookupRows) return Promise.resolve(lookupRows);
+        return fetch('data/disputed_contracts.json').then(r => r.json()).then(d => { lookupRows = d.rows; return lookupRows; });
+    }
+
+    document.getElementById('cite-input').addEventListener('input', function(e) {
+        var q = e.target.value.toLowerCase().trim();
+        var box = document.getElementById('cite-suggestions');
+        if (q.length < 2) { box.innerHTML = ''; return; }
+        ensureLookup().then(function(rows) {
+            var matches = rows.filter(function(r) {
+                var hay = ((r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
+                return hay.indexOf(q) !== -1;
+            }).slice(0, 8);
+            box.innerHTML = matches.map(function(r) {
+                return '<a class="lookup-suggest" href="contract.html?id=' + encodeURIComponent(r.id) + '">' +
+                    '<span class="mono">' + r.id + '</span> ' +
+                    '<span>' + escapeHtml(r.question_text || '[question text missing]') + '</span>' +
+                    '</a>';
+            }).join('');
+        });
+    });
+
+    function doCiteLookup(e) {
+        e.preventDefault();
+        var q = document.getElementById('cite-input').value.trim();
+        if (!q) return false;
+        if (/^[0-9a-f]{8}$/.test(q)) { window.location.href = 'contract.html?id=' + encodeURIComponent(q); return false; }
+        var pmMatch = q.match(/polymarket\.com\/event\/([a-z0-9-]+)/i);
+        if (pmMatch) { window.location.href = 'explorer.html?search=' + encodeURIComponent(pmMatch[1]); return false; }
+        if (/^0x[0-9a-f]{64}$/i.test(q)) {
+            ensureLookup().then(function(rows) {
+                var found = rows.find(function(r) { return r.raw_condition_id && r.raw_condition_id.toLowerCase() === q.toLowerCase(); });
+                if (found) window.location.href = 'contract.html?id=' + encodeURIComponent(found.id);
+                else window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
+            });
+            return false;
+        }
+        window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
+        return false;
+    }
+    </script>
+</body>
+</html>
