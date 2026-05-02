@@ -18,7 +18,7 @@
         ]},
         // Diagnostic disagreement: candidate_mismatch=true is a flag (not a "good" mark)
         { title: 'D. Diagnostic disagreement', invertColor: true, items: [
-            { key: 'candidate_mismatch', label: 'Candidate mismatch under coded benchmark' },
+            { key: 'candidate_mismatch', label: 'Broad candidate mismatch (94)' },
         ]},
     ];
 

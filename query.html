@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Query &mdash; Settlement Explorer</title>
+    <title>SQL Lab &mdash; Settlement Explorer</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css?v=20260502">
     <meta name="description" content="In-browser SQL queries against the settlement-explorer DuckDB via WebAssembly.">
@@ -20,7 +20,7 @@
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
                     <a href="rates.html">Rates</a>
-                    <a href="query.html" class="active">Query</a>
+                    <a href="query.html" class="active">SQL Lab</a>
                     <a href="about.html">About</a>
                 </div>
             </div>
@@ -42,10 +42,10 @@
 
     <section class="hero hero-compact">
         <div class="hero-inner">
-            <p class="hero-eyebrow">Live Query &middot; duckdb-wasm</p>
+            <p class="hero-eyebrow">SQL Lab &middot; duckdb-wasm</p>
             <h1>Run SQL against the settlement panel in your browser</h1>
             <p class="hero-description">
-                The full disputed sample lives in a small DuckDB file (10 MB) that loads into your browser via WebAssembly. No server. No network roundtrip after the initial load. Tables: <code>contracts</code> (2,221), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.
+                The full disputed sample lives in a small DuckDB file (10 MB) that loads into your browser via WebAssembly. <strong>"Lab" because it runs locally over a static snapshot, not over live market data.</strong> No server. No network roundtrip after the initial load. Tables: <code>contracts</code> (2,221), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.
             </p>
         </div>
     </section>
@@ -125,7 +125,7 @@ flip_decomposition  -- 7 subset breakdowns of the 530 revisions</pre>
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
                 <a href="rates.html">Rates</a>
-                <a href="query.html">Query</a>
+                <a href="query.html">SQL Lab</a>
                 <a href="about.html">About</a>
             </nav>
         </div>

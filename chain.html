@@ -20,7 +20,7 @@
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
                     <a href="rates.html">Rates</a>
-                    <a href="query.html">Query</a>
+                    <a href="query.html">SQL Lab</a>
                     <a href="about.html">About</a>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
                 <a href="rates.html">Rates</a>
-                <a href="query.html">Query</a>
+                <a href="query.html">SQL Lab</a>
                 <a href="about.html">About</a>
             </nav>
         </div>
@@ -138,11 +138,13 @@
         var typeBadge = ex.chain_type === 'Request-voiding chain'
             ? chip('Request-voiding chain', 'chip-warn')
             : chip('Repeated adapter-routed request', 'chip-info');
+        var allHref = 'explorer.html?chain=' + encodeURIComponent(ex.chain_type);
         return '<article class="chain-card" data-chain-type="' + ex.chain_type + '">' +
             '<header class="chain-card-header">' +
               '<div class="chain-card-id">id ' + ex.id + '</div>' +
               '<h3 class="chain-card-question">' + (ex.question_text || '[question text missing]') + '</h3>' +
-              '<div class="chain-card-meta">' + typeBadge + ' &middot; ' + (ex.category || 'uncategorized') + ' &middot; ' + ex.n_episodes + ' episodes &middot; <a href="contract.html?id=' + encodeURIComponent(ex.id) + '">Open contract detail →</a></div>' +
+              '<div class="chain-card-meta">' + typeBadge + ' &middot; ' + (ex.category || 'uncategorized') + ' &middot; ' + ex.n_episodes + ' episodes</div>' +
+              '<div class="chain-card-meta" style="margin-top:6px;"><a href="contract.html?id=' + encodeURIComponent(ex.id) + '">Open contract detail →</a> &middot; <a href="' + allHref + '">Show all ' + ex.chain_type.toLowerCase() + ' contracts in Explorer →</a></div>' +
             '</header>' +
             renderRequestSequence(ex.request_sequence) +
             '</article>';

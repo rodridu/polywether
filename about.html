@@ -20,7 +20,7 @@
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
                     <a href="rates.html">Rates</a>
-                    <a href="query.html">Query</a>
+                    <a href="query.html">SQL Lab</a>
                     <a href="about.html" class="active">About</a>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 Question text comes from a COALESCE over <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, and <code>pm_resolution_events.ancillary_data_decoded</code>. Description (resolution criteria) comes from <code>pm_markets.raw.description</code>. Category comes from <code>episode_panel.category</code>.
             </p>
             <p>
-                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. 94 candidate mismatches are identified; 64 are agreed across both coding passes (category-level aggregate; per-row agreement is not exposed).
+                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. <strong>94 broad candidate mismatches</strong> are identified by the first pass; <strong>64</strong> are <strong>agreed</strong> across both coding passes (category-level aggregate; per-row agreement is not exposed in this dashboard). The Explorer/Audit/Cases pages show only the broad set (94) at row level.
             </p>
 
             <h2>What we do NOT claim</h2>
@@ -109,7 +109,7 @@
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
                 <a href="rates.html">Rates</a>
-                <a href="query.html">Query</a>
+                <a href="query.html">SQL Lab</a>
                 <a href="about.html">About</a>
             </nav>
         </div>

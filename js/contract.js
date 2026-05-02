@@ -75,7 +75,47 @@
         return '<div class="contract-text-block"><h3>' + label + '</h3><pre class="contract-text-pre">' + escapeHtml(text) + '</pre></div>';
     }
 
-    function render(rec, episodes) {
+    function computeBaseRates(rec, allRows) {
+        // "Markets like this" — share of disputed contracts that revised, conditional on
+        // (a) same chain_type, (b) same chain_type AND same category,
+        // (c) same chain_type AND same named_source presence.
+        function rate(filterFn) {
+            var bucket = allRows.filter(filterFn);
+            var nrev = bucket.filter(function(r) { return r.revised; }).length;
+            var nmm = bucket.filter(function(r) { return r.candidate_mismatch; }).length;
+            return { n: bucket.length, n_revised: nrev, revision_rate: bucket.length ? nrev/bucket.length : 0, n_mismatch: nmm, mismatch_rate: bucket.length ? nmm/bucket.length : 0 };
+        }
+        var ct = rec.chain_type;
+        var cat = rec.category;
+        var src = rec.audit && rec.audit.named_source_present;
+        return {
+            same_chain: rate(function(r) { return r.chain_type === ct; }),
+            same_chain_category: cat ? rate(function(r) { return r.chain_type === ct && r.category === cat; }) : null,
+            same_chain_source: rate(function(r) { return r.chain_type === ct && (r.audit && r.audit.named_source_present) === src; }),
+            overall: rate(function(_) { return true; }),
+        };
+    }
+
+    function renderBaseRates(rates) {
+        function pctRow(label, r) {
+            if (!r || r.n === 0) return '';
+            return '<div class="base-rate-row">' +
+                '<span class="base-rate-label">' + label + '</span>' +
+                '<span class="base-rate-stat"><strong>' + (100*r.revision_rate).toFixed(1) + '%</strong> revised <span class="muted">(' + r.n_revised + ' / ' + r.n + ')</span></span>' +
+                '<span class="base-rate-stat"><strong>' + (100*r.mismatch_rate).toFixed(1) + '%</strong> broad mismatch <span class="muted">(' + r.n_mismatch + ' / ' + r.n + ')</span></span>' +
+                '</div>';
+        }
+        return '<div class="contract-section"><h2>Markets like this</h2>' +
+            '<p class="muted" style="margin-bottom:12px;font-size:0.92em;">Conditional revision and broad-mismatch rates across the disputed sample, stratified by features of this contract. Sample shares, not estimates with uncertainty intervals.</p>' +
+            '<div class="base-rate-grid">' +
+                pctRow('Overall (disputed sample)', rates.overall) +
+                pctRow('Same chain type', rates.same_chain) +
+                (rates.same_chain_category ? pctRow('Same chain type + same category', rates.same_chain_category) : '') +
+                pctRow('Same chain type + same named-source status', rates.same_chain_source) +
+            '</div></div>';
+    }
+
+    function render(rec, episodes, allRows) {
         if (!rec) {
             document.getElementById('contract-title').textContent = 'Contract not found';
             document.getElementById('contract-meta').textContent = 'No contract matches the requested id.';
@@ -135,13 +175,16 @@
             renderAuditSection(rec.audit) +
             '</div>';
 
+        var rates = computeBaseRates(rec, allRows);
+        var ratesHtml = renderBaseRates(rates);
+
         var actionsHtml = '<div class="contract-actions">' +
             '<a class="btn btn-secondary" href="explorer.html?search=' + encodeURIComponent(rec.id) + '">↩ Back to Explorer</a> ' +
-            '<a class="btn btn-secondary" href="query.html">Open in Live Query</a>' +
+            '<a class="btn btn-secondary" href="query.html">Open in SQL Lab</a>' +
             '</div>';
 
         document.getElementById('contract-body').innerHTML =
-            summary + episodesHtml + textsHtml + auditHtml + actionsHtml;
+            summary + ratesHtml + episodesHtml + textsHtml + auditHtml + actionsHtml;
     }
 
     var params = new URLSearchParams(window.location.search);
@@ -156,7 +199,8 @@
         fetch('data/disputed_contracts.json').then(r => r.json()),
         fetch('data/chain_examples.json').then(r => r.json()).catch(() => ({examples:[]})),
     ]).then(function(arr) {
-        var rec = arr[0].rows.find(r => r.id === id);
+        var allRows = arr[0].rows;
+        var rec = allRows.find(r => r.id === id);
         var ex = (arr[1].examples || []).find(e => e.id === id);
         var episodes = ex ? ex.request_sequence.map(function(e) {
             return {
@@ -167,7 +211,7 @@
                 dispute_time: e.dispute_time,
             };
         }) : null;
-        render(rec, episodes);
+        render(rec, episodes, allRows);
     }).catch(function(err) {
         console.error('contract load failed:', err);
         document.getElementById('contract-body').innerHTML = '<p style="color:#ef4444">Could not load contract data.</p>';

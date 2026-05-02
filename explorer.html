@@ -20,7 +20,7 @@
                     <a href="audit.html">Audit</a>
                     <a href="cases.html">Cases</a>
                     <a href="rates.html">Rates</a>
-                    <a href="query.html">Query</a>
+                    <a href="query.html">SQL Lab</a>
                     <a href="about.html">About</a>
                 </div>
             </div>
@@ -45,20 +45,40 @@
             <p class="hero-eyebrow">Contract Explorer</p>
             <h1>All 2,221 disputed contracts</h1>
             <p class="hero-description">
-                Filterable table of every disputed contract in the Polymarket-via-UMA panel. Click any row for the full record (rule text, description, UMA ancillary data, audit checklist, settlement chain).
+                Filterable table of every disputed contract in the Polymarket-via-UMA panel. Click any row for the full record (rule text, description, UMA ancillary data, audit checklist, "markets like this" base rates, settlement chain).
             </p>
+
+            <!-- Prominent search bar (lookup) -->
+            <form class="hero-search" onsubmit="return doExplorerLookup(event)">
+                <input type="search" id="search" placeholder="Search question text, category, id… (e.g. Trump, F1, government shutdown, or paste a short id like 37b32e72)" autocomplete="off">
+                <button type="submit" class="btn btn-primary">Find</button>
+            </form>
+
             <p style="margin-top: 12px; font-size: 0.86em; color: #64748b;">
                 Question-text coverage is 79.1% (1,756 / 2,221). Rows without question text show <code>[question text missing]</code>; chain type and final payoff are still observed.
             </p>
         </div>
     </section>
 
+    <script>
+    function doExplorerLookup(e) {
+        e.preventDefault();
+        var q = document.getElementById('search').value.trim();
+        if (/^[0-9a-f]{8}$/.test(q)) {
+            window.location.href = 'contract.html?id=' + encodeURIComponent(q);
+            return false;
+        }
+        // Otherwise let the regular search filter handle it (already wired in explorer.js)
+        document.getElementById('search').dispatchEvent(new Event('input'));
+        return false;
+    }
+    </script>
+
     <section class="section">
         <div class="container">
 
             <!-- Filters -->
             <div class="explorer-filters">
-                <input type="search" id="search" placeholder="Search question text, category, id…" class="explorer-search">
 
                 <div class="explorer-chip-row">
                     <span class="explorer-chip-label">Revised:</span>
@@ -77,7 +97,7 @@
                 <div class="explorer-chip-row">
                     <span class="explorer-chip-label">Mismatch:</span>
                     <button class="explorer-chip" data-filter="mismatch" data-value="all">All</button>
-                    <button class="explorer-chip" data-filter="mismatch" data-value="candidate">Candidate (94)</button>
+                    <button class="explorer-chip" data-filter="mismatch" data-value="candidate">Broad candidate (94)</button>
                 </div>
 
                 <div class="explorer-chip-row">
@@ -130,7 +150,7 @@
                 <a href="audit.html">Audit</a>
                 <a href="cases.html">Cases</a>
                 <a href="rates.html">Rates</a>
-                <a href="query.html">Query</a>
+                <a href="query.html">SQL Lab</a>
                 <a href="about.html">About</a>
             </nav>
         </div>
