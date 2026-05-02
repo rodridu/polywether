@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Explorer &mdash; Settlement Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <meta name="description" content="Filterable table of 2,221 disputed Polymarket-UMA contracts.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <div class="nav-links">
+                    <a href="index.html">Funnel</a>
+                    <a href="explorer.html" class="active">Explorer</a>
+                    <a href="chain.html">Chain View</a>
+                    <a href="audit.html">Audit</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="query.html">Query</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Contract Explorer</p>
+            <h1>All 2,221 disputed contracts</h1>
+            <p class="hero-description">
+                Filterable table of every disputed contract in the Polymarket-via-UMA panel: first proposal, final payoff, chain type, and the candidate-mismatch diagnostic. Click a row to expand the full record.
+            </p>
+            <p style="margin-top: 16px; font-size: 0.88em; color: #92400e; background: #fef3c7; border-left: 3px solid #f59e0b; padding: 10px 14px; border-radius: 4px;">
+                <strong>Coverage note:</strong> 1,756 of 2,221 contracts (79.1%) have recoverable question text from on-chain or platform sources. Rows without question text show <code>[question text missing]</code> &mdash; the chain type and final payoff are still observed.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+
+            <!-- Filters -->
+            <div class="explorer-filters">
+                <input type="search" id="search" placeholder="Search question text, category, id..." class="explorer-search">
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Revised:</span>
+                    <button class="explorer-chip" data-filter="revised" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="revised" data-value="true">Revised only</button>
+                    <button class="explorer-chip" data-filter="revised" data-value="false">Not revised</button>
+                </div>
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Chain type:</span>
+                    <button class="explorer-chip" data-filter="chain" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="chain" data-value="Request-voiding chain">Request-voiding</button>
+                    <button class="explorer-chip" data-filter="chain" data-value="Repeated adapter-routed request">Repeated adapter</button>
+                </div>
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Mismatch:</span>
+                    <button class="explorer-chip" data-filter="mismatch" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="mismatch" data-value="candidate">Candidate (94)</button>
+                </div>
+
+                <div class="explorer-chip-row">
+                    <span class="explorer-chip-label">Question text:</span>
+                    <button class="explorer-chip" data-filter="hasq" data-value="all">All</button>
+                    <button class="explorer-chip" data-filter="hasq" data-value="true">Present</button>
+                    <button class="explorer-chip" data-filter="hasq" data-value="false">Missing</button>
+                </div>
+            </div>
+
+            <div class="explorer-meta" id="explorer-meta"></div>
+
+            <table class="explorer-table" id="explorer-table">
+                <thead>
+                    <tr>
+                        <th class="exp-col-id">id</th>
+                        <th class="exp-col-q">Question</th>
+                        <th class="exp-col-cat">Category</th>
+                        <th class="exp-col-prop">First proposal</th>
+                        <th class="exp-col-final">Final payoff</th>
+                        <th class="exp-col-rev">Revised</th>
+                        <th class="exp-col-chain">Chain type</th>
+                        <th class="exp-col-mm">Mismatch</th>
+                    </tr>
+                </thead>
+                <tbody id="explorer-tbody"></tbody>
+            </table>
+
+            <div id="explorer-pagination" class="explorer-pagination"></div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Funnel</a>
+                <a href="explorer.html">Explorer</a>
+                <a href="chain.html">Chain View</a>
+                <a href="audit.html">Audit</a>
+                <a href="cases.html">Cases</a>
+                <a href="query.html">Query</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Data:</span>
+                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
+                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/explorer.js?v=20260502"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Query &mdash; Settlement Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <meta name="description" content="In-browser SQL queries against the settlement-explorer DuckDB via WebAssembly.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <div class="nav-links">
+                    <a href="index.html">Funnel</a>
+                    <a href="explorer.html">Explorer</a>
+                    <a href="chain.html">Chain View</a>
+                    <a href="audit.html">Audit</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="query.html" class="active">Query</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Live Query &middot; duckdb-wasm</p>
+            <h1>Run SQL against the settlement panel in your browser</h1>
+            <p class="hero-description">
+                The full disputed sample lives in a small DuckDB file (10 MB) that loads into your browser via WebAssembly. No server. No network roundtrip after the initial load. Tables: <code>contracts</code> (2,221), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div id="query-status" class="query-status">Loading duckdb-wasm…</div>
+
+            <div class="query-toolbar">
+                <label for="example-pick" class="muted">Examples:</label>
+                <select id="example-pick" class="query-select">
+                    <option value="">— pick one —</option>
+                    <option data-q="SELECT * FROM contracts WHERE revised = true LIMIT 50">Revised contracts (first 50)</option>
+                    <option data-q="SELECT chain_type, COUNT(*) AS n, AVG(CASE WHEN revised THEN 1.0 ELSE 0.0 END) AS revision_rate FROM contracts GROUP BY chain_type ORDER BY n DESC">Revision rate by chain type</option>
+                    <option data-q="SELECT category, COUNT(*) AS n_disputed, SUM(CASE WHEN revised THEN 1 ELSE 0 END) AS n_revised, ROUND(100.0 * SUM(CASE WHEN revised THEN 1 ELSE 0 END) / COUNT(*), 1) AS pct_revised FROM contracts WHERE category IS NOT NULL GROUP BY category ORDER BY n_disputed DESC">Revisions by category</option>
+                    <option data-q="SELECT first_proposal, final_payoff, COUNT(*) AS n FROM contracts WHERE first_proposal IS NOT NULL AND final_payoff IS NOT NULL GROUP BY 1, 2 ORDER BY n DESC">Transition matrix: first proposal vs final payoff</option>
+                    <option data-q="SELECT c.condition_id, c.question_text, COUNT(e.episode_id) AS n_episodes, SUM(CASE WHEN e.was_disputed THEN 1 ELSE 0 END) AS n_disputed_eps FROM contracts c LEFT JOIN episodes e ON c.condition_id = e.condition_id WHERE c.revised = true GROUP BY 1, 2 HAVING COUNT(e.episode_id) >= 3 ORDER BY n_episodes DESC LIMIT 20">Revised contracts with 3+ episodes</option>
+                    <option data-q="SELECT * FROM funnel">Settlement funnel ladder</option>
+                    <option data-q="SELECT * FROM flip_decomposition">Revision rate by chain decomposition</option>
+                </select>
+                <button id="run-btn" class="btn btn-primary" disabled>Run query</button>
+            </div>
+
+            <textarea id="sql-input" class="query-input" rows="6" placeholder="Loading…" disabled></textarea>
+
+            <div class="query-result-meta" id="result-meta"></div>
+            <div class="query-result-table-wrap">
+                <table class="query-result-table" id="result-table"><thead></thead><tbody></tbody></table>
+            </div>
+
+            <div class="query-help">
+                <h3>Schema reference</h3>
+                <pre class="query-schema">contracts (2,221 rows)
+  condition_id          VARCHAR   keccak256 hash, internal
+  first_proposal        VARCHAR   'Yes' / 'No' / 'Other'
+  final_payoff          VARCHAR   'Yes' / 'No' / 'Other' / 'Invalid' / 'Pending'
+  revised               BOOLEAN   final_payoff != first_proposal
+  multi_episode         BOOLEAN
+  chain_type            VARCHAR   'Request-voiding chain' or 'Repeated adapter-routed request'
+  question_text         VARCHAR   nullable (79.1% coverage)
+  category              VARCHAR   nullable
+  description           VARCHAR   nullable, fuller resolution criteria
+  episode_sequence      VARCHAR   raw "1:Yes->clean_yes(D)|2:..." encoding
+  S_i                   VARCHAR   raw paper variable
+  terminal_state_type   VARCHAR   raw paper variable
+  first_proposal_time   BIGINT    POSIX seconds
+  final_settlement_time BIGINT    POSIX seconds
+
+episodes (2,668 rows)
+  condition_id     VARCHAR   FK to contracts
+  episode_id       VARCHAR
+  t_proposal       BIGINT
+  t_dispute        BIGINT    nullable
+  t_final          BIGINT    nullable
+  proposed         VARCHAR
+  final_outcome    VARCHAR
+  was_disputed     BOOLEAN
+  outcome_flipped  BOOLEAN
+
+funnel              -- 9-step settlement funnel ladder (CSV import)
+chain_signatures    -- 23 raw chain-pattern aggregates with category
+flip_decomposition  -- 7 subset breakdowns of the 530 revisions</pre>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Funnel</a>
+                <a href="explorer.html">Explorer</a>
+                <a href="chain.html">Chain View</a>
+                <a href="audit.html">Audit</a>
+                <a href="cases.html">Cases</a>
+                <a href="query.html">Query</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Data:</span>
+                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
+                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>,
+                <a href="https://duckdb.org/docs/api/wasm/overview" target="_blank" rel="noopener">duckdb-wasm</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm';
+
+        const status = document.getElementById('query-status');
+        const sqlInput = document.getElementById('sql-input');
+        const runBtn = document.getElementById('run-btn');
+        const resultMeta = document.getElementById('result-meta');
+        const resultTable = document.getElementById('result-table');
+        const examplePick = document.getElementById('example-pick');
+
+        let conn = null;
+
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return '<span class="muted">NULL</span>';
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        async function init() {
+            try {
+                status.textContent = 'Selecting duckdb-wasm bundle…';
+                const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+                const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
+                const worker_url = URL.createObjectURL(
+                    new Blob([`importScripts("${bundle.mainWorker}");`], {type: 'text/javascript'})
+                );
+                status.textContent = 'Initializing WebAssembly…';
+                const worker = new Worker(worker_url);
+                const logger = new duckdb.ConsoleLogger();
+                const db = new duckdb.AsyncDuckDB(logger, worker);
+                await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+                URL.revokeObjectURL(worker_url);
+
+                status.textContent = 'Downloading 10 MB settlement_explorer.duckdb…';
+                const dbUrl = 'data/settlement_explorer.duckdb';
+                const resp = await fetch(dbUrl);
+                if (!resp.ok) throw new Error('Failed to fetch DuckDB file: ' + resp.status);
+                const buf = new Uint8Array(await resp.arrayBuffer());
+                await db.registerFileBuffer('settlement_explorer.duckdb', buf);
+
+                conn = await db.connect();
+                await conn.query("ATTACH 'settlement_explorer.duckdb' AS db (READ_ONLY)");
+                await conn.query("USE db");
+
+                status.innerHTML = '<span class="chip chip-ok">Ready</span> &nbsp; DuckDB loaded with ' +
+                    '<code>contracts</code> (2,221), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.';
+                sqlInput.disabled = false;
+                runBtn.disabled = false;
+                sqlInput.placeholder = '-- Try: SELECT * FROM contracts WHERE revised = true LIMIT 20;';
+                sqlInput.value = 'SELECT chain_type, COUNT(*) AS n, ROUND(100.0 * AVG(CASE WHEN revised THEN 1.0 ELSE 0.0 END), 1) AS revision_rate_pct\nFROM contracts\nGROUP BY chain_type\nORDER BY n DESC;';
+                runQuery();
+            } catch (err) {
+                console.error(err);
+                status.innerHTML = '<span class="chip" style="background:#fee2e2;color:#b91c1c">Failed to load duckdb-wasm: ' + escapeHtml(err.message || err) + '</span>';
+            }
+        }
+
+        async function runQuery() {
+            if (!conn) return;
+            const sql = sqlInput.value.trim();
+            if (!sql) return;
+            resultMeta.textContent = 'Running…';
+            const t0 = performance.now();
+            try {
+                const result = await conn.query(sql);
+                const t1 = performance.now();
+                const rows = result.toArray().map(r => r.toJSON ? r.toJSON() : r);
+                const cols = result.schema.fields.map(f => f.name);
+                resultMeta.innerHTML = '<strong>' + rows.length + ' rows</strong> &middot; ' + (t1 - t0).toFixed(1) + ' ms';
+                renderResult(cols, rows);
+            } catch (err) {
+                console.error(err);
+                resultMeta.innerHTML = '<span style="color:#b91c1c"><strong>Error:</strong> ' + escapeHtml(err.message || err) + '</span>';
+                resultTable.querySelector('thead').innerHTML = '';
+                resultTable.querySelector('tbody').innerHTML = '';
+            }
+        }
+
+        function renderResult(cols, rows) {
+            const thead = resultTable.querySelector('thead');
+            const tbody = resultTable.querySelector('tbody');
+            thead.innerHTML = '<tr>' + cols.map(c => '<th>' + escapeHtml(c) + '</th>').join('') + '</tr>';
+            const limited = rows.slice(0, 500);
+            tbody.innerHTML = limited.map(row => '<tr>' + cols.map(c => {
+                let v = row[c];
+                if (typeof v === 'bigint') v = v.toString();
+                if (typeof v === 'object' && v !== null) v = JSON.stringify(v);
+                return '<td>' + escapeHtml(v) + '</td>';
+            }).join('') + '</tr>').join('');
+            if (rows.length > 500) {
+                tbody.innerHTML += '<tr><td colspan="' + cols.length + '" class="muted" style="text-align:center;padding:12px">… ' + (rows.length - 500) + ' more rows truncated</td></tr>';
+            }
+        }
+
+        runBtn.addEventListener('click', runQuery);
+        sqlInput.addEventListener('keydown', e => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') runQuery();
+        });
+        examplePick.addEventListener('change', e => {
+            const opt = e.target.selectedOptions[0];
+            if (opt && opt.dataset.q) {
+                sqlInput.value = opt.dataset.q + ';';
+                runQuery();
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

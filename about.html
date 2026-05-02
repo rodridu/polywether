@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About &mdash; Settlement Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <meta name="description" content="About the Settlement Explorer: scope, framing, data sources, and methodology.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <div class="nav-links">
+                    <a href="index.html">Funnel</a>
+                    <a href="explorer.html">Explorer</a>
+                    <a href="chain.html">Chain View</a>
+                    <a href="audit.html">Audit</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="query.html">Query</a>
+                    <a href="about.html" class="active">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">About</p>
+            <h1>About this Settlement Explorer</h1>
+            <p class="hero-description">
+                Settlement-path observability for disputed Polymarket-UMA contracts &mdash; a public-facing companion to the working paper "Settlement-State Construction in Prediction-Market Contracts."
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container container-narrow">
+            <h2>The argument in one paragraph</h2>
+            <p>
+                Prediction-market prices are usually interpreted as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. This project distinguishes three objects: realized world facts <em>W</em>, the rule-implied label <em>G</em> under the contract's text and source hierarchy, and the settlement state <em>S</em> delivered by the mechanism. The paper reconstructs this mapping for disputed Polymarket contracts resolved through UMA. The Settlement Explorer is the public version of that reconstruction: where does a given disputed contract sit in the funnel, and how did its final payoff get produced?
+            </p>
+
+            <h2>Headline facts</h2>
+            <ul style="line-height: 1.8;">
+                <li><strong>661,949</strong> total settlement conditions in the Polymarket-via-UMA panel.</li>
+                <li><strong>2,221</strong> are disputed (at least one counter-bond posted).</li>
+                <li><strong>2,197</strong> disputed contracts have an observed final payoff state &mdash; the analysis sample.</li>
+                <li><strong>530</strong>, or <strong>24.1%</strong>, end with a final payoff different from the first proposed outcome.</li>
+                <li>Of these revisions, <strong>352 (66%)</strong> occur through repeated adapter-routed requests; <strong>178 (34%)</strong> occur via DVM request-voiding.</li>
+                <li>A two-pass LLM-coded benchmark identifies <strong>94</strong> candidate mismatches (final payoff vs rule-implied label), of which <strong>64</strong> are agreed across both coding passes. This is a diagnostic layer, not an externally validated error count.</li>
+            </ul>
+
+            <h2>Scope &amp; non-claims</h2>
+            <p>This project is a measurement project. It reconstructs and reports the path from first proposal to final payoff for disputed contracts. It does <strong>not</strong>:</p>
+            <ul style="line-height: 1.8;">
+                <li>Identify the unconditional rate at which a randomly selected market receives an erroneous final payoff.</li>
+                <li>Adjudicate whether any specific contract's final payoff is correct in real-world terms.</li>
+                <li>Study UMA tokenholder voter identity, vote concentration, or turnout. Those questions live elsewhere.</li>
+                <li>Estimate causal effects of any UMA policy change.</li>
+            </ul>
+            <p>
+                When you click through to a contract, you see <em>how its final payoff was produced</em> &mdash; not whether it's "right."
+            </p>
+
+            <h2>Data sources</h2>
+            <p>
+                Polymarket markets and UMA Optimistic Oracle resolution events are ingested into a research database. The settlement panel covers all Polymarket conditions resolved via UMA. The disputed-contract sample (D=1) is the union of contracts with at least one counter-bond posted. Episode-level chains are reconstructed from the UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code> event sequence.
+            </p>
+            <p>
+                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. Coverage and limitations are documented in the paper.
+            </p>
+
+            <h2>Limitations</h2>
+            <p>
+                Several caveats apply to the current export:
+            </p>
+            <ul style="line-height: 1.8;">
+                <li><strong>Question-text coverage is 79.1%.</strong> 1,756 of 2,221 disputed contracts have recoverable question text in <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, or <code>pm_resolution_events.ancillary_data_decoded</code>. The other 465 are visible in the rev3 settlement panel but absent from the Polymarket-side metadata (likely Kalshi-only or deprecated condition_ids). The Contract Explorer shows <code>[question text missing]</code> for affected rows; chain type and final payoff are still observed.</li>
+                <li>The <strong>Settlement Auditability checklist</strong> uses heuristic regex over question text + contract description + ancillary data. Items 1&ndash;4 (rule text / named source / fallback / edge cases) are noisy: they tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed. Items 5&ndash;8 (chain completeness / repeated-request / final payoff / benchmark agreement) are derived from the on-chain settlement data and are deterministic.</li>
+                <li>The <strong>Public Case Locator</strong> uses keyword matching on <code>pm_markets.question</code>. It locates candidate markets in the panel but does not decide which specific contract the public controversy referred to. Three of seven curated cases (Venezuela / Iran-Khamenei / Lebanon) match in the market panel but not in the disputed-analysis sample &mdash; this could mean the relevant contract was excluded under the paper's sample-construction rules, or that the public dispute attached to a Kalshi-side market not visible here.</li>
+            </ul>
+
+            <h2>Researcher</h2>
+            <p>
+                <strong>Hongzhen Du</strong>, Northwestern University. Contact via the paper repository.
+            </p>
+
+            <h2>Reading the paper</h2>
+            <p>
+                The full working paper, "Settlement-State Construction in Prediction-Market Contracts," contains the formal estimands, sample-construction details, robustness checks, and full case appendices. The dashboard is intentionally a thinner artifact &mdash; you can see the funnel and chain mechanics here, but the academic argument lives in the paper.
+            </p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Funnel</a>
+                <a href="explorer.html">Explorer</a>
+                <a href="chain.html">Chain View</a>
+                <a href="audit.html">Audit</a>
+                <a href="cases.html">Cases</a>
+                <a href="query.html">Query</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">
+                &copy; 2026 Hongzhen Du
+            </div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Data:</span>
+                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
+                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain View &mdash; Settlement Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <meta name="description" content="Per-contract settlement chain timelines for disputed Polymarket-UMA contracts.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Explorer</a>
+                <div class="nav-links">
+                    <a href="index.html">Funnel</a>
+                    <a href="explorer.html">Explorer</a>
+                    <a href="chain.html" class="active">Chain View</a>
+                    <a href="audit.html">Audit</a>
+                    <a href="cases.html">Cases</a>
+                    <a href="query.html">Query</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <!-- Hero (compact) -->
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Chain View</p>
+            <h1>How a single contract gets to its final payoff</h1>
+            <p class="hero-description">
+                Each disputed contract goes through one or more <em>requests</em>. A request can settle cleanly, be disputed, or be voided by UMA's Data Verification Mechanism (DVM), forcing a re-request. The examples below trace this path for ten hand-curated sports contracts, split between the two main chain types.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div id="chain-tabs" class="chain-tabs">
+                <button class="chain-tab-btn active" data-filter="all">All examples</button>
+                <button class="chain-tab-btn" data-filter="Request-voiding chain">Request-voiding chain</button>
+                <button class="chain-tab-btn" data-filter="Repeated adapter-routed request">Repeated adapter-routed request</button>
+            </div>
+
+            <div id="chain-list"></div>
+
+            <p style="margin-top: 32px; font-size: 0.88em; color: #64748b; font-style: italic;">
+                Selection rule: contracts in the disputed sample (D=1) with at least two episodes, sports category only (low public-controversy risk), proposed and final outcomes both observed. Hand-curated to span both chain types. Times are POSIX seconds.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Explorer</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="index.html">Funnel</a>
+                <a href="explorer.html">Explorer</a>
+                <a href="chain.html">Chain View</a>
+                <a href="audit.html">Audit</a>
+                <a href="cases.html">Cases</a>
+                <a href="query.html">Query</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">
+                &copy; 2026 Hongzhen Du
+            </div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Data:</span>
+                <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a>,
+                <a href="https://uma.xyz" target="_blank" rel="noopener">UMA Protocol</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function fmtTime(t) {
+        if (!t) return '—';
+        var d = new Date(t * 1000);
+        return d.toISOString().slice(0, 10);
+    }
+
+    function renderRequestSequence(seq) {
+        var html = '<div class="chain-timeline">';
+        seq.forEach(function(req, idx) {
+            var disputed = req.was_disputed;
+            var voided = (req.final_outcome && req.final_outcome.toLowerCase() === 'other') && disputed;
+            var nodeCls = 'chain-node';
+            if (disputed) nodeCls += ' chain-node-disputed';
+            if (voided) nodeCls += ' chain-node-voided';
+            html += '<div class="' + nodeCls + '">' +
+                '<div class="chain-node-idx">Request ' + req.request_idx + '</div>' +
+                '<div class="chain-node-row"><span class="chain-node-key">Proposed:</span> <strong>' + (req.proposed || '—') + '</strong></div>' +
+                '<div class="chain-node-row"><span class="chain-node-key">Disputed:</span> ' + (disputed ? '<span class="chip chip-warn">yes</span>' : '<span class="chip chip-ok">no</span>') + '</div>' +
+                '<div class="chain-node-row"><span class="chain-node-key">Final:</span> <strong>' + (req.final_outcome || '—') + '</strong>' + (voided ? ' <span class="chip chip-warn">DVM voided</span>' : '') + '</div>' +
+                '<div class="chain-node-time">proposal ' + fmtTime(req.proposal_time) + (req.dispute_time ? ' &middot; dispute ' + fmtTime(req.dispute_time) : '') + (req.final_time ? ' &middot; final ' + fmtTime(req.final_time) : '') + '</div>' +
+                '</div>';
+            if (idx < seq.length - 1) html += '<div class="chain-arrow">→</div>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function renderExample(ex) {
+        var typeBadge = ex.chain_type === 'Request-voiding chain'
+            ? '<span class="chip chip-warn">Request-voiding chain</span>'
+            : '<span class="chip chip-info">Repeated adapter-routed request</span>';
+        return '<article class="chain-card" data-chain-type="' + ex.chain_type + '">' +
+            '<header class="chain-card-header">' +
+              '<div class="chain-card-id">id ' + ex.id + '</div>' +
+              '<h3 class="chain-card-question">' + (ex.question_text || '[question text missing]') + '</h3>' +
+              '<div class="chain-card-meta">' + typeBadge + ' &middot; ' + (ex.category || 'uncategorized') + ' &middot; ' + ex.n_episodes + ' episodes' + '</div>' +
+            '</header>' +
+            renderRequestSequence(ex.request_sequence) +
+            '</article>';
+    }
+
+    var allExamples = [];
+
+    function applyFilter(filter) {
+        var list = document.getElementById('chain-list');
+        var rows = filter === 'all' ? allExamples : allExamples.filter(function(e) { return e.chain_type === filter; });
+        list.innerHTML = rows.map(renderExample).join('');
+    }
+
+    fetch('data/chain_examples.json').then(r => r.json()).then(d => {
+        allExamples = d.examples;
+        applyFilter('all');
+
+        document.querySelectorAll('.chain-tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chain-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                applyFilter(btn.dataset.filter);
+            });
+        });
+    }).catch(function(err) {
+        console.error('chain_examples.json load failed:', err);
+        document.getElementById('chain-list').innerHTML = '<p style="color: #ef4444;">Could not load chain_examples.json (try serving over http://, not file://).</p>';
+    });
+    </script>
+</body>
+</html>

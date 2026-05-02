@@ -1,0 +1,990 @@
+{
+  "n_candidate": 94,
+  "n_agreed": 64,
+  "by_category": [
+    {
+      "category": "Sports",
+      "n_candidate": 40,
+      "n_agreed": 40,
+      "n_questionable": 0
+    },
+    {
+      "category": "Politics / elections",
+      "n_candidate": 4,
+      "n_agreed": 3,
+      "n_questionable": 1
+    },
+    {
+      "category": "Geopolitical / policy",
+      "n_candidate": 21,
+      "n_agreed": 12,
+      "n_questionable": 9
+    },
+    {
+      "category": "Crypto / financial",
+      "n_candidate": 2,
+      "n_agreed": 1,
+      "n_questionable": 1
+    },
+    {
+      "category": "Weather / natural",
+      "n_candidate": 7,
+      "n_agreed": 7,
+      "n_questionable": 0
+    },
+    {
+      "category": "Other / pop-culture / tech",
+      "n_candidate": 3,
+      "n_agreed": 1,
+      "n_questionable": 2
+    },
+    {
+      "category": "Unauditable (no text)",
+      "n_candidate": 17,
+      "n_agreed": 0,
+      "n_questionable": 17
+    }
+  ],
+  "rows": [
+    {
+      "id": "abbb2fd9",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "069c2305",
+      "question_text": "Guardians vs. Nationals",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "e2302438",
+      "question_text": "Will the highest temperature in London be between 70-71°F on June 2?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "3cca5594",
+      "question_text": "Will Trump say \"Green new scam\" during Pennsylvania rally on October 9?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "03a37ffd",
+      "question_text": "Games Total: O/U 2.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "df28ad32",
+      "question_text": "Will DOGE audit the IRS before May?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "841b2501",
+      "question_text": "Will the highest temperature in Buenos Aires be 26°C on December 8?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "555a21cb",
+      "question_text": "Will Trump say \"Big beautiful deal\" this week?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "c069ff20",
+      "question_text": "1H Spread: Spurs (-1.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "757937fb",
+      "question_text": "Dota 2: Team Rostik999 vs Team Stariy_Bog (BO3) - Winline Star Series Group A",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "7c530cb3",
+      "question_text": "Southern vs. Alabama State",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "3e02f66a",
+      "question_text": "Will Trump say \"MAGA\" or \"Make America Great Again\" this week? (December 29 - January 4)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "9c42c437",
+      "question_text": "BPL: Durdanto Dhaka vs Rangpur Riders (Game 1) - Most Sixes Durdanto Dhaka Winner",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "fd1b93a7",
+      "question_text": "Trump approval Up or Down this week?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "55c21bca",
+      "question_text": "Will Israel strike Lebanon on November 4?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "9a67dc58",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6df8b773",
+      "question_text": "Series: LNG Esports Kill Handicap (-13.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "64ac0703",
+      "question_text": "Will Fed end QT before May?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "127b00ad",
+      "question_text": "Jusuf Nurkić: Rebounds Over 8.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "c9107751",
+      "question_text": "Will the highest temperature in London be between 58-59°F on December 7?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "c9a09f96",
+      "question_text": "Will Trump reduce tariffs on Mexico or Canada today?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "ad999391",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6fef8e34",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "fd281555",
+      "question_text": "Will Trump issue an executive order on Day 11?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "8f6bcea5",
+      "question_text": "Series: LNG Esports Kill Handicap (-15.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "2a3b855e",
+      "question_text": "ATP Washington D.C – Shelton vs. Tiafoe",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "ce162ea3",
+      "question_text": "Will Trump audit Ukraine aid before May?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6edb0f62",
+      "question_text": "Will Qatar gift Trump a new Air Force One in May?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "97b4d403",
+      "question_text": "Big Bash League: Hobart Hurricanes vs Brisbane Heat (Game 1)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "46c231fe",
+      "question_text": "Pacers vs. Spurs",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "458e268e",
+      "question_text": "Counter-Strike: KZG vs Mindfreak (BO3)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "5d65128d",
+      "question_text": "NRFI: Cleveland Guardians vs. Minnesota Twins",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "67e1ac54",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "581ee184",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "4baf1ede",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "132dc9da",
+      "question_text": "NBA: Golden State Warriors vs. Sacramento Kings 2023-04-28",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "c1231287",
+      "question_text": "Manchester United FC vs. Manchester City FC: O/U 2.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "f78d7e3d",
+      "question_text": "U.S. refuels Israeli jets for strikes on Iran before July?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "0ee77349",
+      "question_text": "Will Russia abandon Syrian naval base before April?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "88b40a67",
+      "question_text": "Brewers vs. Mets",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "0784f9ff",
+      "question_text": "Sam Houston State vs. Western Kentucky",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "8bb9e754",
+      "question_text": "Israel strikes Syria by Friday?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "a1dd95a7",
+      "question_text": "Will a hurricane form by August 31?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "faded9b4",
+      "question_text": "Dota 2: Team Spirit vs Team Liquid (BO3)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "92e6d4e9",
+      "question_text": "US strikes Yemen by September 30?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "293cf809",
+      "question_text": "Tigers vs. Nationals",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "62fa24fa",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "41f2c158",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "156d237d",
+      "question_text": "League of Legends: JD Gaming vs. Weibo Gaming",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "a7595f2b",
+      "question_text": "CD Riestra vs. CSyD Defensa y Justicia: O/U 1.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "0cbeb4a9",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "3360e6af",
+      "question_text": "Jerry Rice Team vs. Louisiana",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "62d46c79",
+      "question_text": "Will Israel airdrop aid into Gaza?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "e097bd4e",
+      "question_text": "North Carolina Central vs. MD Eastern Shore",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "9fd3445e",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "d5937e74",
+      "question_text": "Will Trump say \"mog\" in 2024?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "d47ed994",
+      "question_text": "Cade Cunningham: Points Over 26.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "87782468",
+      "question_text": "Will Han Duck-soo register for presidential run?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "de53ca77",
+      "question_text": "Will xQc beat Forsen's Minecraft speedrun record by January 31?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "86dd0ae0",
+      "question_text": "Will DeSantis mention \"Trump\" during his Twitter Space?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "8aeb4ad5",
+      "question_text": "Kamala positive favorability by Friday?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "208a5578",
+      "question_text": "Diamondbacks vs. Giants",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6f81020b",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "5a6fa0a9",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "f5b01dab",
+      "question_text": "Counter-Strike: Aurora Gaming vs HOTU - Map 2 Winner",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "e597dea3",
+      "question_text": "Valorant: JD Gaming vs EDward Gaming (BO3) - VCT China Kickoff Playoffs",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "b854db5d",
+      "question_text": "Games Total: O/U 2.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "cf69c1cc",
+      "question_text": "Will Trump say \"Biden\" during his presser with Ireland PM?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "a7d519b0",
+      "question_text": "Will the highest temperature in New York City be between 77-78°F on October 7?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "e9ce602b",
+      "question_text": "Will the highest temperature in New York City be between 68-69°F on May 31?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "621d8de3",
+      "question_text": "US military intervention by Oct 31?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "d7c1a691",
+      "question_text": "Will Romania's court annul the presidential election?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "97ff89b6",
+      "question_text": "Series: LNG Esports Kill Handicap (-14.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "74c167ac",
+      "question_text": "Will Trump Media buy more Bitcoin in 2025?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "0aafe1d5",
+      "question_text": "AHL: Chicago Wolves vs. Manitoba Moose",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "f52dd6cf",
+      "question_text": "Ethereum Up or Down on May 1?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "51e927dc",
+      "question_text": "Magic vs. Lakers",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6c9cca5f",
+      "question_text": "Julius Randle: Assists Over 4.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "80bdedde",
+      "question_text": "Another commercial airline evacuation before March?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "7fd57d5c",
+      "question_text": "New York Mets vs. Miami Marlins",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "9cdc8c1d",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "48d4e9f4",
+      "question_text": "BPL: Durdanto Dhaka vs Rangpur Riders (Game 1) - Most Sixes Rangpur Riders Winner",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "5b14d7ce",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "de7774ed",
+      "question_text": "Will Harris publicly support tax on unrealized gains?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "2f8d9b14",
+      "question_text": "Will Israel strike Gaza on November 5?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "19b0c222",
+      "question_text": "1H Spread: Spurs (-2.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "d5f32e4c",
+      "question_text": "Timberwolves vs. Kings: O/U 236.5",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "3b2a1603",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "50c638c3",
+      "question_text": "Map Handicap: EF (-1.5)",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "6c1ac7be",
+      "question_text": "Will Trump impose tariffs on Colombia in the first 100 days?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "40b996be",
+      "question_text": "Earthquake 7.0 or above in April?",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "fd4b650e",
+      "question_text": "Aston Villa vs. Manchester City: Both Teams to Score",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "65ee5bb8",
+      "question_text": null,
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "coded_benchmark": "Yes",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    },
+    {
+      "id": "ac1fc3f7",
+      "question_text": "Royals vs. Cardinals",
+      "category": "1_uncorrected_oracle_error",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "coded_benchmark": "No",
+      "mismatch_agreed": false,
+      "classification": "uncorrected_oracle_error"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "generated_at": "2026-04-23T21:23:04.198713",
+    "treatment_date": "2025-08-01",
+    "treatment_ts": 1754006400
+  },
+  "sample": {
+    "n_markets": 588479,
+    "n_markets_total_gamma": 506926,
+    "n_episodes": 590873,
+    "n_markets_with_episodes": 588479,
+    "n_proposers": 1431,
+    "n_disputers": 619,
+    "n_disputes": 2568,
+    "first_proposal_date": "2022-11-05",
+    "last_proposal_date": "2026-04-22",
+    "source": "episode_panel table (terminal states only)"
+  },
+  "key_findings": {
+    "dispute_rate_decline": {
+      "pre": 1.9726027397260273,
+      "post": 0.26592897668050774,
+      "pct_change": -86.51887826550204,
+      "interpretation": "Dispute rate fell 87% after managed proposer policy"
+    },
+    "win_rate_decline": {
+      "pre": 7.638888888888889,
+      "post": 20.76271186440678,
+      "pp_change": 13.12382297551789,
+      "interpretation": "Disputer win rate rose from 7.6% to 20.8%"
+    },
+    "managed_proposer_share": {
+      "n_eligible": 406,
+      "pct": 28.371767994409502,
+      "interpretation": "28.4% of proposers meet managed criteria"
+    },
+    "bond_distribution": {
+      "most_common": 500.0,
+      "most_common_pct": 95.21420301042069,
+      "bond_500_pct": 95.21420301042069,
+      "interpretation": "$500 is most common bond (95% of disputes)"
+    }
+  },
+  "dispute_statistics": {
+    "pre_treatment": {
+      "n_proposals": 58400,
+      "n_disputes": 1152,
+      "dispute_rate": 1.9726027397260273,
+      "disputer_win_rate": 7.638888888888889
+    },
+    "post_treatment": {
+      "n_proposals": 532473,
+      "n_disputes": 1416,
+      "dispute_rate": 0.26592897668050774,
+      "disputer_win_rate": 20.76271186440678
+    },
+    "dispute_rate_change_pct": -86.51887826550204,
+    "win_rate_change_pp": 13.12382297551789,
+    "source": "pm_resolution_events table"
+  },
+  "managed_proposer_statistics": {
+    "n_total_proposers": 1431,
+    "n_managed_eligible": 406,
+    "pct_managed_eligible": 28.371767994409502,
+    "total_proposals": 590856,
+    "avg_proposals_per_proposer": 412.8972746331237,
+    "managed_criteria": {
+      "min_proposals": 20,
+      "min_accuracy": 95.0
+    },
+    "source": "pm_resolution_events table, managed proposer criteria"
+  },
+  "bond_statistics": {
+    "n_disputes_with_bond": 2591,
+    "most_common_bond": 500.0,
+    "most_common_bond_count": 2467,
+    "most_common_bond_pct": 95.21420301042069,
+    "bond_500_count": 2467,
+    "bond_500_pct": 95.21420301042069,
+    "mean_bond": 493.3230412967966,
+    "median_bond": 500.0,
+    "source": "pm_resolution_events.bond field"
+  },
+  "analysis_outputs": {
+    "managed_proposer_did_results.json": {
+      "did": {
+        "Dispute Rate": {
+          "coef": -0.01667372247709128,
+          "se": 0.0007868778013481768,
+          "pval": 1.1879460468359923e-99,
+          "mean_pre": 0.020823086992380505,
+          "mean_post": 0.004149364515290243,
+          "pct_change": -80.07324986536068,
+          "n": 766716
+        },
+        "Correction Rate (conditional)": {
+          "coef": 0.08459352008055229,
+          "se": 0.015034137660996998,
+          "pval": 1.8362340575052986e-08,
+          "mean_pre": 0.07340116279069768,
+          "mean_post": 0.15799468287124951,
+          "pct_change": 115.2482016146924,
+          "n": 5385
+        }
+      },
+      "summary": {
+        "Pre": {
+          "n_proposals": 58383,
+          "n_proposers": 757,
+          "n_disputes": 1152,
+          "dispute_rate": 1.973,
+          "n_corrected": 88,
+          "correction_rate": 7.64
+        },
+        "Post": {
+          "n_proposals": 241420,
+          "n_proposers": 623,
+          "n_disputes": 937,
+          "dispute_rate": 0.388,
+          "n_corrected": 151,
+          "correction_rate": 16.12
+        }
+      }
+    },
+    "staggered_did_sa_results.json": {
+      "status": "not_found"
+    },
+    "staggered_did_cs_results.json": {
+      "status": "not_found"
+    },
+    "exposure_share_summary.json": {
+      "status": "not_found"
+    },
+    "winrate_decline_analysis.json": {
+      "status": "not_found"
+    },
+    "disputer_economics_summary.json": {
+      "status": "not_found"
+    },
+    "double_coding_validation.json": {
+      "cohens_kappa": 0.8763600395647874,
+      "pass": true
+    }
+  }
+}
