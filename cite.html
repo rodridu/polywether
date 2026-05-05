@@ -52,12 +52,15 @@
     <section class="section">
         <div class="container">
             <h2>Look up a market</h2>
-            <p style="color:#475569;margin-bottom:12px;">Paste a Polymarket URL, condition ID, or question text. The risk profile below populates from the disputed-contract panel; for un-disputed markets we can't yet check rule clarity.</p>
+            <p style="color:#475569;margin-bottom:12px;">Paste a Polymarket URL, condition ID, or question text. The risk profile pulls from the disputed-contract panel.</p>
             <form class="hero-search" onsubmit="return doCiteLookup(event)">
                 <input type="search" id="cite-input" placeholder="Paste Polymarket URL, condition ID (0x…), slug, or question text" autocomplete="off">
                 <button type="submit" class="btn btn-primary">Run cite check</button>
                 <div id="cite-suggestions" class="lookup-suggestions"></div>
             </form>
+            <p style="margin-top:12px;font-size:0.9em;color:#475569;">
+                <strong>Not in the disputed-contract panel?</strong> Most live or un-disputed markets aren't. Paste the rule text into the <a href="analyze.html">manual analyzer</a> for a rule-clarity screen instead.
+            </p>
         </div>
     </section>
 

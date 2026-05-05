@@ -73,6 +73,16 @@
     <section class="section">
         <div class="container">
 
+            <!-- Possible results framing -->
+            <div class="result-states">
+                <h3>Possible results</h3>
+                <ol>
+                    <li><strong>Full settlement profile</strong> — if the market is in the disputed-contract panel (n=2,221).</li>
+                    <li><strong>Not found in disputed-contract panel</strong> — if Polymarket has the market but it's never been disputed, hasn't resolved yet, or is outside the snapshot. We route you to the <a href="analyze.html">rule-text analyzer</a>.</li>
+                    <li><strong>Manual rule-text screen</strong> — paste the question + resolution rules directly: <a href="analyze.html">analyze.html</a>. Returns a rule-clarity screen even with no settlement history.</li>
+                </ol>
+            </div>
+
             <!-- Filters (collapsed by default — paste-first UX) -->
             <details class="explorer-filters-wrap">
                 <summary>Browse all 2,221 disputed contracts (filters)</summary>
