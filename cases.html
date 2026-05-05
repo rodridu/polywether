@@ -119,6 +119,16 @@
     function yn(b) { return b ? '<span class="chip chip-warn">yes</span>' : '<span class="chip chip-ok">no</span>'; }
     function dash() { return '<span class="muted">—</span>'; }
 
+    var LESSONS = {
+        "Zelenskyy suit": "Pre-define what counts as a suit (collar / lapels / fabric).",
+        "Venezuela / Maduro": "Pre-define 'invasion' vs 'regime change'; name a defense-ministry source.",
+        "Iran / Khamenei": "Pre-define 'remain in office' (death / resignation / removal) and source.",
+        "Trump Bitcoin reserve": "Pre-define 'establishing a reserve' (executive order / law / Treasury action).",
+        "Tesla robotaxi": "Pre-define 'launch' (paid customers vs demo / beta).",
+        "Lebanon ground incursion": "Pre-define unit threshold + duration; remove oracle discretion.",
+        "Government shutdown 2025": "Pre-specify cutoff date + time zone + funding-lapse vs agency-closure rule."
+    };
+
     function renderSummary(cases) {
         var rows = cases.map(function(c) {
             var inPanel = c.n_market_matches > 0;
@@ -137,6 +147,7 @@
             // Issue type guess
             var issue = c.why_matters ? c.why_matters.split(';')[0].split('—')[0].trim() : '—';
             if (issue.length > 60) issue = issue.slice(0, 57) + '…';
+            var lesson = LESSONS[c.label] || '—';
             return '<tr>' +
                 '<td><strong>' + escapeHtml(c.label) + '</strong></td>' +
                 '<td>' + (inPanel ? '<span class="chip chip-info">' + c.n_market_matches + '</span>' : dash()) + '</td>' +
@@ -144,6 +155,7 @@
                 '<td>' + (anyRevised === null ? dash() : yn(anyRevised)) + '</td>' +
                 '<td>' + (anyMismatch === null ? dash() : yn(anyMismatch)) + '</td>' +
                 '<td class="muted" style="font-size:0.85em;">' + escapeHtml(issue) + '</td>' +
+                '<td class="muted" style="font-size:0.85em;">' + escapeHtml(lesson) + '</td>' +
                 '</tr>';
         }).join('');
         return '<table class="explorer-table">' +
@@ -154,6 +166,7 @@
                 '<th>Any revised?</th>' +
                 '<th>Any candidate mismatch?</th>' +
                 '<th>Main issue</th>' +
+                '<th>Lesson for blueprint</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>';
     }
 
