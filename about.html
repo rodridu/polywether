@@ -14,14 +14,10 @@
             <div class="nav-left">
                 <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
                 <div class="nav-links">
-                    <a href="index.html">Monitor</a>
                     <a href="explorer.html">Lookup</a>
                     <a href="rates.html">Rates</a>
-                    <a href="cases.html">Cases</a>
                     <a href="blueprints.html">Blueprints</a>
-                    <a href="cite.html">Cite</a>
-                    <a href="research.html">Research</a>
-                    <a href="docs.html">Docs</a>
+                    <a href="about.html" class="active">About</a>
                 </div>
             </div>
             <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
@@ -43,9 +39,9 @@
     <section class="hero hero-compact">
         <div class="hero-inner">
             <p class="hero-eyebrow">About</p>
-            <h1>Data, scope, limitations</h1>
+            <h1>What this monitor covers</h1>
             <p class="hero-description">
-                Public-facing companion to the working paper "Settlement-State Construction in Prediction-Market Contracts." The Funnel page carries the framing argument; this page documents how the data are constructed.
+                A settlement-risk layer for prediction markets, built on a panel of disputed Polymarket contracts resolved through UMA. Track rule clarity and historical revision patterns before quoting or trading.
             </p>
         </div>
     </section>
@@ -53,45 +49,30 @@
     <section class="section">
         <div class="container container-narrow">
 
-            <h2>Data construction</h2>
-            <p>
-                Polymarket markets and UMA Optimistic Oracle resolution events are ingested into a research database. The settlement panel covers all Polymarket conditions resolved via UMA (n=661,949). The disputed-contract sample (D=1, n=2,221) is the union of contracts with at least one counter-bond posted. Episode-level chains are reconstructed from the UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code> event sequence.
-            </p>
-            <p>
-                Question text comes from a COALESCE over <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, and <code>pm_resolution_events.ancillary_data_decoded</code>. Description (resolution criteria) comes from <code>pm_markets.raw.description</code>. Category comes from <code>episode_panel.category</code>.
-            </p>
-            <p>
-                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. <strong>94 broad candidate mismatches</strong> are identified by the first pass; <strong>64</strong> are <strong>agreed</strong> across both coding passes (category-level aggregate; per-row agreement is not exposed in this dashboard). The Explorer/Audit/Cases pages show only the broad set (94) at row level.
-            </p>
+            <h2>Coverage</h2>
+            <ul style="line-height:1.8;">
+                <li><strong>661,949</strong> Polymarket-via-UMA settlement conditions tracked.</li>
+                <li><strong>2,221</strong> disputed contracts (≥1 counter-bond posted) — analysis sample.</li>
+                <li><strong>530 (24.1%)</strong> end with a final payoff different from the first proposal.</li>
+                <li><strong>94</strong> broad candidate mismatches under a two-pass LLM-coded benchmark.</li>
+            </ul>
 
             <h2>What we do NOT claim</h2>
             <ul style="line-height: 1.8;">
-                <li>The unconditional rate at which a randomly selected market receives an erroneous final payoff.</li>
-                <li>Whether any specific contract's final payoff is correct in real-world terms. (Locator pages do not adjudicate.)</li>
+                <li>The unconditional rate at which a random market receives an erroneous final payoff.</li>
+                <li>Whether any specific contract's final payoff is correct in real-world terms.</li>
                 <li>UMA tokenholder voter identity, vote concentration, or turnout.</li>
                 <li>Causal effects of any UMA policy change.</li>
             </ul>
 
-            <h2>Limitations</h2>
-            <ul style="line-height: 1.8;">
-                <li><strong>Question-text coverage is 79.1%.</strong> 1,756 of 2,221 disputed contracts have recoverable question text. The other 465 are visible in the rev3 settlement panel but absent from Polymarket-side metadata (likely Kalshi-only or deprecated condition_ids). The Contract Explorer shows <code>[question text missing]</code> for affected rows; chain type and final payoff are still observed.</li>
-                <li><strong>Auditability flags 4&ndash;6</strong> (named source / fallback / edge cases) are heuristic regex over a noisy text corpus. They tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed.</li>
-                <li><strong>Public Case Locator</strong> uses keyword matching on <code>pm_markets.question</code>. Three of seven curated cases (Venezuela / Iran-Khamenei / Lebanon) match in the market panel but not in the disputed-analysis sample &mdash; could mean the relevant contract was excluded under the paper's sample-construction rules, or the public dispute attached to a Kalshi-side market not visible here.</li>
-            </ul>
-
-            <h2>Refresh cadence</h2>
+            <h2>Data source</h2>
             <p>
-                Aggregate JSONs (funnel, chain signatures, candidate mismatches) regenerate weekly via a GitHub Actions workflow that reads small CSVs in <code>data-source/</code>. Per-contract data and the duckdb-wasm DB are refreshed manually when the paper's analysis pipeline runs. See the <a href="https://github.com/rodridu/polywether">repo README</a> for the refresh workflow.
+                Polymarket markets and UMA Optimistic Oracle resolution events. Aggregates refresh weekly via a GitHub Actions workflow on committed source CSVs; per-contract data and the duckdb-wasm DB refresh manually when the paper's analysis pipeline regenerates the panel.
             </p>
 
             <h2>Researcher</h2>
             <p>
-                <strong>Hongzhen Du</strong>, Northwestern University. Contact via the paper repository.
-            </p>
-
-            <h2>Reading the paper</h2>
-            <p>
-                The full working paper, "Settlement-State Construction in Prediction-Market Contracts," contains the formal estimands, sample-construction details, robustness checks, and full case appendices. The dashboard is intentionally a thinner artifact &mdash; you can see the funnel and chain mechanics here, but the academic argument lives in the paper.
+                <strong>Hongzhen Du</strong>, Northwestern University. Built on the working paper "Settlement-State Construction in Prediction-Market Contracts." Full methodology, sample construction, and limitations: <a href="research.html">Research →</a>. Data fields and JSON endpoints: <a href="docs.html">Docs →</a>.
             </p>
         </div>
     </section>
@@ -103,14 +84,12 @@
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
             <nav class="footer-nav">
-                <a href="index.html">Monitor</a>
-                <a href="explorer.html">Lookup</a>
-                <a href="rates.html">Rates</a>
-                <a href="cases.html">Cases</a>
-                <a href="blueprints.html">Blueprints</a>
-                <a href="cite.html">Cite</a>
                 <a href="research.html">Research</a>
                 <a href="docs.html">Docs</a>
+                <a href="query.html">SQL Lab</a>
+                <a href="cases.html">Cases</a>
+                <a href="cite.html">Cite</a>
+                <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
         <div class="footer-bottom">

@@ -14,14 +14,10 @@
             <div class="nav-left">
                 <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
                 <div class="nav-links">
-                    <a href="index.html">Monitor</a>
                     <a href="explorer.html">Lookup</a>
                     <a href="rates.html">Rates</a>
-                    <a href="cases.html">Cases</a>
                     <a href="blueprints.html" class="active">Blueprints</a>
-                    <a href="cite.html">Cite</a>
-                    <a href="research.html">Research</a>
-                    <a href="docs.html">Docs</a>
+                    <a href="about.html">About</a>
                 </div>
             </div>
             <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
@@ -59,7 +55,7 @@
             <h2 id="bp-philosophy">Design philosophy</h2>
             <p>Each numeric threshold below (4-hour custody, 12-hour incursion, battalion-strength, 100 paying customers) is a <strong>market-design choice, not legal truth.</strong> A different platform may pick different thresholds and still write a settlement-safe blueprint.</p>
             <p>The thresholds are written narrowly to make the "did the event happen?" question answerable from a single named source within a fixed window. Wider thresholds (e.g. "any U.S. forces crossing the border" rather than "battalion-strength for ≥12 hours") are also valid, but require more elaborate edge-case handling.</p>
-            <p>If you use one of these on a platform, treat the body of the blueprint as a starting point. Adjust thresholds to the question your market is actually about, and document <em>why</em> you chose them. The eight-field structure (event / source / fallback / edge cases / time zone / settlement timing / invalid rules / examples) is what carries the settlement-safety guarantee. The specific thresholds are local choices.</p>
+            <p>If you use one of these on a platform, treat the body of the blueprint as a starting point. Adjust thresholds to the question your market is actually about, and document <em>why</em> you chose them. The seven-field structure (event / source / fallback / edge cases / time zone / settlement timing / invalid rules / examples) is what carries the settlement-safety guarantee. The specific thresholds are local choices.</p>
             <p style="font-style:italic;color:#64748b;">Short version: the structure is universal, the thresholds are not.</p>
         </div>
     </section>
@@ -67,7 +63,7 @@
     <section class="section">
         <div class="container">
             <h2 id="bp-template">The Blueprint template</h2>
-            <p>Every blueprint below uses the same eight fields:</p>
+            <p>Every blueprint below uses the same seven fields:</p>
             <ol class="audit-defs" style="margin-top:12px;">
                 <li><strong>Event definition.</strong> The world-state question, written to eliminate semantic ambiguity. Must specify scope, agent, action, object.</li>
                 <li><strong>Primary source.</strong> Named external authority. Never the platform itself. URL or registry.</li>
@@ -76,7 +72,6 @@
                 <li><strong>Time zone.</strong> Explicit zone for cutoff times. Avoid relative phrases ("today", "this week").</li>
                 <li><strong>Settlement timing.</strong> Window within which the resolution is evaluated after the event.</li>
                 <li><strong>Invalid / N/A rules.</strong> When the contract resolves Invalid (50/50) rather than Yes or No.</li>
-                <li><strong>Worked examples.</strong> Three examples spanning Yes / No / Invalid, derived from real or hypothetical world-states.</li>
             </ol>
         </div>
     </section>
@@ -95,7 +90,6 @@
                     <tr><th>Time zone</th><td>Eastern Time. Cutoff is 11:59:59 PM ET on {deadline}.</td></tr>
                     <tr><th>Settlement timing</th><td>Resolves within 48 hours of the cutoff time.</td></tr>
                     <tr><th>Invalid / N/A</th><td>Resolves Invalid only if both primary and fallback sources are unavailable for &gt; 7 days.</td></tr>
-                    <tr><th>Worked examples</th><td>YES: Oct 1 2013 shutdown. NO: 2018 Mar CR signed at 11:30 PM. INVALID (hypothetical): both OMB and AP unavailable due to crisis.</td></tr>
                 </table>
             </div>
         </div>
@@ -115,7 +109,6 @@
                     <tr><th>Time zone</th><td>UTC.</td></tr>
                     <tr><th>Settlement timing</th><td>Resolves within 7 days of confirmation.</td></tr>
                     <tr><th>Invalid / N/A</th><td>Resolves Invalid only if conflicting authoritative reports persist for &gt; 14 days.</td></tr>
-                    <tr><th>Worked examples</th><td>YES: 2003 Iraq invasion. NO: 2024 Lebanon strikes prior to ground deployment. INVALID (hypothetical): authoritative sources disagree on whether troops crossed.</td></tr>
                 </table>
             </div>
         </div>
@@ -135,7 +128,6 @@
                     <tr><th>Time zone</th><td>{tz} of arresting jurisdiction.</td></tr>
                     <tr><th>Settlement timing</th><td>Resolves within 48 hours of confirmed custody.</td></tr>
                     <tr><th>Invalid / N/A</th><td>Resolves Invalid only if no authoritative source confirms or denies within 14 days of deadline.</td></tr>
-                    <tr><th>Worked examples</th><td>YES: defendant booked at federal courthouse. NO: warrant issued but defendant in another country and not in custody. INVALID: rumored arrest but no agency confirmation by deadline.</td></tr>
                 </table>
             </div>
         </div>
@@ -155,7 +147,6 @@
                     <tr><th>Time zone</th><td>UTC of company's primary listing exchange.</td></tr>
                     <tr><th>Settlement timing</th><td>Resolves within 14 days of confirmed launch.</td></tr>
                     <tr><th>Invalid / N/A</th><td>Resolves Invalid if the product is launched in name only with no working software / hardware delivered.</td></tr>
-                    <tr><th>Worked examples</th><td>YES: paid app launches in App Store. NO: "Cybertruck announced" without delivery. NO: closed-beta available to 1,000 employees only. INVALID: demo at conference with no product behind it.</td></tr>
                 </table>
             </div>
         </div>
@@ -175,7 +166,6 @@
                     <tr><th>Time zone</th><td>UTC.</td></tr>
                     <tr><th>Settlement timing</th><td>Resolves within 24 hours of result posting.</td></tr>
                     <tr><th>Invalid / N/A</th><td>Cancellation; abandonment without applicable body rules.</td></tr>
-                    <tr><th>Worked examples</th><td>YES: team A wins per league standings. NO: team A loses or draws. INVALID: weather-cancelled match.</td></tr>
                 </table>
             </div>
         </div>
@@ -185,7 +175,7 @@
         <div class="container">
             <h2 id="bp-howto">How to use these</h2>
             <ol style="line-height:1.8;">
-                <li><strong>Before listing a market</strong>, find the closest blueprint and copy the eight fields.</li>
+                <li><strong>Before listing a market</strong>, find the closest blueprint and copy the seven fields.</li>
                 <li><strong>Replace placeholders</strong> with the specific event ({deadline}, {actor}, {company}). Do not skip fields.</li>
                 <li><strong>Run the lookup tool</strong> on similar historical contracts (<a href="explorer.html">Lookup</a>) to see whether the corresponding markets had revisions or candidate mismatches. If revision rates are high in this category × chain type, tighten the edge-case section.</li>
                 <li><strong>Publish the full spec</strong> as part of the market's resolution criteria — not just the summary question. Most disputes in the panel start because the resolution criteria field is shorter than this blueprint.</li>
@@ -203,14 +193,12 @@
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
             <nav class="footer-nav">
-                <a href="index.html">Monitor</a>
-                <a href="explorer.html">Lookup</a>
-                <a href="rates.html">Rates</a>
-                <a href="cases.html">Cases</a>
-                <a href="blueprints.html">Blueprints</a>
-                <a href="cite.html">Cite</a>
                 <a href="research.html">Research</a>
                 <a href="docs.html">Docs</a>
+                <a href="query.html">SQL Lab</a>
+                <a href="cases.html">Cases</a>
+                <a href="cite.html">Cite</a>
+                <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
         <div class="footer-bottom">

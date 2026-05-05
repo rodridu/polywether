@@ -2460,3 +2460,22 @@ a.chain-split-card-link:hover {
     line-height: 1.55;
 }
 .data-status a { color: #1e40af; font-weight: 500; }
+
+/* Glossary on homepage */
+.glossary {
+    margin: 0;
+    padding: 0;
+}
+.glossary dt {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-top: 16px;
+    font-size: 1.02rem;
+}
+.glossary dt:first-child { margin-top: 0; }
+.glossary dd {
+    margin: 4px 0 0 0;
+    color: var(--gray-700);
+    line-height: 1.55;
+}

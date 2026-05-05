@@ -14,14 +14,10 @@
             <div class="nav-left">
                 <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
                 <div class="nav-links">
-                    <a href="index.html" class="active">Monitor</a>
                     <a href="explorer.html">Lookup</a>
                     <a href="rates.html">Rates</a>
-                    <a href="cases.html">Cases</a>
                     <a href="blueprints.html">Blueprints</a>
-                    <a href="cite.html">Cite</a>
-                    <a href="research.html">Research</a>
-                    <a href="docs.html">Docs</a>
+                    <a href="about.html">About</a>
                 </div>
             </div>
             <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
@@ -124,18 +120,30 @@
         </div>
     </section>
 
-    <!-- Why settlement risk -->
+    <!-- Glossary -->
     <section class="section">
-        <div class="container">
-            <h2>Why settlement risk is its own layer</h2>
-            <p>
-                Prediction-market prices are usually read as beliefs about events. But <strong>traders are paid on settlement labels, not on world events.</strong> Three objects can disagree:
-            </p>
-            <ul style="margin-top: 16px; line-height: 1.8;">
-                <li><strong>World facts.</strong> What actually happened.</li>
-                <li><strong>Rule-implied label.</strong> What the contract's text and source hierarchy <em>would say</em>.</li>
-                <li><strong>Settlement state.</strong> The label the mechanism actually delivers as the payoff.</li>
-            </ul>
+        <div class="container container-narrow">
+            <h2>Core definitions</h2>
+            <p style="color:#475569;margin-bottom:18px;">A market price is only useful if the contract says clearly what counts as YES, NO, or INVALID. These are the terms the rest of the site uses.</p>
+            <dl class="glossary">
+                <dt>Settlement risk</dt>
+                <dd>Risk that a market's payoff depends on ambiguous resolution rules, weak sources, or dispute mechanics — not only on the real-world event.</dd>
+
+                <dt>Disputed contract</dt>
+                <dd>A Polymarket / UMA contract where at least one counter-bond was posted (n=2,221 in the panel).</dd>
+
+                <dt>Settlement revision</dt>
+                <dd>The final payoff differs from the first proposed outcome.</dd>
+
+                <dt>Chain type</dt>
+                <dd>The path the contract follows through UMA resolution. Two main types: <em>request-voiding</em> (DVM voids a request, adapter re-files) and <em>repeated adapter-routed request</em> (multiple requests against the same contract without DVM voiding).</dd>
+
+                <dt>Candidate mismatch</dt>
+                <dd>Diagnostic flag: the final payoff appears to disagree with a rule-implied label coded from the recoverable contract text. Not a proven error.</dd>
+
+                <dt>Risk tier</dt>
+                <dd>Screening label (High / Caution / Low) based on rule clarity and historical settlement patterns. Not a prediction that settlement will be wrong.</dd>
+            </dl>
             <p style="margin-top: 16px;">
                 Liquidity-style monitors (e.g. <a href="https://bellwethermetrics.com/" target="_blank" rel="noopener">Bellwether</a>) ask whether a price is robust enough to cite. This monitor asks a different question: <strong>is the contract clean enough that the price means what users think it means?</strong>
             </p>
@@ -150,14 +158,12 @@
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
             <nav class="footer-nav">
-                <a href="index.html">Monitor</a>
-                <a href="explorer.html">Lookup</a>
-                <a href="rates.html">Rates</a>
-                <a href="cases.html">Cases</a>
-                <a href="blueprints.html">Blueprints</a>
-                <a href="cite.html">Cite</a>
                 <a href="research.html">Research</a>
                 <a href="docs.html">Docs</a>
+                <a href="query.html">SQL Lab</a>
+                <a href="cases.html">Cases</a>
+                <a href="cite.html">Cite</a>
+                <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
         <div class="footer-bottom">
