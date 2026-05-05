@@ -2629,3 +2629,39 @@ a.chain-split-card-link:hover {
     color: var(--gray-900);
 }
 .aud-view p { line-height: 1.65; }
+
+/* Hero 4-button user-job CTA */
+.hero-job-row {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+.hero-job-btn {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.hero-job-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.hero-job-btn strong {
+    display: block;
+    color: var(--primary);
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+.hero-job-btn span {
+    display: block;
+    color: var(--gray-600);
+    font-size: 0.85em;
+    line-height: 1.5;
+}
