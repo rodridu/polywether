@@ -2583,3 +2583,10 @@ a.chain-split-card-link:hover {
     color: var(--gray-700);
 }
 .result-states ol li { margin-bottom: 4px; }
+
+/* Test-tier badge: neutral gray, signals 'excluded from analysis' not 'risky' */
+.tier-badge.tier-test {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+}

@@ -44,6 +44,36 @@ def short_id(condition_id: str) -> str:
     return hashlib.sha256(condition_id.encode()).hexdigest()[:8]
 
 
+_JSON_TITLE_RE = __import__("re").compile(r'"title"\s*:\s*"([^"]+)"')
+_JSON_DESC_RE  = __import__("re").compile(r'"description"\s*:\s*"([^"]+)"')
+
+def parse_json_ancillary(s: str | None) -> tuple[str | None, str | None, bool]:
+    """Best-effort extract (title, description, is_test) from raw ancillary JSON-like blob.
+
+    Returns (title, desc, is_test). is_test=True iff the text matches
+    Polymarket dev/test patterns (e.g. 'Test propose only for Value title',
+    or description is just a small integer like '109')."""
+    if not s:
+        return (None, None, False)
+    if not s.lstrip().startswith("{"):
+        return (None, None, False)  # not a JSON-blob — caller handles plain text
+    title_m = _JSON_TITLE_RE.search(s)
+    desc_m = _JSON_DESC_RE.search(s)
+    title = title_m.group(1) if title_m else None
+    desc = desc_m.group(1) if desc_m else None
+    is_test = False
+    if title:
+        tlow = title.lower()
+        if "test propose" in tlow or tlow.startswith("test ") or tlow == "test":
+            is_test = True
+    if desc and desc.isdigit() and len(desc) <= 3:
+        is_test = True  # short numeric descriptions are dev placeholders
+    if title and "earlyExpiration" in s and not is_test:
+        # JSON-blob shape WITHOUT a normal human question is itself a test signal
+        is_test = is_test or ("title" not in title.lower() and len(title) < 50 and not any(k in tlow for k in ['will ', '? ', 'who ', 'when ']))
+    return (title, desc, is_test)
+
+
 def chain_type_from_category(category: str | None, has_rejection: bool | None) -> str:
     """Map raw chain_signature category to public-facing chain type."""
     if category == "canonical_correction_path":
@@ -276,15 +306,37 @@ def main():
         # final_payoff: prefer S_i (Yes/No/Other), else terminal_state_type decoded
         final_payoff = d["S_i"] if d["S_i"] in ("Yes", "No", "Other") else decode_terminal_state(d["terminal_state_type"])
         chain_type = decode_episode_sequence(d["episode_sequence"])
-        flags = audit_flags(d["question_text"], d["description"], d["ancillary_text"])
+
+        # If the only "rule text" we have is a raw JSON-ancillary blob, parse it for a
+        # human title/description and detect Polymarket dev/test markets.
+        is_test = False
+        q_text = d["question_text"]
+        desc_text = d["description"]
+        anc_text = d["ancillary_text"]
+        # JSON-blob detection — covers (1) q_text was COALESCE'd from raw ancillary,
+        # (2) ancillary itself is a JSON blob even when q_text exists. Some test markets
+        # leak via either path.
+        for blob in [q_text, anc_text, desc_text]:
+            if blob and blob.lstrip().startswith("{"):
+                parsed_title, parsed_desc, blob_is_test = parse_json_ancillary(blob)
+                if parsed_title and (not q_text or q_text.lstrip().startswith("{")):
+                    q_text = parsed_title
+                if parsed_desc and (not desc_text or desc_text.lstrip().startswith("{")):
+                    desc_text = parsed_desc
+                if blob_is_test:
+                    is_test = True
+                break
+
+        flags = audit_flags(q_text, desc_text, anc_text)
         is_mismatch = cid in mismatch_ids
         out = {
             "id": short_id(cid),
             "raw_condition_id": cid,
             "slug": d["slug"] if d["slug"] else None,
-            "question_text": d["question_text"] if d["question_text"] else None,
-            "description": d["description"] if d["description"] else None,
-            "ancillary_text": d["ancillary_text"] if d["ancillary_text"] else None,
+            "is_test": is_test,
+            "question_text": q_text if q_text else None,
+            "description": desc_text if desc_text else None,
+            "ancillary_text": anc_text if anc_text else None,
             "category": d["category"] if d["category"] else None,
             "first_proposal": d["P_i1"],
             "final_payoff": final_payoff,
@@ -340,6 +392,7 @@ def main():
 
     def compute_tier(r):
         """Return (tier, list-of-reasons). Rules:
+           TEST:    is_test (Polymarket dev/test market — excluded from the user-facing watchlist).
            HIGH:    candidate_mismatch
                    OR (no rule_text)
                    OR (rule_text present, but no named_source AND no fallback)
@@ -348,6 +401,8 @@ def main():
                    OR same-bucket revision_rate above sample median
            LOW:     otherwise (all of named_source/fallback/edge_cases present, low-rate bucket)
         """
+        if r.get("is_test"):
+            return ("Test", ["Polymarket dev/test market — excluded from analysis"])
         a = r["audit"]
         reasons = []
         if a.get("candidate_mismatch"):
@@ -378,9 +433,9 @@ def main():
         r["risk_reasons"] = reasons
 
     # tier distribution for memo
-    tier_dist = {"Low": 0, "Caution": 0, "High": 0}
+    tier_dist = {"Low": 0, "Caution": 0, "High": 0, "Test": 0}
     for r in rows_out:
-        tier_dist[r["settlement_risk_tier"]] += 1
+        tier_dist[r["settlement_risk_tier"]] = tier_dist.get(r["settlement_risk_tier"], 0) + 1
 
     # ---------- conditional revision/mismatch rates ----------
     # Pre-compute rates by (a) category, (b) chain_type, (c) first_proposal,

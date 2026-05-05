@@ -85,7 +85,7 @@
     <section class="section">
         <div class="container">
             <h2>High settlement-risk contracts <span class="muted" style="font-weight:normal;font-size:0.8em;">— sample of disputed contracts flagged High by the screening tier</span></h2>
-            <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a></p>
+            <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a> <em>5 Polymarket dev/test markets are tagged separately and excluded.</em></p>
             <p class="data-status">
                 <strong>Data status:</strong> historical disputed-contract panel, not live market surveillance. Aggregate refresh runs weekly via <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">GitHub Actions</a>; per-contract data refreshes manually when the paper's analysis pipeline regenerates the panel. <a href="docs.html#refresh">Refresh cadence →</a>
             </p>
@@ -216,7 +216,7 @@
     }
 
     fetch('data/disputed_contracts.json').then(r => r.json()).then(d => {
-        var high = d.rows.filter(function(r) { return r.settlement_risk_tier === 'High' && r.question_text; }).slice(0, 10);
+        var high = d.rows.filter(function(r) { return r.settlement_risk_tier === 'High' && r.question_text && !r.is_test; }).slice(0, 10);
         var html = '<table class="explorer-table watchlist-table"><thead><tr><th>Risk</th><th>Question</th><th>Category</th><th>Reason(s)</th><th>Final</th></tr></thead><tbody>';
         html += high.map(function(r) {
             var reasons = (r.risk_reasons || []).slice(0, 2).join(' · ');

@@ -52,9 +52,10 @@
             <h2 id="risk-tier">Settlement-risk tier</h2>
             <p>The screening tier on each disputed contract is a rules-based v0. Computed from existing audit flags + chain-type×category revision rates:</p>
             <table class="blueprint-table">
-                <tr><th>High</th><td>Broad candidate mismatch flagged, OR rule text not recoverable, OR (rule text present but no named source AND no fallback). 616 of 2,221 contracts (28%).</td></tr>
+                <tr><th>High</th><td>Broad candidate mismatch flagged, OR rule text not recoverable, OR (rule text present but no named source AND no fallback). 611 of 2,221 contracts (27.5%).</td></tr>
                 <tr><th>Caution</th><td>No fallback language, OR no edge-case language, OR same chain-type × category bucket has revision rate above the sample median. 1,513 of 2,221 (68%).</td></tr>
                 <tr><th>Low</th><td>Source, fallback, edge-case language all present, and bucket revision rate at or below sample median. 92 of 2,221 (4%).</td></tr>
+                <tr><th>Test</th><td>Polymarket dev/test market detected via JSON-blob ancillary data (e.g. <code>{"earlyExpiration":1,"q":{"title":"Test propose only…"}}</code>). 5 of 2,221. Excluded from the High watchlist + default Lookup view; filterable via the explicit Test chip.</td></tr>
             </table>
             <p style="margin-top:12px;color:#475569;">
                 The tier is a <strong>screening flag</strong>, not a prediction of correct/incorrect settlement. It says: <em>the payoff depends on discretionary or ambiguous interpretation rather than a clean event-to-label mapping.</em>

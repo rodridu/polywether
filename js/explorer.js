@@ -31,7 +31,9 @@
     }
 
     function tierBadge(tier) {
-        var cls = tier === 'High' ? 'tier-high' : tier === 'Caution' ? 'tier-caution' : 'tier-low';
+        var cls = tier === 'High' ? 'tier-high' :
+                  tier === 'Caution' ? 'tier-caution' :
+                  tier === 'Test' ? 'tier-test' : 'tier-low';
         return '<span class="tier-badge ' + cls + '">' + tier + '</span>';
     }
 
@@ -77,6 +79,8 @@
     function applyFilters() {
         var s = filters.search.toLowerCase().trim();
         filtered = allRows.filter(function(r) {
+            // Hide Test markets unless tier filter explicitly requests them
+            if (filters.tier !== 'Test' && r.settlement_risk_tier === 'Test') return false;
             if (filters.tier !== 'all' && r.settlement_risk_tier !== filters.tier) return false;
             if (filters.revised === 'true' && !r.revised) return false;
             if (filters.revised === 'false' && r.revised) return false;
