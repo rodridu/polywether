@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260502">
+    <link rel="stylesheet" href="css/styles.css?v=20260504a">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
 </head>
 <body>
@@ -51,6 +51,7 @@
         <div class="container">
             <div id="rates-overall" class="rates-overall"></div>
             <div id="rates-notice" class="rates-notice"></div>
+            <div id="rates-examples"></div>
             <div id="rates-tables"></div>
             <p style="margin-top: 32px; font-size: 0.9em; color: #64748b; font-style: italic;">
                 Source: <code>data/conditional_rates.json</code>, derived from the same 2,221-disputed-contract panel feeding the Explorer. Rates are sample shares, not estimates with uncertainty intervals — small-N buckets should be read with that in mind.
@@ -154,6 +155,33 @@
         return notes;
     }
 
+    function renderExamples(ex) {
+        if (!ex || !ex.examples || !ex.examples.length) return '';
+        var byChain = {};
+        ex.examples.forEach(function(e) {
+            (byChain[e.chain_type] = byChain[e.chain_type] || []).push(e);
+        });
+        var blocks = Object.keys(byChain).map(function(ct) {
+            var cards = byChain[ct].map(function(e) {
+                var kindLabel = e.kind === 'revised' ? 'Revised' : 'Clean';
+                var kindCls = e.kind === 'revised' ? 'ex-card-revised' : 'ex-card-clean';
+                var arrow = escapeHtml(e.first_proposal) + ' &rarr; ' + escapeHtml(e.final_payoff);
+                return '<a class="ex-card ' + kindCls + '" href="contract.html?id=' + encodeURIComponent(e.id) + '">' +
+                    '<div class="ex-card-tag">' + kindLabel + '</div>' +
+                    '<div class="ex-card-q">' + escapeHtml(e.question_text) + '</div>' +
+                    '<div class="ex-card-meta"><span class="mono">' + arrow + '</span><span class="ex-card-id mono">' + escapeHtml(e.id) + '</span></div>' +
+                    '</a>';
+            }).join('');
+            return '<div class="ex-block"><h3>' + escapeHtml(ct) + ' &mdash; one revised, one clean</h3>' +
+                '<div class="ex-grid">' + cards + '</div></div>';
+        }).join('');
+        return '<div class="rates-block rates-examples-block">' +
+            '<h2>Bucket examples</h2>' +
+            '<p class="rates-examples-intro">Same disputed sample. Two contracts per chain type &mdash; one whose final payoff differs from the first proposal, one where they agree. Click for the full settlement chain.</p>' +
+            blocks +
+            '</div>';
+    }
+
     fetch('data/conditional_rates.json').then(r => r.json()).then(d => {
         var o = d.overall;
         document.getElementById('rates-overall').innerHTML =
@@ -179,6 +207,13 @@
             if (d[k]) html += renderTable(d[k]);
         });
         document.getElementById('rates-tables').innerHTML = html;
+
+        // Bucket examples — one revised + one clean per chain type
+        fetch('data/risk_map_examples.json').then(r => r.json()).then(ex => {
+            document.getElementById('rates-examples').innerHTML = renderExamples(ex);
+        }).catch(function(err) {
+            console.warn('risk_map_examples.json load failed:', err);
+        });
     }).catch(function(err) {
         console.error('conditional_rates.json load failed:', err);
         document.getElementById('rates-tables').innerHTML = '<p style="color:#ef4444;">Could not load conditional_rates.json.</p>';

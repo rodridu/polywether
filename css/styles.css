@@ -2665,3 +2665,71 @@ a.chain-split-card-link:hover {
     font-size: 0.85em;
     line-height: 1.5;
 }
+
+/* Risk Map — bucket examples */
+.rates-examples-block { margin-top: 8px; margin-bottom: 36px; }
+.rates-examples-intro {
+    margin: 0 0 18px 0;
+    color: var(--gray-600);
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+.ex-block { margin-bottom: 22px; }
+.ex-block h3 {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 0 0 10px 0;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.ex-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+@media (max-width: 720px) { .ex-grid { grid-template-columns: 1fr; } }
+.ex-card {
+    display: block;
+    padding: 14px 16px;
+    border: 1px solid var(--gray-200);
+    border-left-width: 4px;
+    border-radius: 6px;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+.ex-card:hover {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+.ex-card-revised { border-left-color: #dc2626; }
+.ex-card-clean   { border-left-color: #16a34a; }
+.ex-card-tag {
+    display: inline-block;
+    font-size: 0.72em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+.ex-card-revised .ex-card-tag { background: #fee2e2; color: #991b1b; }
+.ex-card-clean   .ex-card-tag { background: #dcfce7; color: #166534; }
+.ex-card-q {
+    font-family: var(--font-serif);
+    font-size: 1.0em;
+    line-height: 1.4;
+    color: var(--gray-900);
+    margin-bottom: 10px;
+}
+.ex-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--gray-600);
+}
+.ex-card-id { color: var(--gray-500); }

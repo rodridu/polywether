@@ -1,0 +1,49 @@
+{
+  "n": 4,
+  "examples": [
+    {
+      "chain_type": "Request-voiding chain",
+      "kind": "revised",
+      "id": "a1114116",
+      "question_text": "Will Zelenskyy wear a suit before July?",
+      "first_proposal": "Yes",
+      "final_payoff": "No",
+      "category": "other",
+      "candidate_mismatch": false,
+      "settlement_risk_tier": "Caution"
+    },
+    {
+      "chain_type": "Request-voiding chain",
+      "kind": "clean",
+      "id": "b9a2dfdb",
+      "question_text": "Will Hikaru Nakamura qualify for the 2026 World Chess Championship Candidates Tournament?",
+      "first_proposal": "Yes",
+      "final_payoff": "Yes",
+      "category": "uncategorized",
+      "candidate_mismatch": false,
+      "settlement_risk_tier": "Caution"
+    },
+    {
+      "chain_type": "Repeated adapter-routed request",
+      "kind": "revised",
+      "id": "87b5faa9",
+      "question_text": "Greek Election: Will Syriza get more votes than PASOK?",
+      "first_proposal": "No",
+      "final_payoff": "Yes",
+      "category": "politics",
+      "candidate_mismatch": false,
+      "settlement_risk_tier": "Caution"
+    },
+    {
+      "chain_type": "Repeated adapter-routed request",
+      "kind": "clean",
+      "id": "b622bff9",
+      "question_text": "Will at least 95 senators vote \"Yea\" on an Epstein disclosure bill?",
+      "first_proposal": "Yes",
+      "final_payoff": "Yes",
+      "category": "politics",
+      "candidate_mismatch": false,
+      "settlement_risk_tier": "Caution"
+    }
+  ]
+}
