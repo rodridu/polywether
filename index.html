@@ -47,10 +47,13 @@
 
             <!-- Lookup search -->
             <form class="hero-search" onsubmit="return doLookup(event)">
-                <input type="search" id="lookup-input" placeholder="Paste Polymarket URL, condition ID (0x…), slug, or question text" autocomplete="off">
+                <input type="search" id="lookup-input" placeholder="Search by market title, Polymarket URL, slug, or condition ID — e.g. 'Lebanon invasion'" autocomplete="off">
                 <button type="submit" class="btn btn-primary">Analyze market</button>
                 <div id="lookup-suggestions" class="lookup-suggestions"></div>
             </form>
+            <p style="margin-top:10px;font-size:0.86em;color:#475569;">
+                Full settlement history if the market is in the disputed-contract panel. <a href="analyze.html">Paste rule text directly</a> if it's a live or un-disputed market.
+            </p>
         </div>
     </section>
 
@@ -265,15 +268,24 @@
         if (!q) return false;
         if (/^[0-9a-f]{8}$/.test(q)) { window.location.href = 'contract.html?id=' + encodeURIComponent(q); return false; }
         var pmMatch = q.match(/polymarket\.com\/event\/([a-z0-9-]+)/i);
-        if (pmMatch) { window.location.href = 'explorer.html?search=' + encodeURIComponent(pmMatch[1]); return false; }
+        if (pmMatch) {
+            ensureLookup().then(function(rows) {
+                var slug = pmMatch[1];
+                var found = rows.find(function(r) { return r.slug === slug; });
+                if (found) window.location.href = 'contract.html?id=' + encodeURIComponent(found.id);
+                else window.location.href = 'explorer.html?search=' + encodeURIComponent(slug) + '&miss=1';
+            });
+            return false;
+        }
         if (/^0x[0-9a-f]{64}$/i.test(q)) {
             ensureLookup().then(function(rows) {
                 var found = rows.find(function(r) { return r.raw_condition_id && r.raw_condition_id.toLowerCase() === q.toLowerCase(); });
                 if (found) window.location.href = 'contract.html?id=' + encodeURIComponent(found.id);
-                else window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
+                else window.location.href = 'explorer.html?search=' + encodeURIComponent(q) + '&miss=1';
             });
             return false;
         }
+        // Free text — pass to Explorer; Explorer surfaces 'not found in disputed panel' state if 0 matches
         window.location.href = 'explorer.html?search=' + encodeURIComponent(q);
         return false;
     }

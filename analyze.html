@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze rule text &mdash; Settlement Risk Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=20260505">
+    <meta name="description" content="Paste prediction-market rule text. Get a rule-clarity screen — named source, fallback, edge cases, time zone, invalid rules.">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
+                <div class="nav-links">
+                    <a href="explorer.html">Lookup</a>
+                    <a href="rates.html">Rates</a>
+                    <a href="blueprints.html">Blueprints</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+            <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
+                <span>Northwestern University</span>
+            </a>
+        </div>
+    </nav>
+    <script>
+    (function() {
+        var nav = document.querySelector('.nav');
+        var scrolled = false;
+        window.addEventListener('scroll', function() {
+            var s = window.scrollY > 20;
+            if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+        }, { passive: true });
+    })();
+    </script>
+
+    <section class="hero hero-compact">
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Analyze rule text</p>
+            <h1>Paste a contract. Screen it for settlement risk.</h1>
+            <p class="hero-description">
+                If a market is not in the disputed-contract panel — because it's live, hasn't resolved, or is outside the snapshot — paste its question and resolution rules below. We'll screen the text for the same rule-clarity flags used on the disputed sample: named source, fallback, edge cases, time zone, invalid/N/A rules.
+            </p>
+            <p style="margin-top:14px;font-size:0.92em;color:#475569;">
+                <strong>This is a rule-text screen only.</strong> No settlement-history data. For markets in the disputed panel, use <a href="explorer.html">Lookup</a> for the full record.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container container-narrow">
+            <h2>Paste contract text</h2>
+            <form id="analyze-form" onsubmit="return runAnalysis(event)">
+                <label class="analyze-label">Market question</label>
+                <input type="text" id="q-input" class="analyze-input" placeholder="e.g. Will Israel invade Lebanon by Mar 31, 2025?">
+
+                <label class="analyze-label">Resolution rules / description</label>
+                <textarea id="rules-input" class="analyze-textarea" rows="8" placeholder="Paste the full resolution criteria from the market page. The longer the better — we screen for source/fallback/edge-case/time-zone language."></textarea>
+
+                <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary">Run rule-clarity screen</button>
+                    <button type="button" class="btn btn-secondary" onclick="loadExample()">Load example (Lebanon incursion)</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="section section-alt" id="result-section" style="display:none;">
+        <div class="container container-narrow">
+            <h2>Rule-clarity screen</h2>
+            <div id="analyze-tier"></div>
+            <ul class="audit-checklist" id="analyze-flags" style="margin-top:14px;"></ul>
+
+            <h3 style="margin-top:24px;">What was matched</h3>
+            <div id="analyze-matches"></div>
+
+            <h3 style="margin-top:24px;">Next steps</h3>
+            <p>Compare the contract above against the closest <a href="blueprints.html">Blueprint</a> (event / source / fallback / edge cases / time zone / settlement timing / invalid). If the rule is missing fields the blueprint specifies, the market is at higher settlement risk.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container container-narrow">
+            <h2>What this analyzer does NOT do</h2>
+            <ul style="line-height:1.8;">
+                <li>It does not measure liquidity or price robustness. For that, use <a href="https://bellwethermetrics.com/" target="_blank" rel="noopener">Bellwether</a>.</li>
+                <li>It does not predict settlement. The flags identify whether the relevant <em>language</em> appears in the rule text — not whether the contract is correctly designed.</li>
+                <li>It does not look up settlement chains. If the market is in the disputed-contract panel, use <a href="explorer.html">Lookup</a> instead for the full record.</li>
+                <li>The flags are heuristic regex over a noisy text corpus. False positives + false negatives both occur.</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-title">Settlement Risk Monitor</div>
+                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
+            </div>
+            <nav class="footer-nav">
+                <a href="research.html">Research</a>
+                <a href="docs.html">Docs</a>
+                <a href="query.html">SQL Lab</a>
+                <a href="cases.html">Cases</a>
+                <a href="cite.html">Cite</a>
+                <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
+            <div class="footer-sources">
+                <span class="footer-sources-label">Settlement risk is trading risk.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // Same regex patterns as build_settlement_explorer_data.py
+    var SOURCE_PAT = /\b(according to|official(ly)?|determined by|verified by|reported by|published by|announced by|released by|confirmed by|sourced from|primary source|resolution source|the source for this market|will resolve based on|will resolve according to)\b|https?:\/\//i;
+    var FALLBACK_PAT = /\b(if (the )?source|in the event|fallback|in case|alternat(e|ive)|backup source|if unavailable|otherwise|should the (primary )?source|if no (reliable |credible )?source|if not(hing)? (is )?(available|reported|published))\b/i;
+    var EDGECASE_PAT = /\b(edge case|n\/?a|N\.A\.|invalid|cancel(l?ed|lation)?|postpon(e|ed|ement)|delay(ed)?|tied|tie-breaker|abandon(ed)?|forfeit|disput(e|ed) resolution|in the case (where|that)|deadline.{1,40}(passes|expires|missed))\b/i;
+    var TIMEZONE_PAT = /\b(UTC|GMT|ET|EST|EDT|PT|PST|PDT|CT|CST|CDT|MT|MST|MDT|AM|PM|AEST|JST|CET|BST|midnight|noon|\d{1,2}(:\d{2})?\s*(am|pm)\b)/i;
+    var DEADLINE_PAT = /\b(by\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)|by\s+\d{1,2}\/\d{1,2}|before\s+\d|on or before|deadline|cutoff|expir(y|ation|es))\b/i;
+    var INVALID_PAT = /\b(invalid|N\/A|n\.a\.|50\/50|cancelled?|abandoned|resolves invalid|cannot be (determined|verified))\b/i;
+
+    function runAnalysis(e) {
+        e.preventDefault();
+        var q = document.getElementById('q-input').value.trim();
+        var r = document.getElementById('rules-input').value.trim();
+        var body = (q + '\n\n' + r).trim();
+        if (!body) { alert('Paste at least the resolution rules.'); return false; }
+
+        var flags = {
+            "Question text": !!q,
+            "Resolution rules text": !!r,
+            "Named external source": SOURCE_PAT.test(body),
+            "Fallback / contingency language": FALLBACK_PAT.test(body),
+            "Edge-case language": EDGECASE_PAT.test(body),
+            "Time zone": TIMEZONE_PAT.test(body),
+            "Deadline / cutoff": DEADLINE_PAT.test(body),
+            "Invalid / N/A rule": INVALID_PAT.test(body),
+        };
+
+        // Compute screening tier
+        var tier, reasons = [];
+        if (!flags["Question text"] && !flags["Resolution rules text"]) {
+            tier = 'High'; reasons.push('No rule text provided');
+        } else if (!flags["Named external source"]) {
+            tier = 'High'; reasons.push('No named external source detected');
+            if (!flags["Fallback / contingency language"]) reasons.push('No fallback language');
+        } else if (!flags["Fallback / contingency language"] || !flags["Edge-case language"]) {
+            tier = 'Caution';
+            if (!flags["Fallback / contingency language"]) reasons.push('No fallback language');
+            if (!flags["Edge-case language"]) reasons.push('No edge-case language');
+            if (!flags["Time zone"]) reasons.push('No time-zone marker');
+        } else {
+            tier = 'Low'; reasons.push('Source, fallback, and edge-case language all detected');
+        }
+
+        var tierCls = tier === 'High' ? 'tier-high' : tier === 'Caution' ? 'tier-caution' : 'tier-low';
+        var tierHtml = '<span class="tier-badge tier-badge-large ' + tierCls + '">Settlement risk: ' + tier + '</span>';
+        if (reasons.length) {
+            tierHtml += '<div class="contract-risk-reasons">' + reasons.map(function(rsn) { return '<span class="contract-risk-reason">' + escapeHtml(rsn) + '</span>'; }).join('') + '</div>';
+        }
+        document.getElementById('analyze-tier').innerHTML = tierHtml;
+
+        // Render flag checklist
+        var flagItems = Object.keys(flags).map(function(k) {
+            var v = flags[k];
+            var icon = v ? '✓' : '✗';
+            var cls = v ? 'audit-yes' : 'audit-no';
+            return '<li class="' + cls + '"><span class="audit-icon">' + icon + '</span> ' + escapeHtml(k) + '</li>';
+        }).join('');
+        document.getElementById('analyze-flags').innerHTML = flagItems;
+
+        // Render matched snippets
+        var matches = [];
+        function findMatch(label, pat) {
+            var m = body.match(pat);
+            if (m) {
+                var start = Math.max(0, m.index - 40);
+                var end = Math.min(body.length, m.index + m[0].length + 40);
+                matches.push({ label: label, snippet: body.slice(start, end), match: m[0] });
+            }
+        }
+        findMatch('Named source', SOURCE_PAT);
+        findMatch('Fallback', FALLBACK_PAT);
+        findMatch('Edge case', EDGECASE_PAT);
+        findMatch('Time zone', TIMEZONE_PAT);
+        findMatch('Deadline', DEADLINE_PAT);
+        findMatch('Invalid rule', INVALID_PAT);
+        var matchHtml = matches.length
+            ? '<ul class="match-list">' + matches.map(function(m) {
+                  var snippet = escapeHtml(m.snippet).replace(escapeHtml(m.match), '<mark>' + escapeHtml(m.match) + '</mark>');
+                  return '<li><strong>' + escapeHtml(m.label) + '</strong>: …' + snippet + '…</li>';
+              }).join('') + '</ul>'
+            : '<p class="muted">No flag matches in the pasted text.</p>';
+        document.getElementById('analyze-matches').innerHTML = matchHtml;
+
+        document.getElementById('result-section').style.display = '';
+        document.getElementById('result-section').scrollIntoView({behavior:'smooth', block:'start'});
+        return false;
+    }
+
+    function loadExample() {
+        document.getElementById('q-input').value = 'Will Israel invade Lebanon by March 31, 2025?';
+        document.getElementById('rules-input').value =
+            'This market resolves YES if Israel conducts a military ground operation crossing into Lebanese territory before March 31, 2025. Otherwise resolves NO. Source: news reports.';
+    }
+
+    // Allow ?q=... &rules=... prefill from Lookup miss
+    (function() {
+        var p = new URLSearchParams(window.location.search);
+        if (p.get('q')) document.getElementById('q-input').value = p.get('q');
+        if (p.get('rules')) document.getElementById('rules-input').value = p.get('rules');
+        if (p.get('q') && p.get('rules')) runAnalysis({preventDefault: function(){}});
+    })();
+    </script>
+</body>
+</html>

@@ -110,9 +110,29 @@
         });
 
         var meta = document.getElementById('explorer-meta');
-        meta.textContent = filtered.length + ' contracts match (showing ' +
-            Math.min(filtered.length, page * ROWS_PER_PAGE + 1) + '–' +
-            Math.min(filtered.length, (page + 1) * ROWS_PER_PAGE) + ')';
+        if (filtered.length === 0 && filters.search) {
+            // 3-state: search returned no disputed-panel matches
+            var qEsc = encodeURIComponent(filters.search);
+            meta.innerHTML =
+                '<div class="not-found-card">' +
+                  '<h3>Not found in disputed-contract panel</h3>' +
+                  '<p>No contract matching <strong>' + escapeHtml(filters.search) + '</strong> in the 2,221-contract disputed sample. This usually means one of three things:</p>' +
+                  '<ol style="margin-top:8px;line-height:1.7;">' +
+                    '<li>It was never disputed (most markets resolve cleanly).</li>' +
+                    '<li>It has not resolved yet.</li>' +
+                    '<li>It is outside the current snapshot.</li>' +
+                  '</ol>' +
+                  '<p style="margin-top:12px;"><strong>Still useful:</strong> paste the rule text into the analyzer for a rule-clarity screen.</p>' +
+                  '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">' +
+                    '<a class="btn btn-primary" href="analyze.html?q=' + qEsc + '">Analyze rule text →</a>' +
+                    '<a class="btn btn-secondary" href="blueprints.html">See blueprints</a>' +
+                  '</div>' +
+                '</div>';
+        } else {
+            meta.textContent = filtered.length + ' contracts match (showing ' +
+                Math.min(filtered.length, page * ROWS_PER_PAGE + 1) + '–' +
+                Math.min(filtered.length, (page + 1) * ROWS_PER_PAGE) + ')';
+        }
 
         renderPagination();
     }
