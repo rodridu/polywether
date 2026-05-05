@@ -2590,3 +2590,42 @@ a.chain-split-card-link:hover {
     color: var(--gray-700);
     border: 1px solid var(--gray-300);
 }
+
+/* Audience tabs on contract detail */
+.aud-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--gray-200);
+}
+.aud-tab-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    transition: all 0.12s;
+}
+.aud-tab-btn:hover { color: var(--gray-900); }
+.aud-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+.aud-view {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}
+.aud-view h3 {
+    margin-top: 0;
+    font-family: var(--font-serif);
+    color: var(--gray-900);
+}
+.aud-view p { line-height: 1.65; }

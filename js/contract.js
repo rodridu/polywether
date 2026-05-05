@@ -197,8 +197,78 @@
             (rec.slug ? '<button class="btn btn-secondary" data-copy="' + rec.slug + '">Copy slug</button> ' : '') +
             '</div>';
 
+        // Build audience-tab views. Same data, different framing.
+        var tierLabel = rec.settlement_risk_tier || '—';
+        var voiding = rec.chain_type === 'Request-voiding chain';
+        var traderView =
+            '<div class="aud-view"><h3>Trader read</h3>' +
+            '<p>This market sits at <strong>' + tierLabel + '</strong> settlement risk. ' +
+            (rec.revised
+                ? 'The final payoff <strong>differed</strong> from the first proposed outcome — settlement-mechanism intervention rewrote the answer at least once.'
+                : 'First proposal and final payoff agreed — settlement was clean despite the dispute.') +
+            ' Chain type: <strong>' + escapeHtml(rec.chain_type) + '</strong>' +
+            (voiding ? ' (DVM voided a request on this contract).' : ' (multiple requests filed without DVM voiding).') +
+            '</p>' +
+            '<p>Among historical disputed contracts in the same chain type and category, ' +
+            (rates.same_chain_category && rates.same_chain_category.n
+                ? '<strong>' + (100*rates.same_chain_category.revision_rate).toFixed(0) + '%</strong> revised (' + rates.same_chain_category.n_revised + '/' + rates.same_chain_category.n + ').'
+                : 'rates not computed (small bucket).') +
+            '</p>' +
+            '<p class="muted">Read: price may reflect settlement ambiguity, not only event probability. Not buy/sell guidance.</p></div>';
+
+        var journoView =
+            '<div class="aud-view"><h3>Journalist read</h3>' +
+            '<p><strong>Cite-safe?</strong> ' +
+            (tierLabel === 'Low' ? 'Likely yes — clean rule, source, fallback present.' :
+             tierLabel === 'Caution' ? 'Cite with a settlement-risk caveat.' :
+             tierLabel === 'High' ? 'Do not cite without explaining the rule and dispute history.' :
+             'Test market — not a real settlement question.') +
+            '</p>' +
+            '<p><strong>Suggested caveat:</strong> ' +
+            (rec.revised
+                ? '<em>"As of {date}, this market\'s settled outcome differed from the initial proposal; readers should treat the price as conditional on the resolution mechanism."</em>'
+                : '<em>"This market\'s contract has been disputed in the past; readers should be aware that the price reflects expected settlement, not unconditional event probability."</em>') +
+            '</p></div>';
+
+        var platformView =
+            '<div class="aud-view"><h3>Platform / market-creator read</h3>' +
+            '<p>Missing fields detected:</p>' +
+            '<ul style="line-height:1.7;">' +
+              (!rec.audit.named_source_present ? '<li><strong>No named external source</strong> — historically the strongest correlate of revision.</li>' : '') +
+              (!rec.audit.fallback_present ? '<li>No fallback / contingency language.</li>' : '') +
+              (!rec.audit.edge_cases_present ? '<li>No edge-case language (cancellation, postponement, ties).</li>' : '') +
+              (!rec.audit.rule_text_present ? '<li>No recoverable rule text at all.</li>' : '') +
+            '</ul>' +
+            '<p>Compare against <a href="blueprints.html">Blueprints</a> (event / source / fallback / edge cases / time zone / settlement timing / invalid). Each missing field maps to a blueprint section.</p></div>';
+
+        // Research view = the existing summary + episodes + texts + audit (already structured, deterministic)
+        var researchView = '<div class="aud-view">' + summary + ratesHtml + episodesHtml + textsHtml + auditHtml + '</div>';
+
+        var tabsHtml = '<div class="aud-tabs">' +
+            '<button class="aud-tab-btn active" data-tab="trader">Trader</button>' +
+            '<button class="aud-tab-btn" data-tab="journalist">Journalist</button>' +
+            '<button class="aud-tab-btn" data-tab="platform">Platform</button>' +
+            '<button class="aud-tab-btn" data-tab="research">Research</button>' +
+            '</div>';
+
         document.getElementById('contract-body').innerHTML =
-            summary + ratesHtml + episodesHtml + textsHtml + auditHtml + actionsHtml;
+            tabsHtml +
+            '<div id="aud-trader" class="aud-panel">' + traderView + '</div>' +
+            '<div id="aud-journalist" class="aud-panel" style="display:none;">' + journoView + '</div>' +
+            '<div id="aud-platform" class="aud-panel" style="display:none;">' + platformView + '</div>' +
+            '<div id="aud-research" class="aud-panel" style="display:none;">' + researchView + '</div>' +
+            actionsHtml;
+
+        // Tab switcher
+        document.querySelectorAll('.aud-tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.aud-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                ['trader','journalist','platform','research'].forEach(function(t) {
+                    document.getElementById('aud-' + t).style.display = (t === btn.dataset.tab) ? '' : 'none';
+                });
+            });
+        });
 
         // Wire copy buttons
         document.querySelectorAll('.contract-actions button[data-copy]').forEach(function(b) {
