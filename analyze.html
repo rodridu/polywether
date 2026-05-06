@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rule Linter &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260505c">
+    <link rel="stylesheet" href="css/styles.css?v=20260505d">
     <meta name="description" content="Paste prediction-market rule text. Get a rule-clarity screen — named source, fallback, edge cases, time zone, invalid rules.">
 </head>
 <body>
@@ -14,10 +14,11 @@
             <div class="nav-left">
                 <a href="index.html" class="nav-logo">Settlement Risk Monitor</a>
                 <div class="nav-links">
-                    <a href="explorer.html">Lookup</a>
-                    <a href="rates.html">Rates</a>
+                    <a href="explorer.html">Analyze</a>
+                    <a href="rates.html">Risk Map</a>
+                    <a href="cases.html">Cases</a>
                     <a href="analyze.html" class="active">Rule Linter</a>
-                    <a href="about.html">About</a>
+                    <a href="research.html">Research & Data</a>
                 </div>
             </div>
             <a href="https://www.northwestern.edu" target="_blank" rel="noopener" class="nav-affiliation">
@@ -113,12 +114,12 @@
                 <div class="footer-title">Settlement Risk Monitor</div>
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
-                        <nav class="footer-nav">
-                <a href="research.html">Research</a>
+                                    <nav class="footer-nav">
                 <a href="docs.html">Docs</a>
                 <a href="query.html">SQL Lab</a>
-                <a href="cases.html">Cases</a>
                 <a href="cite.html">Cite</a>
+                <a href="blueprints.html">Templates</a>
+                <a href="about.html">About</a>
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
@@ -224,57 +225,50 @@
     }
 
     function buildSuggestedRewrite(q, flags, body) {
-        // Pull lightweight fillers from body when flag matched, else use bracketed placeholder.
+        // Template-based rewrite. Bracketed placeholders mark fields the linter could not find.
         function ph(label) { return '[' + label + ']'; }
 
-        // Try to extract a captured marker for time zone + deadline + source URL
-        var sourceFill = ph('PRIMARY SOURCE — name a specific external authority, e.g. Reuters, AP, or a named .gov page');
+        var sourceFill = ph('PRIMARY SOURCE — name a specific external authority (e.g. Reuters, AP, named .gov page)');
         if (flags["Named external source"]) {
             var urlMatch = body.match(/https?:\/\/[^\s)\]]+/);
-            if (urlMatch) sourceFill = urlMatch[0];
-            else sourceFill = ph('PRIMARY SOURCE — confirm the named source above');
+            sourceFill = urlMatch ? urlMatch[0] : ph('PRIMARY SOURCE — confirm the named source above');
         }
-
         var fallbackFill = flags["Fallback / contingency language"]
             ? ph('FALLBACK SOURCE — confirm the alternate source named above')
             : ph('FALLBACK SOURCE — what source resolves the market if the primary is unavailable, delayed, or contradictory');
+        var deadlineFill = flags["Deadline / cutoff"] ? ph('DEADLINE — confirm cutoff above') : ph('DEADLINE — DATE');
+        var tzFill       = flags["Time zone"]         ? ph('TIME ZONE — confirm zone above')   : ph('TIME ZONE — e.g. ET, UTC');
+        var fallbackEvalFill = ph('FALLBACK EVALUATION TIME — when fallback takes over');
+        var finalEvalFill    = ph('FINAL EVALUATION TIME — past which market resolves INVALID');
+        var eventDef         = q || ph('EVENT DEFINITION — restate question as a precise observable fact');
 
-        var deadlineFill = flags["Deadline / cutoff"]
-            ? ph('DEADLINE — confirm the cutoff above')
-            : ph('DEADLINE — DATE');
-        var tzFill = flags["Time zone"]
-            ? ph('TIME ZONE — confirm the zone above')
-            : ph('TIME ZONE — e.g. ET, UTC');
-        var fallbackEvalFill = ph('FALLBACK EVALUATION TIME — when does the fallback take over');
-        var finalEvalFill = ph('FINAL EVALUATION TIME — past which the market resolves Invalid');
-
-        var edgeBlock;
+        var edgeLines;
         if (flags["Edge-case language"]) {
-            edgeBlock = 'If the event is canceled, postponed, or otherwise undefined under the rule above, resolve as ' + ph('YES / NO / INVALID') + '.';
+            edgeLines = [
+                '  - If [cancellation / postponement / partial event], resolve as ' + ph('YES / NO / INVALID') + '.',
+                '  - If sources conflict, use ' + ph('TIE-BREAKING HIERARCHY — which source wins, in what order') + '.'
+            ];
         } else {
-            edgeBlock =
-                'If the event is canceled, resolve as ' + ph('YES / NO / INVALID') + '.\n' +
-                'If the event is postponed past the deadline, resolve as ' + ph('YES / NO / INVALID') + '.\n' +
-                'If the event is partially completed (e.g. tie, walk-off, technicality), resolve as ' + ph('YES / NO / INVALID') + '.';
+            edgeLines = [
+                '  - If event is canceled, resolve as ' + ph('YES / NO / INVALID') + '.',
+                '  - If event is postponed past the deadline, resolve as ' + ph('YES / NO / INVALID') + '.',
+                '  - If event is partially completed (tie, walk-off, technicality), resolve as ' + ph('YES / NO / INVALID') + '.',
+                '  - If sources conflict, use ' + ph('TIE-BREAKING HIERARCHY — which source wins, in what order') + '.'
+            ];
         }
 
-        var invalidLine = flags["Invalid / N/A rule"]
-            ? 'If no listed source provides a determinate answer by ' + finalEvalFill + ', resolve as INVALID.'
-            : 'If no listed source provides a determinate answer by ' + finalEvalFill + ', resolve as INVALID. (No invalid/N/A rule was detected in your text — add one.)';
-
-        var eventDef = q || ph('EVENT DEFINITION — restate the question as a precise observable fact');
+        var invalidLine = 'If no listed source gives a determinate answer by ' + finalEvalFill + ', resolve INVALID.';
+        if (!flags["Invalid / N/A rule"]) invalidLine += ' (No INVALID/N/A rule detected in your text — add one.)';
 
         return [
-            'This market resolves YES if ' + eventDef + ' occurs by ' + deadlineFill + ' (' + tzFill + '),',
-            'as reported by ' + sourceFill + '.',
+            'This market resolves YES if ' + eventDef + ' occurs by ' + deadlineFill + ' at ' + tzFill + ',',
+            'according to ' + sourceFill + '.',
             '',
-            'If the primary source is unavailable, delayed, or contradictory by ' + fallbackEvalFill + ',',
+            'If ' + sourceFill + ' is unavailable, delayed, or contradictory by ' + fallbackEvalFill + ',',
             'use ' + fallbackFill + '.',
             '',
-            edgeBlock,
-            '',
-            invalidLine
-        ].join('\n');
+            'Edge cases:'
+        ].concat(edgeLines).concat(['', invalidLine]).join('\n');
     }
 
     function loadExample() {
