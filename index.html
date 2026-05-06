@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260505f">
+    <link rel="stylesheet" href="css/styles.css?v=20260506a">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
 </head>
 <body>
@@ -144,7 +144,7 @@
                 <a class="insight-card insight-card-link" href="explorer.html?mismatch=candidate">
                     <div class="insight-value" id="stat-mismatch">94</div>
                     <div class="insight-label">Flagged for rule/payoff review</div>
-                    <div class="insight-context">Broad candidate mismatches; 64 agreed across both coding passes</div>
+                    <div class="insight-context">Broad candidate mismatches. 55 row-level <code>two_benchmark</code> agreements; paper Table 1 reports 64 at category level. <a href="docs.html#benchmark-transparency">Why two numbers →</a></div>
                 </a>
             </div>
         </div>
@@ -196,7 +196,8 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-        <div class="footer-bottom">
+            <div class="footer-build">Build: <code>3.14.3</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+<div class="footer-bottom">
             <div class="footer-legal">
                 &copy; 2026 Hongzhen Du
             </div>

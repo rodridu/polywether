@@ -2734,6 +2734,26 @@ a.chain-split-card-link:hover {
 }
 .ex-card-id { color: var(--gray-500); }
 
+/* Build version stamp in footer */
+.footer-build {
+    margin-top: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--gray-200);
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+    color: var(--gray-500);
+    text-align: left;
+}
+.footer-build a { color: var(--gray-500); text-decoration: underline; }
+.footer-build a:hover { color: var(--gray-700); }
+.footer-build code {
+    background: rgba(0,0,0,0.04);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.95em;
+    color: var(--gray-700);
+}
+
 /* Rule Linter — suggested-rewrite block */
 .rewrite-block { margin-top: 28px; }
 .rewrite-block > h3 {
