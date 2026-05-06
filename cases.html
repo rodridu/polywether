@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Phase 3.15 — cases page: dedup matches, canonical-first, collapsed non-canonical -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,10 +7,10 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Public Case Locator &mdash; Settlement Risk Monitor</title>
+    <title>Cases &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506a">
-    <meta name="description" content="Public Case Locator: where do publicly-salient prediction-market controversies sit in the settlement-data funnel?">
+    <link rel="stylesheet" href="css/styles.css?v=20260506b">
+    <meta name="description" content="How public prediction-market controversies enter the settlement-data funnel. Locate, do not adjudicate.">
 </head>
 <body>
     <nav class="nav">
@@ -42,21 +43,21 @@
 
     <section class="hero hero-compact">
         <div class="hero-inner">
-            <p class="hero-eyebrow">Public Case Locator</p>
-            <h1>Where named cases sit in the funnel</h1>
+            <p class="hero-eyebrow">Cases</p>
+            <h1>How public controversies enter the settlement-data funnel</h1>
             <p class="hero-description">
-                Some prediction-market controversies have made it into the news: Zelenskyy's "suit," the Venezuela election, the Lebanon ground incursion, the U.S. government shutdown, the Trump strategic Bitcoin reserve. This page tells you where each one sits in the settlement-data funnel.
+                Some prediction-market disputes have made it into the news: Zelenskyy's "suit," Venezuela election, Lebanon incursion, U.S. shutdown, Trump Bitcoin reserve. This page locates each one in the disputed-contract panel.
             </p>
             <div class="locator-banner">
-                <strong>Locate, do not adjudicate.</strong> This page reports where each case falls in the settlement-data funnel. It does <em>not</em> decide the correct real-world outcome.
+                <strong>Locate, do not adjudicate.</strong> This page reports where each case falls in the panel. It does <em>not</em> decide the correct real-world outcome.
             </div>
         </div>
     </section>
 
     <section class="section">
         <div class="container">
-            <h2>Summary table</h2>
-            <p style="color:#475569;margin-bottom:12px;font-size:0.92em;">Quick view of where each case sits. <em>Disputed</em> = at least one matched market is in the analysis sample. <em>Revised / Mismatch</em> = at least one matched disputed-sample row had that flag.</p>
+            <h2>Summary</h2>
+            <p class="section-intro">Quick view of where each case sits. <em>Disputed</em> = at least one matched market is in the analysis sample. <em>Revised / Mismatch</em> = at least one matched disputed-sample row had that flag.</p>
             <div id="cases-summary"></div>
         </div>
     </section>
@@ -64,7 +65,7 @@
     <section class="section section-alt">
         <div class="container">
             <h2>Case files</h2>
-            <p style="color:#475569;margin-bottom:18px;font-size:0.92em;">Per-case detail: why each one matters, all matched markets, and links to contract pages where in-sample.</p>
+            <p class="section-intro">Per-case detail. Canonical disputed-sample matches show first; out-of-sample keyword matches are collapsed under each case.</p>
             <div id="cases-list"></div>
         </div>
     </section>
@@ -75,7 +76,7 @@
                 <div class="footer-title">Settlement Risk Monitor</div>
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
-                                    <nav class="footer-nav">
+            <nav class="footer-nav">
                 <a href="docs.html">Docs</a>
                 <a href="query.html">SQL Lab</a>
                 <a href="cite.html">Cite</a>
@@ -84,8 +85,8 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.14.3</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
-<div class="footer-bottom">
+        <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+        <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
                 <span class="footer-sources-label">Settlement risk is trading risk.</span>
@@ -105,65 +106,70 @@
         if (c.n_market_matches > 0) return '<span class="chip chip-info">Found in market panel only (' + c.n_market_matches + ')</span>';
         return '<span class="chip">Not located</span>';
     }
+    function dedupMatches(matches) {
+        var seen = new Set();
+        return matches.filter(function(m) {
+            if (seen.has(m.id)) return false;
+            seen.add(m.id);
+            return true;
+        });
+    }
     function matchRow(m) {
         var badges = [];
         if (m.in_disputed_panel) badges.push('<span class="chip chip-warn">disputed</span>');
+        if (m.revised)            badges.push('<span class="chip chip-warn">revised</span>');
         if (m.candidate_mismatch) badges.push('<span class="chip chip-info">candidate mismatch</span>');
-        // Only link to contract.html if the row is in the disputed sample (has data there)
-        var linkOpen = m.in_disputed_panel ? '<a class="case-match-link" href="contract.html?id=' + encodeURIComponent(m.id) + '">' : '<span class="case-match-link case-match-link-disabled">';
-        var linkClose = m.in_disputed_panel ? '</a>' : '</span>';
-        return '<li class="case-match">' +
-            linkOpen +
-                '<span class="case-match-id mono">' + m.id + '</span>' +
-                '<span class="case-match-q">' + escapeHtml(m.question || '') + '</span>' +
-                '<span class="case-match-badges">' + badges.join(' ') + '</span>' +
-            linkClose +
-        '</li>';
-    }
+        if (m.settlement_risk_tier === 'High')    badges.push('<span class="chip chip-warn">High risk</span>');
+        if (m.settlement_risk_tier === 'Caution') badges.push('<span class="chip">Caution</span>');
+        if (m.settlement_risk_tier === 'Low')     badges.push('<span class="chip chip-ok">Low risk</span>');
 
+        var qText = m.question || '<span class="muted">[question text not in panel]</span>';
+        var idCell = '<span class="match-id mono">' + m.id + '</span>';
+        var qCell  = '<span class="match-question">' + (typeof qText === 'string' && !qText.startsWith('<') ? escapeHtml(qText) : qText) + '</span>';
+        var statusCell = '<span class="match-status">' + badges.join(' ') + '</span>';
+        var inner = idCell + qCell + statusCell;
+        if (m.in_disputed_panel) {
+            return '<a class="match-row match-row-link" href="contract.html?id=' + encodeURIComponent(m.id) + '">' + inner + '</a>';
+        }
+        return '<div class="match-row match-row-disabled">' + inner + '</div>';
+    }
     function yn(b) { return b ? '<span class="chip chip-warn">yes</span>' : '<span class="chip chip-ok">no</span>'; }
     function dash() { return '<span class="muted">—</span>'; }
 
     var LESSONS = {
-        "Zelenskyy suit": "Pre-define what counts as a suit (collar / lapels / fabric).",
-        "Venezuela / Maduro": "Pre-define 'invasion' vs 'regime change'; name a defense-ministry source.",
-        "Iran / Khamenei": "Pre-define 'remain in office' (death / resignation / removal) and source.",
-        "Trump Bitcoin reserve": "Pre-define 'establishing a reserve' (executive order / law / Treasury action).",
-        "Tesla robotaxi": "Pre-define 'launch' (paid customers vs demo / beta).",
-        "Lebanon ground incursion": "Pre-define unit threshold + duration; remove oracle discretion.",
-        "Government shutdown 2025": "Pre-specify cutoff date + time zone + funding-lapse vs agency-closure rule."
+        "Zelenskyy suit":            "Pre-define what counts as a suit (collar / lapels / fabric).",
+        "Venezuela / Maduro":        "Pre-define 'invasion' vs 'regime change'; name a defense-ministry source.",
+        "Iran / Khamenei":           "Pre-define 'remain in office' (death / resignation / removal) and source.",
+        "Trump Bitcoin reserve":     "Pre-define 'establishing a reserve' (executive order / law / Treasury action).",
+        "Tesla robotaxi":            "Pre-define 'launch' (paid customers vs demo / beta).",
+        "Lebanon ground incursion":  "Pre-define unit threshold + duration; remove oracle discretion.",
+        "Government shutdown 2025":  "Pre-specify cutoff date + time zone + funding-lapse vs agency-closure rule."
     };
 
     function renderSummary(cases) {
         var rows = cases.map(function(c) {
-            var inPanel = c.n_market_matches > 0;
-            var inDisputed = c.n_disputed_matches > 0;
-            // Aggregate revised/mismatch from matches
+            var unique = dedupMatches(c.matches || []);
+            var inPanel = unique.length > 0;
+            var inDisputed = unique.filter(function(m) { return m.in_disputed_panel; });
             var anyRevised = null, anyMismatch = null;
-            if (inDisputed) {
-                anyRevised = false; anyMismatch = false;
-                c.matches.forEach(function(m) {
-                    if (m.in_disputed_panel) {
-                        if (m.revised) anyRevised = true;
-                        if (m.candidate_mismatch) anyMismatch = true;
-                    }
-                });
+            if (inDisputed.length) {
+                anyRevised = inDisputed.some(function(m) { return m.revised; });
+                anyMismatch = inDisputed.some(function(m) { return m.candidate_mismatch; });
             }
-            // Issue type guess
             var issue = c.why_matters ? c.why_matters.split(';')[0].split('—')[0].trim() : '—';
             if (issue.length > 60) issue = issue.slice(0, 57) + '…';
             var lesson = LESSONS[c.label] || '—';
             return '<tr>' +
                 '<td><strong>' + escapeHtml(c.label) + '</strong></td>' +
-                '<td>' + (inPanel ? '<span class="chip chip-info">' + c.n_market_matches + '</span>' : dash()) + '</td>' +
-                '<td>' + (inDisputed ? '<span class="chip chip-warn">' + c.n_disputed_matches + '</span>' : dash()) + '</td>' +
+                '<td>' + (inPanel ? '<span class="chip chip-info">' + unique.length + '</span>' : dash()) + '</td>' +
+                '<td>' + (inDisputed.length ? '<span class="chip chip-warn">' + inDisputed.length + '</span>' : dash()) + '</td>' +
                 '<td>' + (anyRevised === null ? dash() : yn(anyRevised)) + '</td>' +
                 '<td>' + (anyMismatch === null ? dash() : yn(anyMismatch)) + '</td>' +
                 '<td class="muted" style="font-size:0.85em;">' + escapeHtml(issue) + '</td>' +
                 '<td class="muted" style="font-size:0.85em;">' + escapeHtml(lesson) + '</td>' +
                 '</tr>';
         }).join('');
-        return '<table class="explorer-table">' +
+        return '<table class="explorer-table case-summary-table">' +
             '<thead><tr>' +
                 '<th>Case</th>' +
                 '<th>In market panel</th>' +
@@ -171,52 +177,68 @@
                 '<th>Any revised?</th>' +
                 '<th>Any candidate mismatch?</th>' +
                 '<th>Main issue</th>' +
-                '<th>Lesson for blueprint</th>' +
+                '<th>Lesson</th>' +
             '</tr></thead><tbody>' + rows + '</tbody></table>';
     }
 
     fetch('data/public_cases.json').then(r => r.json()).then(d => {
-        // First, fetch disputed_contracts to enrich match data with revised/mismatch flags
         return fetch('data/disputed_contracts.json').then(r => r.json()).then(function(dc) {
-            // Build lookup
             var contractById = {};
             dc.rows.forEach(function(r) { contractById[r.id] = r; });
-            // Enrich matches
+
+            // Enrich matches with disputed-panel flags
             d.cases.forEach(function(c) {
-                c.matches.forEach(function(m) {
+                (c.matches || []).forEach(function(m) {
                     var rec = contractById[m.id];
                     if (rec) {
-                        m.revised = rec.revised;
-                        m.candidate_mismatch = rec.candidate_mismatch;
+                        m.revised = !!rec.revised;
+                        m.candidate_mismatch = !!rec.candidate_mismatch;
                         m.settlement_risk_tier = rec.settlement_risk_tier;
                     }
                 });
             });
 
-            // Render summary table at top
+            // Summary table
             document.getElementById('cases-summary').innerHTML = renderSummary(d.cases);
 
-            // Render existing case-file cards
-            var box = document.getElementById('cases-list');
-        var html = d.cases.map(function(c) {
-            return '<article class="case-locator-card">' +
-                '<header class="case-locator-header">' +
-                    '<h2 class="case-locator-title">' + escapeHtml(c.label) + '</h2>' +
-                    '<div class="case-locator-status">' + statusChip(c) + '</div>' +
-                '</header>' +
-                (c.why_matters ? '<p class="case-locator-why"><strong>Why it matters:</strong> ' + escapeHtml(c.why_matters) + '</p>' : '') +
-                '<div class="case-locator-counts">' +
-                    '<span><strong>' + c.n_market_matches + '</strong> market matches</span>' +
-                    '<span><strong>' + c.n_disputed_matches + '</strong> in disputed sample</span>' +
-                '</div>' +
-                (c.matches.length > 0
-                    ? '<details class="case-locator-details" open><summary>Show matched markets</summary><ul class="case-locator-list">' +
-                      c.matches.map(matchRow).join('') +
-                      '</ul></details>'
-                    : '<p class="muted">No matches found in current data export.</p>') +
-            '</article>';
-        }).join('');
-            box.innerHTML = html;
+            // Per-case files
+            var html = d.cases.map(function(c) {
+                var unique = dedupMatches(c.matches || []);
+                var canonical = unique.filter(function(m) { return m.in_disputed_panel; });
+                var nonCanonical = unique.filter(function(m) { return !m.in_disputed_panel; });
+                var lesson = LESSONS[c.label];
+
+                var canonicalBlock = canonical.length
+                    ? '<div class="case-canonical">' +
+                        '<h3 class="case-section-h">Canonical disputed-sample matches (' + canonical.length + ')</h3>' +
+                        '<div class="match-list">' + canonical.map(matchRow).join('') + '</div>' +
+                      '</div>'
+                    : '<p class="muted case-noncanonical-note">No matches in the disputed-contract analysis sample. Markets below were located in the broader Polymarket market panel only.</p>';
+
+                var nonCanonicalBlock = nonCanonical.length
+                    ? '<details class="case-noncanonical">' +
+                        '<summary>Show ' + nonCanonical.length + ' related market panel match' + (nonCanonical.length === 1 ? '' : 'es') + '</summary>' +
+                        '<p class="muted case-noncanonical-note">Out of analysis sample. Either the market never disputed, or it was outside the rev3 settlement panel snapshot. Listed for context only — no settlement chain to inspect.</p>' +
+                        '<div class="match-list">' + nonCanonical.map(matchRow).join('') + '</div>' +
+                      '</details>'
+                    : '';
+
+                return '<article class="case-locator-card">' +
+                    '<header class="case-locator-header">' +
+                        '<h2 class="case-locator-title">' + escapeHtml(c.label) + '</h2>' +
+                        '<div class="case-locator-status">' + statusChip(c) + '</div>' +
+                    '</header>' +
+                    (c.why_matters ? '<p class="case-locator-why"><strong>Why it matters:</strong> ' + escapeHtml(c.why_matters) + '</p>' : '') +
+                    (lesson ? '<p class="case-locator-lesson"><strong>Lesson for contract design:</strong> ' + escapeHtml(lesson) + '</p>' : '') +
+                    '<div class="case-locator-counts">' +
+                        '<span><strong>' + unique.length + '</strong> unique market matches</span>' +
+                        '<span><strong>' + canonical.length + '</strong> in disputed sample</span>' +
+                    '</div>' +
+                    canonicalBlock +
+                    nonCanonicalBlock +
+                '</article>';
+            }).join('');
+            document.getElementById('cases-list').innerHTML = html;
         });
     }).catch(function(err) {
         console.error('public_cases.json load failed:', err);

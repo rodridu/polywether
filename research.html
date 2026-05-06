@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Phase 3.14.2 — research benchmark paragraph aligned with docs.html#benchmark-transparency -->
+<!-- Phase 3.15 — research page redesigned: hero buttons + metric grid + funnel table + structured 2-column body -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,12 +7,12 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Research &mdash; Settlement Risk Monitor</title>
+    <title>Research &amp; Data &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506a">
-    <meta name="description" content="Research backing the Settlement Risk Monitor — working paper, methodology, sample construction, limitations.">
+    <link rel="stylesheet" href="css/styles.css?v=20260506b">
+    <meta name="description" content="Working paper, sample funnel, methodology, benchmark transparency, replication checklist, and limitations for the Settlement Risk Monitor.">
 </head>
-<body>
+<body class="research-page">
     <nav class="nav">
         <div class="nav-inner">
             <div class="nav-left">
@@ -41,72 +41,196 @@
     })();
     </script>
 
+    <!-- Hero -->
     <section class="hero hero-compact">
-        <div class="hero-inner">
-            <p class="hero-eyebrow">Research</p>
-            <h1>The paper behind the monitor</h1>
+        <div class="hero-inner research-hero-inner">
+            <p class="hero-eyebrow">Research &amp; Data</p>
+            <h1>Settlement-State Construction in Prediction-Market Contracts</h1>
             <p class="hero-description">
-                The Settlement Risk Monitor is built on the working paper "Settlement-State Construction in Prediction-Market Contracts." This page documents the paper, the sample, the methodology, and what the data does and does not support.
+                Working paper by Hongzhen Du, Northwestern University. Reconstructs how disputed Polymarket contracts move from first proposal to final payoff. Distinguishes world facts <em>W</em>, rule-implied label <em>G</em>, and settlement state <em>S</em>.
+            </p>
+            <div class="research-hero-actions">
+                <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener" class="btn btn-primary">Repository &amp; full data</a>
+                <a href="docs.html#data-files" class="btn btn-secondary">JSON endpoints</a>
+                <a href="docs.html#replication" class="btn btn-secondary">Replication checklist</a>
+                <a href="query.html" class="btn btn-secondary">SQL Lab</a>
+            </div>
+            <p class="research-version-strip">
+                Paper draft <code>2026-05-05</code> &middot; data snapshot <code>2026-04-23</code> &middot; panel through <code>2026-04-22</code> &middot; build <code>3.15</code>
             </p>
         </div>
     </section>
 
+    <!-- Metric grid -->
+    <section class="section research-metric-section">
+        <div class="container container-research">
+            <p class="research-eyebrow">Sample at a glance</p>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-value">661,949</div>
+                    <div class="metric-label">Settlement conditions</div>
+                    <div class="metric-context">Polymarket-via-UMA panel</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2,221</div>
+                    <div class="metric-label">Disputed contracts</div>
+                    <div class="metric-context">At least one counter-bond</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2,197</div>
+                    <div class="metric-label">Analysis sample</div>
+                    <div class="metric-context">Final payoff observed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">530</div>
+                    <div class="metric-label">Revisions</div>
+                    <div class="metric-context">First proposal &ne; final payoff</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">352 / 178</div>
+                    <div class="metric-label">Chain split</div>
+                    <div class="metric-context">Repeated adapter / Request-voiding</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">94</div>
+                    <div class="metric-label">Candidate mismatches</div>
+                    <div class="metric-context">Pass-1 LLM benchmark, row level</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">55</div>
+                    <div class="metric-label">Row-level agreed</div>
+                    <div class="metric-context">stratum = two_benchmark</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">64</div>
+                    <div class="metric-label">Category-level agreed</div>
+                    <div class="metric-context">Paper Table 1 aggregate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample funnel table -->
+    <section class="section section-alt">
+        <div class="container container-research">
+            <h2 id="funnel">Sample funnel</h2>
+            <p class="research-prose-narrow">From the full Polymarket-via-UMA panel down to the analysis sample. Each row is a disjoint filter applied to the row above. Counts come from <code>rev3_contract_level_settlement_funnel.csv</code>; see <a href="docs.html#replication">Replication checklist</a> for the SQL.</p>
+            <table class="research-funnel-table">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Description</th>
+                        <th class="num">Count</th>
+                        <th class="num">% of prior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>All settlement conditions in panel</td><td class="num mono">661,949</td><td class="num mono">&mdash;</td></tr>
+                    <tr><td>2</td><td>Conditions with at least one counter-bond posted</td><td class="num mono">2,221</td><td class="num mono">0.34%</td></tr>
+                    <tr><td>3</td><td>Disputed contracts with observed final payoff state</td><td class="num mono">2,197</td><td class="num mono">98.9%</td></tr>
+                    <tr><td>4</td><td>Final payoff differs from first proposal (revised)</td><td class="num mono">530</td><td class="num mono">24.1%</td></tr>
+                    <tr><td>5a</td><td>&hellip; via repeated adapter-routed requests</td><td class="num mono">352</td><td class="num mono">66% of 530</td></tr>
+                    <tr><td>5b</td><td>&hellip; via DVM request-voiding</td><td class="num mono">178</td><td class="num mono">34% of 530</td></tr>
+                    <tr><td>6</td><td>Broad candidate mismatches (pass-1 LLM benchmark)</td><td class="num mono">94</td><td class="num mono">4.3% of 2,197</td></tr>
+                    <tr><td>7a</td><td>&hellip; row-level <code>two_benchmark</code></td><td class="num mono">55</td><td class="num mono">59% of 94</td></tr>
+                    <tr><td>7b</td><td>&hellip; row-level <code>frozen</code></td><td class="num mono">39</td><td class="num mono">41% of 94</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Two-column body: prose + sidebar -->
     <section class="section">
-        <div class="container container-narrow">
+        <div class="container container-research">
+            <div class="research-grid">
+                <div class="research-prose">
 
-            <h2>Working paper</h2>
-            <p>
-                <strong>"Settlement-State Construction in Prediction-Market Contracts."</strong> Hongzhen Du, Northwestern University. Working paper, 2026.
-            </p>
-            <p>
-                Prediction-market prices are usually interpreted as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. The paper distinguishes three objects: realized world facts <em>W</em>, the rule-implied label <em>G</em> under the contract's text and source hierarchy, and the settlement state <em>S</em> delivered by the mechanism. It reconstructs this mapping for disputed Polymarket contracts resolved through UMA.
-            </p>
+                    <h2>Working paper</h2>
+                    <p>
+                        Prediction-market prices are usually interpreted as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. The paper distinguishes three objects: realized world facts <em>W</em>, the rule-implied label <em>G</em> under the contract's text and source hierarchy, and the settlement state <em>S</em> delivered by the mechanism. It reconstructs this mapping for disputed Polymarket contracts resolved through UMA.
+                    </p>
+                    <p>
+                        The unit of analysis is a disputed contract. The dependent variable is whether the final payoff state <em>S</em> equals the first proposed outcome <em>P&#8321;</em>. The contribution is descriptive: it documents the mechanism path from <em>P&#8321;</em> to <em>S</em>, and a candidate-mismatch layer that flags rows where <em>S</em> may not equal <em>G</em>.
+                    </p>
 
-            <h2>Headline empirical results</h2>
-            <ul style="line-height:1.8;">
-                <li><strong>661,949</strong> total settlement conditions in the Polymarket-via-UMA panel.</li>
-                <li><strong>2,221</strong> are disputed (at least one counter-bond posted).</li>
-                <li><strong>2,197</strong> disputed contracts have an observed final payoff state — the analysis sample.</li>
-                <li><strong>530 (24.1%)</strong> end with a final payoff different from the first proposed outcome.</li>
-                <li>Of those revisions, <strong>352 (66%)</strong> occur through repeated adapter-routed requests; <strong>178 (34%)</strong> through DVM request-voiding.</li>
-                <li><strong>94</strong> broad candidate mismatches identified by a two-pass LLM-coded benchmark; <strong>64</strong> agreed across both passes (category-level).</li>
-            </ul>
+                    <h2>Methodology</h2>
+                    <p>
+                        Polymarket markets and UMA Optimistic Oracle resolution events are ingested into a research database. The disputed-contract sample is the union of contracts with at least one counter-bond posted. Episode-level chains are reconstructed from the UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code> event sequence.
+                    </p>
+                    <p>
+                        Question text comes from a COALESCE over <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, and <code>pm_resolution_events.ancillary_data_decoded</code>. Description (resolution criteria) comes from <code>pm_markets.raw.description</code>. Category from <code>episode_panel.category</code>.
+                    </p>
 
-            <h2>Methodology</h2>
-            <p>
-                Polymarket markets and UMA Optimistic Oracle resolution events are ingested into a research database. The disputed-contract sample is the union of contracts with at least one counter-bond posted. Episode-level chains are reconstructed from the UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code> event sequence.
-            </p>
-            <p>
-                Question text comes from a COALESCE over <code>pm_markets.question</code>, <code>episode_panel.question_text</code>, and <code>pm_resolution_events.ancillary_data_decoded</code>. Description (resolution criteria) comes from <code>pm_markets.raw.description</code>. Category from <code>episode_panel.category</code>.
-            </p>
-            <p>
-                The candidate-mismatch layer uses a two-pass LLM coding protocol against the recoverable contract text and named source. <strong>94 broad candidate mismatches</strong> are identified by the first pass. The paper reports <strong>64 agreed at the category level</strong>. The dashboard now exposes row-level benchmark stratum fields: <strong>55 of 94 are <code>two_benchmark</code> rows</strong> independently coded in both passes, and <strong>39 are <code>frozen</code> rows</strong> carried forward from a single pass. Use the row-level agreement flag (<code>stratum == 'two_benchmark'</code>, equivalently <code>mismatch_agreed</code>) for replication-grade contract audits; use the 64 figure only as the paper's category-level aggregate. Per-row fields exposed in <code>candidate_mismatches.json</code>: <code>stratum</code>, <code>G_i_source</code>, <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>, <code>mismatch_agreed</code>. See <a href="docs.html#benchmark-transparency">Docs &rarr; Benchmark validation transparency</a>.
-            </p>
+                    <h2 id="benchmark">Benchmark transparency</h2>
+                    <p>
+                        The candidate-mismatch layer uses a two-pass LLM coding protocol against recoverable contract text and named source. Pass 1 flags 94 broad candidate mismatches at the row level (<code>classification == 'uncorrected_oracle_error'</code>). The paper reports 64 mismatches agreed at the category level. The dashboard exposes row-level benchmark stratum: <strong>55 of 94 are <code>two_benchmark</code> rows</strong> (independently coded in both passes), and <strong>39 are <code>frozen</code> rows</strong> (carried forward from a single pass).
+                    </p>
+                    <p>
+                        For replication-grade auditing of individual contracts, use the row-level flag <code>mismatch_agreed = (stratum == 'two_benchmark')</code>. Use the 64 figure only as the paper's category-level aggregate. Both numbers come from the same two-pass benchmark; they answer different questions.
+                    </p>
+                    <p>
+                        Per-row fields exposed in <code>candidate_mismatches.json</code>: <code>stratum</code>, <code>G_i_source</code>, <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>, <code>mismatch_agreed</code>. See <a href="docs.html#benchmark-transparency">Docs &rarr; Benchmark validation transparency</a> for the full schema.
+                    </p>
 
-            <h2>What the paper does NOT claim</h2>
-            <ul style="line-height:1.8;">
-                <li>The unconditional rate at which a randomly selected market receives an erroneous final payoff.</li>
-                <li>Whether any specific contract's final payoff is correct in real-world terms.</li>
-                <li>UMA tokenholder voter identity, vote concentration, or turnout.</li>
-                <li>Causal effects of any UMA policy change.</li>
-            </ul>
+                    <h2>What the paper does NOT claim</h2>
+                    <ul class="research-list">
+                        <li>The unconditional rate at which a randomly selected market receives an erroneous final payoff.</li>
+                        <li>Whether any specific contract's final payoff is correct in real-world terms.</li>
+                        <li>UMA tokenholder voter identity, vote concentration, or turnout.</li>
+                        <li>Causal effects of any UMA policy change.</li>
+                        <li>Cross-platform generalizability (Kalshi, dYdX, OutcomeFi, etc. not in panel).</li>
+                    </ul>
 
-            <h2>Limitations carried into the dashboard</h2>
-            <ul style="line-height:1.8;">
-                <li><strong>Question-text coverage is 79.1%.</strong> 1,756 of 2,221 disputed contracts have recoverable question text. The other 465 are visible in the rev3 settlement panel but absent from Polymarket-side metadata.</li>
-                <li><strong>Auditability flags 4–6</strong> (named source / fallback / edge cases) are heuristic regex over a noisy text corpus. They tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed.</li>
-                <li><strong>The settlement-risk tier is a screening flag, not a prediction.</strong> It identifies contracts whose payoff depends on discretionary or ambiguous interpretation. It does not predict whether the final payoff is correct.</li>
-                <li><strong>Public Case Locator</strong> uses keyword matching. Three of seven curated cases match the market panel but not the disputed-analysis sample.</li>
-            </ul>
+                    <h2>Limitations carried into the dashboard</h2>
+                    <ul class="research-list">
+                        <li><strong>Question-text coverage is 79.1%.</strong> 1,756 of 2,221 disputed contracts have recoverable question text. The other 465 are visible in the rev3 settlement panel but absent from Polymarket-side metadata.</li>
+                        <li><strong>Auditability flags 4&ndash;6</strong> (named source / fallback / edge cases) are heuristic regex over a noisy text corpus. They tag whether the relevant language <em>appears</em>, not whether the contract was correctly designed.</li>
+                        <li><strong>Settlement-risk tier is a screening flag, not a prediction.</strong> It identifies contracts whose payoff depends on discretionary or ambiguous interpretation. It does not predict whether the final payoff is correct.</li>
+                        <li><strong>Cases page</strong> uses keyword matching to locate publicly-discussed markets in the panel. Three of seven curated cases match the market panel but not the disputed-analysis sample.</li>
+                    </ul>
 
-            <h2>Companion tools</h2>
-            <p>For the in-browser SQL interface and full data schema, see <a href="docs.html">Docs</a>. For the public-case locator, see <a href="cases.html">Cases</a>. For the per-contract chain timelines used in the paper's appendix, see <a href="chain.html">Chain View</a>. For the nine-flag per-contract auditability checklist (grouped into four categories), see <a href="audit.html">Audit</a>.</p>
+                    <h2>Researcher</h2>
+                    <p>
+                        <strong>Hongzhen Du</strong>, Northwestern University. Contact via the <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">paper repository</a>.
+                    </p>
 
-            <h2>Researcher</h2>
-            <p>
-                <strong>Hongzhen Du</strong>, Northwestern University. Contact via the paper repository.
-            </p>
+                </div>
 
+                <aside class="research-sidebar">
+
+                    <div class="research-sidecard">
+                        <h3>Replication links</h3>
+                        <ul class="research-sidelist">
+                            <li><a href="docs.html#replication">Replication checklist</a> &mdash; every headline number to source CSV / JSON.</li>
+                            <li><a href="docs.html#snapshot">Data snapshot &amp; version</a></li>
+                            <li><a href="docs.html#data-files">Static JSON endpoints</a></li>
+                            <li><a href="docs.html#benchmark-transparency">Benchmark transparency</a></li>
+                            <li><a href="query.html">In-browser SQL Lab</a> (duckdb-wasm)</li>
+                            <li><a href="https://github.com/rodridu/polywether/tree/main/data-source" target="_blank" rel="noopener">Source CSVs in repo</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="research-sidecard">
+                        <h3>Companion tools</h3>
+                        <ul class="research-sidelist">
+                            <li><a href="explorer.html">Analyze</a> &mdash; per-contract lookup</li>
+                            <li><a href="rates.html">Risk Map</a> &mdash; conditional rates</li>
+                            <li><a href="analyze.html">Rule Linter</a> &mdash; rule-text screen</li>
+                            <li><a href="cases.html">Cases</a> &mdash; public controversies</li>
+                            <li><a href="chain.html">Chain View</a> &mdash; per-request timelines</li>
+                            <li><a href="audit.html">Audit</a> &mdash; nine-flag checklist</li>
+                            <li><a href="blueprints.html">Templates</a> &mdash; reference designs</li>
+                        </ul>
+                    </div>
+
+                    <div class="research-sidecard">
+                        <h3>Cite</h3>
+                        <p class="research-cite-text">Du, Hongzhen. "Settlement-State Construction in Prediction-Market Contracts." Working paper, Northwestern University, 2026.</p>
+                        <p><a href="cite.html" class="research-sidelink">Citation guide for journalists &rarr;</a></p>
+                    </div>
+
+                </aside>
+            </div>
         </div>
     </section>
 
@@ -116,7 +240,7 @@
                 <div class="footer-title">Settlement Risk Monitor</div>
                 <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
             </div>
-                                    <nav class="footer-nav">
+            <nav class="footer-nav">
                 <a href="docs.html">Docs</a>
                 <a href="query.html">SQL Lab</a>
                 <a href="cite.html">Cite</a>
@@ -125,8 +249,8 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.14.3</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
-<div class="footer-bottom">
+        <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+        <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
                 <span class="footer-sources-label">Settlement risk is trading risk.</span>
