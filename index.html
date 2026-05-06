@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260505e">
+    <link rel="stylesheet" href="css/styles.css?v=20260505f">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
 </head>
 <body>
@@ -112,6 +112,9 @@
             <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a> <em>5 Polymarket dev/test markets are tagged separately and excluded.</em></p>
             <p class="data-status">
                 <strong>Data status:</strong> historical disputed-contract panel, not live market surveillance. Aggregate refresh runs weekly via <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">GitHub Actions</a>; per-contract data refreshes manually when the paper's analysis pipeline regenerates the panel. <a href="docs.html#refresh">Refresh cadence →</a>
+            </p>
+            <p class="data-status" style="margin-top:6px;">
+                <strong>Site version:</strong> paper draft <code>2026-05-05</code> &middot; data snapshot <code>2026-04-23</code> &middot; panel through <code>2026-04-22</code>. <a href="docs.html#snapshot">Snapshot details →</a> &middot; <a href="docs.html#replication">Replication checklist →</a>
             </p>
             <div id="watchlist-table"></div>
             <p style="margin-top:16px;"><a href="explorer.html?tier=High" class="btn btn-secondary">See all High-risk contracts in Lookup →</a></p>

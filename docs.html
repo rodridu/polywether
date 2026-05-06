@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Docs &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260505e">
+    <link rel="stylesheet" href="css/styles.css?v=20260505f">
     <meta name="description" content="Settlement Risk Monitor data fields, JSON endpoints, refresh cadence, internal tools.">
 </head>
 <body>
@@ -72,7 +72,7 @@
                 <tr><th><code>/data/disputed_contracts.json</code></th><td>One row per disputed contract (n=2,221). Reader-facing fields: <code>id</code>, <code>raw_condition_id</code>, <code>slug</code>, <code>question_text</code>, <code>description</code>, <code>ancillary_text</code>, <code>category</code>, <code>first_proposal</code>, <code>final_payoff</code>, <code>revised</code>, <code>multi_episode</code>, <code>chain_type</code>, <code>candidate_mismatch</code>, <code>settlement_risk_tier</code>, <code>risk_reasons</code>, <code>first_proposal_time</code>, <code>final_settlement_time</code>, <code>audit{ rule_text_present, description_present, ancillary_present, named_source_present, fallback_present, edge_cases_present, final_payoff_observed, multi_episode, candidate_mismatch }</code></td></tr>
                 <tr><th><code>/data/settlement_funnel.json</code></th><td>9-step funnel ladder + summary numbers (paper Table 1).</td></tr>
                 <tr><th><code>/data/chain_signatures.json</code></th><td>23 raw chain-pattern aggregates + 3-row chain_type_summary.</td></tr>
-                <tr><th><code>/data/candidate_mismatches.json</code></th><td>94 broad mismatches; 64 agreed at category level. Per-row agreement not exposed.</td></tr>
+                <tr><th><code>/data/candidate_mismatches.json</code></th><td>94 broad mismatches at the row level (<code>classification == 'uncorrected_oracle_error'</code>). Per-row fields now expose <code>stratum</code> (55 <code>two_benchmark</code>, 39 <code>frozen</code>), <code>mismatch_agreed</code> (= <code>stratum == 'two_benchmark'</code>), <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>. Paper Table 1's "64 agreed" is a category-level aggregate (different measure).</td></tr>
                 <tr><th><code>/data/conditional_rates.json</code></th><td>Pre-computed revision + candidate-mismatch rates by 5 dimensions (chain_type, category, first_proposal, named_source presence, fallback presence) + overall.</td></tr>
                 <tr><th><code>/data/public_cases.json</code></th><td>7 named cases with status, market matches, and disputed-sample matches. Locate, do not adjudicate.</td></tr>
                 <tr><th><code>/data/chain_examples.json</code></th><td>10 hand-curated example contracts for Chain View, sports-only, with full request-by-request timelines.</td></tr>
@@ -101,10 +101,61 @@ console.log(highRisk.length, 'High-risk contracts');</pre>
             <h2 id="internal-tools">Linked tools</h2>
             <p>SQL Lab (<a href="query.html">query.html</a>), Audit (<a href="audit.html">audit.html</a>, nine-flag per-contract checklist), Chain View (<a href="chain.html">chain.html</a>), and Cases (<a href="cases.html">cases.html</a>) are also reachable from the footer. Source repo: <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">github.com/rodridu/polywether</a>.</p>
 
-            <h2 id="versioning">Versioning</h2>
-            <p>
-                JSON schemas are stable in additive sense: new fields may be added; existing field names will not change without a deprecation note in the repo CHANGELOG. The <code>settlement_risk_tier</code> rule is v0; future versions may incorporate continuous risk scores rather than three buckets.
+            <h2 id="snapshot">Data snapshot &amp; version</h2>
+            <p>This site corresponds to:</p>
+            <table class="blueprint-table">
+                <tr><th>Paper draft</th><td>"Settlement-State Construction in Prediction-Market Contracts," Hongzhen Du, working paper version 2026-05-05.</td></tr>
+                <tr><th>Data snapshot</th><td><code>headline_statistics.json</code> generated <strong>2026-04-23</strong>.</td></tr>
+                <tr><th>Panel coverage</th><td>First proposal date in panel <code>2022-11-05</code>; last proposal date in panel <code>2026-04-22</code>.</td></tr>
+                <tr><th>Source DB commit</th><td>Stripped DuckDB built from <code>oracle_gov/scripts/paper/data/oraclepm.duckdb</code>; full panel lives in <code>oracle_gov/analysis_output/rev3_*.csv</code>.</td></tr>
+                <tr><th>JSON schema</th><td>Stable in additive sense; new fields may be added, existing field names will not change without a deprecation note in repo CHANGELOG.</td></tr>
+                <tr><th><code>settlement_risk_tier</code> version</th><td>v0 (rules-based). Future versions may use continuous scores instead of three buckets.</td></tr>
+            </table>
+
+            <h2 id="replication">Replication checklist</h2>
+            <p>Every headline number on this site traces to a single source file or query. Use this map to reproduce.</p>
+            <table class="blueprint-table">
+                <tr><th>661,949</th><td>Total settlement conditions in the Polymarket-via-UMA panel. Source: <code>rev3_contract_level_table.csv</code> row count.</td></tr>
+                <tr><th>2,221</th><td>Disputed contracts (at least one counter-bond). Source: <code>rev3_contract_level_table.csv</code> filtered to <code>D_i = 1</code>. Also: <code>disputed_contracts.json.n</code>.</td></tr>
+                <tr><th>2,197</th><td>Disputed contracts with an observed final payoff state — analysis sample. Source: 2,221 minus rows where <code>terminal_state_type</code> is missing.</td></tr>
+                <tr><th>530 (24.1%)</th><td>Final payoff differs from first proposal (<code>Flip_i = 1</code>). Source: <code>rev3_flip_rate_decomposition_by_chain_type.csv</code>; also <code>conditional_rates.json.overall.n_revised</code>.</td></tr>
+                <tr><th>352 / 178</th><td>Of the 530 revisions: 352 occur via repeated adapter-routed requests, 178 via DVM request-voiding. Source: <code>rev3_flip_rate_decomposition_by_chain_type.csv</code>; also <code>conditional_rates.json.by_chain_type</code>.</td></tr>
+                <tr><th>94</th><td>Broad candidate mismatches at the <strong>row</strong> level. Source: <code>rev3_final_mismatch_reconciliation.csv</code> filtered to <code>classification == 'uncorrected_oracle_error'</code>; also <code>candidate_mismatches.json.n_candidate</code>.</td></tr>
+                <tr><th>55 / 39</th><td>Of the 94: <strong>55 rows are stratum <code>two_benchmark</code></strong> (both LLM passes independently coded this specific row); <strong>39 rows are stratum <code>frozen</code></strong> (carried forward from a single pass). Per-row stratum is now exposed in <code>candidate_mismatches.json.rows[].stratum</code>.</td></tr>
+                <tr><th>64</th><td><strong>Category-level</strong> agreement count from paper Table 1: of the categories where both passes produced a label, 64 agree on the per-category breakdown. This is a coarser measure than the per-row 55 above; both come from the same two-pass coding but ask different questions (per-row vs per-category).</td></tr>
+            </table>
+            <p style="margin-top:12px;color:#475569;">
+                Pipeline that produces all JSON above: <code>oracle_gov/scripts/paper/build_settlement_explorer_data.py</code>. Audit memo: <code>oracle_gov/scripts/paper/data_audit_memo.md</code>.
             </p>
+
+            <h2 id="benchmark-transparency">Benchmark validation transparency</h2>
+            <p>The candidate-mismatch layer is built from a two-pass LLM-coded benchmark over recoverable contract text. Pass 1 flags <strong>94 broad candidate mismatches</strong> (rows where <code>classification == 'uncorrected_oracle_error'</code>). Pass 2 reconciles a subset.</p>
+
+            <h3>Row-level fields now exposed</h3>
+            <p><code>candidate_mismatches.json.rows[]</code> exposes for every one of the 94:</p>
+            <ul style="line-height:1.8;">
+                <li><code>id</code>, <code>raw_condition_id</code>, <code>question_text</code>, <code>category</code></li>
+                <li><code>first_proposal</code> (<code>P_i1</code>), <code>final_payoff</code> (<code>S_i</code>), <code>coded_benchmark</code> (<code>G_i_label</code>)</li>
+                <li><code>operative_proposed</code>, <code>operative_final</code></li>
+                <li><code>stratum</code> — <code>two_benchmark</code> if both passes independently coded this specific row (n=55); <code>frozen</code> if assignment carried forward from a single pass (n=39).</li>
+                <li><code>G_i_source</code></li>
+                <li><code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code> — replication-grade per-row correctness flags from the paper's reconciliation pipeline.</li>
+                <li><code>mismatch_agreed</code> — boolean equivalent to <code>(stratum == 'two_benchmark')</code>. <strong>Per-row, 55 of 94 are agreed.</strong></li>
+            </ul>
+
+            <h3>What is <em>not</em> yet exposed</h3>
+            <ul style="line-height:1.8;">
+                <li>Per-row LLM rationales (free-text reasoning behind each flag).</li>
+                <li>Exact prompts used in pass 1 vs pass 2.</li>
+                <li>Blinded third-pass independent validation against an external human coder.</li>
+                <li>Sensitivity of the 94 count to rule-text recovery — i.e. how many flagged rows depend on edited or partial rule text.</li>
+            </ul>
+            <p style="color:#475569;">Rationales and prompts live in the paper appendix repository; they are not in the public dashboard pending an independent-coder validation pass. Treat the 94 number as a <strong>diagnostic measurement</strong> over the disputed-contract panel — not a population-wide error rate, and not a final adjudication of any specific contract.</p>
+
+            <h3>Paper's "64 agreed" figure</h3>
+            <p>Paper Table 1 reports <strong>64 mismatches agreed at the category level</strong>. This is a coarser aggregate than per-row stratum agreement: it asks whether per-category counts agree across passes, not whether a specific row was independently coded twice. Per-row stratum agreement (55) is what referees should use for replication-grade auditing of individual contracts. Both numbers come from the same two-pass benchmark; they answer different questions.</p>
+
+            <p style="color:#475569;">The paper's design does not identify full-population accuracy, trader losses, causal effects, or cross-platform generalizability.</p>
 
         </div>
     </section>

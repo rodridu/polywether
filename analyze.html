@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Rule Linter &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260505e">
+    <link rel="stylesheet" href="css/styles.css?v=20260505f">
     <meta name="description" content="Paste prediction-market rule text. Get a rule-clarity screen — named source, fallback, edge cases, time zone, invalid rules.">
 </head>
 <body>
@@ -227,43 +227,78 @@
         return false;
     }
 
+    // Lightweight category detection from question + body.
+    function detectCategory(q, body) {
+        var t = ((q || '') + ' ' + (body || '')).toLowerCase();
+        if (/\b(vs\.?|spread|over\/?under|o\/u|nba|nfl|mlb|nhl|ipl|epl|atp|wta|nascar|game total|games total|won the|will .* win on|score|kill handicap)\b/.test(t)) return 'sports';
+        if (/\b(election|senator|congress|presiden|vote|ballot|primary|caucus|trump|biden|harris|gop|democrat|republican|cabinet|nominee|appointment|inauguration|impeach|filibuster|legislat|bill (will|to|on)|executive order)\b/.test(t)) return 'politics';
+        if (/\b(bitcoin|btc|ethereum|eth|solana|sol|usdc|usdt|stablecoin|on-?chain|token|blockchain|defi|airdrop|dex|coinbase|binance|kraken)\b/.test(t)) return 'crypto';
+        if (/\b(invade|invasion|incursion|battalion|missile|strike|sanction|hezbollah|hamas|israel|ukraine|russia|china|north korea|iran|nato|deploy|forces|shutdown|tariff)\b/.test(t)) return 'geopolitics';
+        if (/\b(launch|release|ipo|approval|fda|rate (cut|hike|decision)|fomc|inflation|cpi|gdp|jobs report|earnings)\b/.test(t)) return 'finance_business';
+        return 'generic';
+    }
+
     function buildSuggestedRewrite(q, flags, body) {
         // Template-based rewrite. Bracketed placeholders mark fields the linter could not find.
         function ph(label) { return '[' + label + ']'; }
 
-        var sourceFill = ph('PRIMARY SOURCE — name a specific external authority (e.g. Reuters, AP, named .gov page)');
+        var cat = detectCategory(q, body);
+
+        // Per-category default suggestions for the bracketed source/fallback strings.
+        var SOURCE_HINT = {
+            sports:           'official league box score (e.g. NBA.com, NFL.com), confirmed by ESPN final',
+            politics:         'official record (e.g. clerk.house.gov, senate.gov vote roll), confirmed by AP wire',
+            crypto:           'on-chain reading at a fixed block height OR closing price on a named exchange (e.g. Coinbase, Binance) at a specific UTC time',
+            geopolitics:      'AP wire OR Reuters wire confirming the event; backed by an official .gov / military communique if applicable',
+            finance_business: 'primary regulator / company filing (e.g. SEC EDGAR, FDA approval letter, Fed FOMC statement); confirmed by Bloomberg or Reuters',
+            generic:          'a specific external authority (e.g. Reuters, AP, named .gov page)'
+        };
+        var FALLBACK_HINT = {
+            sports:           'a second league-recognized source (e.g. league press release) if the box score is delayed or contested',
+            politics:         'C-SPAN floor recording timestamp + AP confirmation if the official record lags',
+            crypto:           'a backup exchange or block-height reading from a different node, with snapshot rules',
+            geopolitics:      'a second wire service (Reuters/AP/AFP) and an official statement from the named government',
+            finance_business: 'a second regulatory filing or a wire confirmation from Bloomberg/Reuters',
+            generic:          'a second external source named in advance'
+        };
+        var EDGE_HINT = {
+            sports:    ['game canceled / abandoned', 'overtime / shootout / tiebreaker', 'rescheduled past resolution date', 'sources disagree on final score'],
+            politics:  ['vote postponed / withdrawn', 'tie or no quorum', 'resolution delayed past calendar deadline', 'official source contradicts wire reporting'],
+            crypto:    ['exchange outage at snapshot time', 'block reorg', 'pricing across exchanges diverges by > X bps', 'token redenomination / fork'],
+            geopolitics: ['ambiguous attribution (proxy actors)', 'event partially completed (limited strike vs ground incursion)', 'cease-fire announced before deadline', 'sources disagree on whether threshold met'],
+            finance_business: ['filing delayed / amended', 'partial approval / conditional approval', 'preliminary vs final number revised', 'sources disagree on whether threshold met'],
+            generic:   ['cancellation / postponement / partial event', 'sources conflict on whether threshold met']
+        };
+
+        var sourceFill = ph('PRIMARY SOURCE — ' + SOURCE_HINT[cat]);
         if (flags["Named external source"]) {
             var urlMatch = body.match(/https?:\/\/[^\s)\]]+/);
             sourceFill = urlMatch ? urlMatch[0] : ph('PRIMARY SOURCE — confirm the named source above');
         }
         var fallbackFill = flags["Fallback / contingency language"]
             ? ph('FALLBACK SOURCE — confirm the alternate source named above')
-            : ph('FALLBACK SOURCE — what source resolves the market if the primary is unavailable, delayed, or contradictory');
+            : ph('FALLBACK SOURCE — ' + FALLBACK_HINT[cat]);
         var deadlineFill = flags["Deadline / cutoff"] ? ph('DEADLINE — confirm cutoff above') : ph('DEADLINE — DATE');
         var tzFill       = flags["Time zone"]         ? ph('TIME ZONE — confirm zone above')   : ph('TIME ZONE — e.g. ET, UTC');
         var fallbackEvalFill = ph('FALLBACK EVALUATION TIME — when fallback takes over');
         var finalEvalFill    = ph('FINAL EVALUATION TIME — past which market resolves INVALID');
         var eventDef         = q || ph('EVENT DEFINITION — restate question as a precise observable fact');
 
-        var edgeLines;
-        if (flags["Edge-case language"]) {
-            edgeLines = [
-                '  - If [cancellation / postponement / partial event], resolve as ' + ph('YES / NO / INVALID') + '.',
-                '  - If sources conflict, use ' + ph('TIE-BREAKING HIERARCHY — which source wins, in what order') + '.'
-            ];
-        } else {
-            edgeLines = [
-                '  - If event is canceled, resolve as ' + ph('YES / NO / INVALID') + '.',
-                '  - If event is postponed past the deadline, resolve as ' + ph('YES / NO / INVALID') + '.',
-                '  - If event is partially completed (tie, walk-off, technicality), resolve as ' + ph('YES / NO / INVALID') + '.',
-                '  - If sources conflict, use ' + ph('TIE-BREAKING HIERARCHY — which source wins, in what order') + '.'
-            ];
-        }
+        // Edge cases — category-aware lines, plus a tie-break line.
+        var edgeBase = (flags["Edge-case language"] ? EDGE_HINT[cat].slice(0,2) : EDGE_HINT[cat]);
+        var edgeLines = edgeBase.map(function(label) {
+            return '  - If ' + label + ', resolve as ' + ph('YES / NO / INVALID') + '.';
+        });
+        edgeLines.push('  - If listed sources conflict, apply this hierarchy: ' + ph('TIE-BREAKING HIERARCHY — which source wins, in what order') + '.');
 
         var invalidLine = 'If no listed source gives a determinate answer by ' + finalEvalFill + ', resolve INVALID.';
         if (!flags["Invalid / N/A rule"]) invalidLine += ' (No INVALID/N/A rule detected in your text — add one.)';
 
+        var header = '/* Detected category: ' + cat + ' */';
+
         return [
+            header,
+            '',
             'This market resolves YES if ' + eventDef + ' occurs by ' + deadlineFill + ' at ' + tzFill + ',',
             'according to ' + sourceFill + '.',
             '',
