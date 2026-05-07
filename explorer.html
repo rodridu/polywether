@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Analyze a market &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506b">
+    <link rel="stylesheet" href="css/styles.css?v=20260506c">
     <meta name="description" content="Filterable table of 2,221 disputed Polymarket-UMA contracts.">
 </head>
 <body>
@@ -54,9 +54,15 @@
                 <button type="submit" class="btn btn-primary">Analyze market</button>
             </form>
 
-            <p style="margin-top: 12px; font-size: 0.86em; color: #64748b;">
-                Question-text coverage is 79.1% (1,756 / 2,221). Rows without question text show <code>[question text missing]</code>; chain type, final payoff, and risk tier are still observed.
-            </p>
+            <details class="explorer-coverage-note">
+                <summary><strong>Why are some rows showing <code>[question text missing]</code>?</strong> Question-text coverage is 79.1% (1,756 / 2,221).</summary>
+                <p style="margin-top: 8px;">
+                    <strong>465 of 2,221 disputed contracts (20.9%)</strong> have no recoverable Polymarket-side metadata &mdash; question, resolution description, AND UMA ancillary text all null. The settlement chain (UMA <code>RequestPrice</code> / <code>DisputePrice</code> / <code>SettlePrice</code>) is still observed: chain type, first proposal, final payoff, multi-episode flag, and the audit checklist all populate normally for these rows. They are tagged <code>settlement_risk_tier = High</code> via the <em>Rule text not recoverable</em> rule.
+                </p>
+                <p>
+                    Three known causes (in priority): off-Polymarket UMA requests that never indexed back to a market record, <code>condition_id</code> schema drift between rev3 panel and <code>pm_markets</code>, and metadata purged before the <code>2026-04-23</code> snapshot. See <a href="research.html#limitations">Research &rarr; Limitations</a> for the full coverage discussion. Filter to these rows with the <strong>Question text: Missing</strong> chip below.
+                </p>
+            </details>
         </div>
     </section>
 

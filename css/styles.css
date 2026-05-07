@@ -3078,6 +3078,28 @@ a.chain-split-card-link:hover {
     border: 1px solid #cbd5e1;
 }
 
+/* Explorer coverage note */
+.explorer-coverage-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 0.86em;
+    color: var(--gray-800);
+}
+.explorer-coverage-note > summary {
+    cursor: pointer;
+    color: var(--gray-800);
+    line-height: 1.5;
+}
+.explorer-coverage-note p {
+    line-height: 1.55;
+    color: var(--gray-700);
+    margin: 0 0 8px 0;
+}
+.explorer-coverage-note p:last-child { margin-bottom: 0; }
+
 /* Build version stamp in footer */
 .footer-build {
     margin-top: 12px;
