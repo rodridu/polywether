@@ -1,60 +1,51 @@
 {
-  "sample_frame": "priced disputed binary subset (markets with at least one trade in the [-30d, 0d) window relative to settlement; condition_id-linked subset of the 2,221 disputed-contract panel)",
+  "_provenance": {
+    "source": "Du (2026), Table 4 + §4.2 decomposition. Binary-binary disputed subset (Yes/No first proposal AND Yes/No final payoff).",
+    "paper_draft_date": "2026-05-10",
+    "data_snapshot": "2026-04-29"
+  },
+  "sample_frame": "Binary-binary disputed subset: first proposal in {Yes, No} AND final payoff in {Yes, No}, with pre-proposal trade in the [-30d, 0d) window. N=1,066.",
   "main": {
-    "n_priced_disputed": 1075,
-    "mean_brier_final": 0.0911686888951899,
+    "n_priced_disputed": 1066,
+    "pooled_brier": 0.091,
     "revised": {
-      "n": 229,
-      "mean_brier_final": 0.3107714573403728,
-      "share_of_n": 0.21302325581395348,
-      "share_of_pooled_loss": 0.726143465031076
+      "n": 220,
+      "mean_brier_final": 0.318,
+      "share_of_n": 0.206,
+      "share_of_pooled_loss": 0.721
     },
     "confirmed": {
       "n": 846,
-      "mean_brier_final": 0.03172538632551287,
-      "share_of_n": 0.7869767441860465,
-      "share_of_pooled_loss": 0.27385653496892526
+      "mean_brier_final": 0.032,
+      "share_of_n": 0.794,
+      "share_of_pooled_loss": 0.279
     }
   },
-  "final_vs_proposal": [
+  "transition_cells": [
     {
-      "bucket": "all_revised_binary_priced",
-      "n": 220,
-      "brier_vs_final": 0.31811262542485136,
-      "brier_vs_proposal": 0.5014717808213021
+      "transition": "Confirmed No",
+      "n": 490,
+      "mean_brier": 0.022,
+      "se": 0.004
     },
     {
-      "bucket": "Yes_to_No",
+      "transition": "Revised Yes->No",
       "n": 126,
-      "brier_vs_final": 0.3210894611877767,
-      "brier_vs_proposal": 0.49203785068596484
+      "mean_brier": 0.321,
+      "se": 0.034
     },
     {
-      "bucket": "No_to_Yes",
+      "transition": "Confirmed Yes",
+      "n": 356,
+      "mean_brier": 0.046,
+      "se": 0.007
+    },
+    {
+      "transition": "Revised No->Yes",
       "n": 94,
-      "brier_vs_final": 0.3141223987639089,
-      "brier_vs_proposal": 0.5141172616410092
+      "mean_brier": 0.314,
+      "se": 0.039
     }
   ],
-  "coverage": [
-    {
-      "slice": "all_disputed_binary",
-      "n_total": 1443,
-      "n_with_trade": 1080,
-      "coverage": 0.7484407484407485
-    },
-    {
-      "slice": "confirmed",
-      "n_total": 1106,
-      "n_with_trade": 846,
-      "coverage": 0.7649186256781193
-    },
-    {
-      "slice": "revised",
-      "n_total": 332,
-      "n_with_trade": 229,
-      "coverage": 0.6897590361445783
-    }
-  ],
-  "methodology_note": "Brier score computed against the final settled outcome over the [-30d, 0d) trading window. Revised contracts (n=229) carry mean Brier 0.31; confirmed contracts (n=846) carry mean Brier 0.03. The pooled-loss decomposition shows revised contracts contribute 72.6% of total Brier loss despite being 21.3% of the priced sample."
+  "methodology_note": "Brier score against the binary final settled outcome, using pre-proposal Yes-token price (last trade within 7 days). Revised contracts (20.6% of sample) carry 72.0% of pooled Brier loss; confirmed contracts (79.4%) carry 28.0%. Within-final-outcome revised-minus-confirmed Brier gap is +0.30 (S=No cell) and +0.27 (S=Yes cell)."
 }

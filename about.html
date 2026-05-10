@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>About &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506f">
+    <link rel="stylesheet" href="css/styles.css?v=20260510a">
     <meta name="description" content="About the Settlement Explorer: data construction, sample, limitations, citation.">
 </head>
 <body>
@@ -58,7 +58,7 @@
                 <li><strong>661,949</strong> Polymarket-via-UMA settlement conditions tracked.</li>
                 <li><strong>2,221</strong> disputed contracts (≥1 counter-bond posted) — analysis sample.</li>
                 <li><strong>530 (24.1%)</strong> end with a final payoff different from the first proposal.</li>
-                <li><strong>94</strong> broad candidate mismatches under a two-pass LLM-coded benchmark.</li>
+                <li><strong>64</strong> candidate rule-divergent revisions flagged by a two-pass LLM-coded benchmark (paper headline), concentrated in Path C request-voiding chains. Preliminary pending independent blinded re-coding.</li>
             </ul>
 
             <h2>What we do NOT claim</h2>
@@ -76,7 +76,7 @@
 
             <h2>Researcher</h2>
             <p>
-                <strong>Hongzhen Du</strong>, Northwestern University. Built on the working paper "Settlement-State Construction in Prediction-Market Contracts." Full methodology, sample construction, and limitations: <a href="research.html">Research →</a>. Data fields and JSON endpoints: <a href="docs.html">Docs →</a>.
+                <strong>Hongzhen Du</strong>, Northwestern University. Built on the working paper "When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets." Full methodology, sample construction, and limitations: <a href="research.html">Research →</a>. Data fields and JSON endpoints: <a href="docs.html">Docs →</a>.
             </p>
         </div>
     </section>
@@ -96,7 +96,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.19</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.20</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">
                 &copy; 2026 Hongzhen Du

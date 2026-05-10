@@ -9,7 +9,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Research &amp; Data &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506f">
+    <link rel="stylesheet" href="css/styles.css?v=20260510a">
     <meta name="description" content="Working paper, sample funnel, methodology, benchmark transparency, replication checklist, and limitations for the Settlement Risk Monitor.">
 </head>
 <body class="research-page">
@@ -45,7 +45,7 @@
     <section class="hero hero-compact">
         <div class="hero-inner research-hero-inner">
             <p class="hero-eyebrow">Research &amp; Data</p>
-            <h1>Settlement-State Construction in Prediction-Market Contracts</h1>
+            <h1>When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets</h1>
             <p class="hero-description">
                 Working paper by Hongzhen Du, Northwestern University. Reconstructs how disputed Polymarket contracts move from first proposal to final payoff. Distinguishes world facts <em>W</em>, rule-implied label <em>G</em>, and settlement state <em>S</em>.
             </p>
@@ -56,7 +56,7 @@
                 <a href="query.html" class="btn btn-secondary">SQL Lab</a>
             </div>
             <p class="research-version-strip">
-                Paper draft <code>2026-05-05</code> &middot; data snapshot <code>2026-04-23</code> &middot; panel through <code>2026-04-22</code> &middot; build <code>3.15</code>
+                Paper draft <code>2026-05-05</code> &middot; data snapshot <code>2026-04-29</code> &middot; panel through <code>2026-04-22</code> &middot; build <code>3.15</code>
             </p>
         </div>
     </section>
@@ -163,13 +163,16 @@
 
                     <h2 id="benchmark">Benchmark transparency</h2>
                     <p>
-                        The candidate-mismatch layer uses a two-pass LLM coding protocol against recoverable contract text and named source. Pass 1 flags 94 broad candidate mismatches at the row level (<code>classification == 'uncorrected_oracle_error'</code>). The paper reports 64 mismatches agreed at the category level. The dashboard exposes row-level benchmark stratum: <strong>55 of 94 are <code>two_benchmark</code> rows</strong> (independently coded in both passes), and <strong>39 are <code>frozen</code> rows</strong> (carried forward from a single pass).
+                        The candidate-mismatch layer is a diagnostic, not a population error estimate. Two LLM-coded passes from different model families are applied to contract text, named sources, and public evidence on the disputed contracts with a determinate binary rule-implied label. Both passes are blind to the realized settlement state.
                     </p>
                     <p>
-                        For replication-grade auditing of individual contracts, use the row-level flag <code>mismatch_agreed = (stratum == 'two_benchmark')</code>. Use the 64 figure only as the paper's category-level aggregate. Both numbers come from the same two-pass benchmark; they answer different questions.
+                        <strong>The paper headline is 64 cases where both coding passes agree that the contract's settled label diverges from the rule-implied label coded from its own text.</strong> Of those 64, <strong>63 sit in Path C</strong> (request-voiding chains) and <strong>1 in Path D</strong> (repeated-request chains). The Path C concentration is descriptive rather than causal: it shows where candidate mismatches concentrate, not why they arise.
                     </p>
                     <p>
-                        Per-row fields exposed in <code>candidate_mismatches.json</code>: <code>stratum</code>, <code>G_i_source</code>, <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>, <code>mismatch_agreed</code>. See <a href="docs.html#benchmark-transparency">Docs &rarr; Benchmark validation transparency</a> for the full schema.
+                        The pipeline also produces a broader pass-1-only count of 94 rows (<code>classification == 'uncorrected_oracle_error'</code>) before reconciliation; <code>candidate_mismatches.json</code> exposes all 94 with per-row stratum (55 <code>two_benchmark</code>, 39 <code>frozen</code>), <code>G_i_source</code>, <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>. Use the paper's 64 as the headline; use the broader 94 only when explicitly auditing the pre-reconciliation pass.
+                    </p>
+                    <p>
+                        Independent blinded re-coding by external coders is the natural next step and is not yet complete (paper &sect;7.3). Treat the 64 as a concrete audit list pending replication. The audit list is distributed in the paper's replication package; see <a href="docs.html#benchmark-transparency">Docs &rarr; Benchmark validation transparency</a> for the full schema.
                     </p>
 
                     <h2>What the paper does NOT claim</h2>
@@ -225,7 +228,7 @@
 
                     <div class="research-sidecard">
                         <h3>Cite</h3>
-                        <p class="research-cite-text">Du, Hongzhen. "Settlement-State Construction in Prediction-Market Contracts." Working paper, Northwestern University, 2026.</p>
+                        <p class="research-cite-text">Du, Hongzhen. "When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets." Working paper, Northwestern University, 2026.</p>
                         <p><a href="cite.html" class="research-sidelink">Citation guide for journalists &rarr;</a></p>
                     </div>
 
@@ -249,7 +252,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-        <div class="footer-build">Build: <code>3.19</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+        <div class="footer-build">Build: <code>3.20</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
         <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">

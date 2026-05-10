@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506f">
+    <link rel="stylesheet" href="css/styles.css?v=20260510a">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
 </head>
 <body>
@@ -78,7 +78,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.19</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.20</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
@@ -160,94 +160,79 @@
         return notes;
     }
 
-    // Map raw category strings to readable buckets (mirrors paper Appendix B groupings).
-    function bucketCategory(cat) {
-        if (!cat) return 'uncategorized';
-        var c = cat.toLowerCase();
-        if (c === 'sports' || c === 'esports')    return 'Sports';
-        if (c === 'politics' || c === 'elections' || c === 'geopolitics') return 'Politics / Geopolitics';
-        if (c === 'crypto' || c === 'finance')    return 'Crypto / Finance';
-        if (c === 'weather' || c === 'science' || c === 'nature') return 'Weather / Nature';
-        return 'Other';
+    // Color ramp: white (0%) → deep red (50%+).
+    function cellColor(rate, n) {
+        if (!n) return '#f8fafc';
+        var t = Math.min(1, rate / 0.5);
+        var h = 45 - 45 * t;
+        var s = 70 + 2 * t;
+        var l = 97 - 55 * t;
+        return 'hsl(' + h.toFixed(0) + ',' + s.toFixed(0) + '%,' + l.toFixed(0) + '%)';
+    }
+    function textColor(rate, n) {
+        if (!n) return 'var(--gray-500)';
+        return rate >= 0.32 ? '#fff' : 'var(--gray-900)';
     }
 
-    function renderCrossTab(rows) {
-        // chain_type × category bucket heatmap
-        var chains = ['Request-voiding chain', 'Repeated adapter-routed request'];
-        var chainShort = { 'Request-voiding chain': 'Request-voiding', 'Repeated adapter-routed request': 'Repeated adapter' };
-        var buckets = ['Sports', 'Politics / Geopolitics', 'Crypto / Finance', 'Weather / Nature', 'Other', 'uncategorized'];
-        var stats = {};
-        chains.concat(['__total__']).forEach(function(c) {
-            stats[c] = {};
-            buckets.concat(['__total__']).forEach(function(b) { stats[c][b] = { n: 0, n_revised: 0, n_mm: 0 }; });
-        });
-        rows.forEach(function(r) {
-            if (r.is_test) return;
-            var chain = r.chain_type;
-            if (chains.indexOf(chain) === -1) return;
-            var b = bucketCategory(r.category);
-            [chain, '__total__'].forEach(function(c) {
-                [b, '__total__'].forEach(function(bk) {
-                    stats[c][bk].n += 1;
-                    if (r.revised) stats[c][bk].n_revised += 1;
-                    if (r.candidate_mismatch) stats[c][bk].n_mm += 1;
-                });
-            });
-        });
+    // Render the heatmap from paper Table A3 (binary-binary disputed subset, n=2,117).
+    // Columns: Sports / Politics-Geopolitics / Crypto / Weather-Nature / Residual / All.
+    // Rows: Path C (request-voiding) / Path D (repeated-request) / All chains.
+    function renderPaperCrossTab(paperData) {
+        var rows = paperData.rows;
+        var all = paperData.subtotals.all;
+        var ident = paperData.subtotals.identified;
 
-        // Color ramp: white (0%) → deep red (50%+). Clamp 0-0.5 then linear.
-        function cellColor(rate, n) {
-            if (!n) return '#f8fafc';
-            var t = Math.min(1, rate / 0.5);
-            // Interpolate hsl: 0=hsl(45,70%,97%) yellow-cream, 1=hsl(0,72%,42%) deep red
-            var h = 45 - 45 * t;
-            var s = 70 + 2 * t;
-            var l = 97 - 55 * t;
-            return 'hsl(' + h.toFixed(0) + ',' + s.toFixed(0) + '%,' + l.toFixed(0) + '%)';
-        }
-        function textColor(rate, n) {
-            if (!n) return 'var(--gray-500)';
-            return rate >= 0.32 ? '#fff' : 'var(--gray-900)';
-        }
-
-        function cell(s) {
-            if (!s || !s.n) {
-                return '<td class="rmap-cell rmap-cell-empty"><span class="rmap-rate">&mdash;</span></td>';
-            }
-            var rate = s.n_revised / s.n;
-            var smallN = s.n < 30;
-            var bg = cellColor(rate, s.n);
-            var fg = textColor(rate, s.n);
-            return '<td class="rmap-cell' + (smallN ? ' rmap-cell-small' : '') + '" style="background:' + bg + ';color:' + fg + ';" title="' + s.n_revised + ' revised of ' + s.n + ' disputed">' +
-                '<div class="rmap-rate">' + (100*rate).toFixed(0) + '%</div>' +
-                '<div class="rmap-n">n=' + s.n + (smallN ? ' *' : '') + '</div>' +
+        function cell(rate_pct, n) {
+            if (n == null || n === 0) return '<td class="rmap-cell rmap-cell-empty"><span class="rmap-rate">&mdash;</span></td>';
+            var rate = rate_pct / 100;
+            var smallN = n < 30;
+            var bg = cellColor(rate, n);
+            var fg = textColor(rate, n);
+            return '<td class="rmap-cell' + (smallN ? ' rmap-cell-small' : '') + '" style="background:' + bg + ';color:' + fg + ';" title="rate ' + rate_pct.toFixed(1) + '% over n=' + n + '">' +
+                '<div class="rmap-rate">' + rate_pct.toFixed(1) + '%</div>' +
+                '<div class="rmap-n">n=' + n + (smallN ? ' *' : '') + '</div>' +
                 '</td>';
         }
-        function rowFor(chain, label, isTotal) {
-            return '<tr' + (isTotal ? ' class="rmap-row-total"' : '') + '><th class="rmap-row-label">' + label + '</th>' +
-                buckets.map(function(b) { return cell(stats[chain][b]); }).join('') +
-                cell(stats[chain].__total__) +
-                '</tr>';
+
+        // Build row HTML for a given path (C, D, or all).
+        function rowFor(path, label, isTotal) {
+            // For each category, pull n and rate based on path
+            var html = '<tr' + (isTotal ? ' class="rmap-row-total"' : '') + '><th class="rmap-row-label">' + label + '</th>';
+            rows.forEach(function(c) {
+                if (path === 'C')      html += cell(c.rev_pct_C,   c.N_C);
+                else if (path === 'D') html += cell(c.rev_pct_D,   c.N_D);
+                else                   html += cell(c.rev_pct_all, c.N_all);
+            });
+            // 'All chains' column
+            if (path === 'C')      html += cell(all.rev_pct_C,   all.N_C);
+            else if (path === 'D') html += cell(all.rev_pct_D,   all.N_D);
+            else                   html += cell(all.rev_pct_all, all.N_all);
+            html += '</tr>';
+            return html;
         }
 
-        // Legend stops (0%, 10%, 20%, 30%, 40%+)
         var legendStops = [0, 0.10, 0.20, 0.30, 0.40, 0.50].map(function(r) {
             return '<span class="rmap-legend-stop" style="background:' + cellColor(r, 1) + ';color:' + textColor(r, 1) + '">' + (100*r).toFixed(0) + '%</span>';
         }).join('');
 
+        var colHeaders = rows.map(function(c) {
+            return '<th class="rmap-col-label">' + escapeHtml(c.category) + (c.is_residual ? ' &nbsp;<span class="muted" style="font-size:0.8em;">(heterog.)</span>' : '') + '</th>';
+        }).join('');
+
         return '<div class="rates-block">' +
             '<h2>Where settlement risk concentrates</h2>' +
-            '<p style="margin:0 0 6px 0;color:#475569;font-size:0.94em;">Revision rate = revised / disputed. Same 2,221-disputed sample. Cell color encodes the rate (cream &rarr; deep red).</p>' +
+            '<p style="margin:0 0 4px 0;color:#475569;font-size:0.94em;">Revision rate by realized chain type &times; category, on the binary-binary disputed subset (N=2,117). Buckets are text-classified per paper Appendix B.3 from keyword matches on the question text; Polymarket\'s own <code>category</code> tag is noisy (many sports contracts tagged &ldquo;Other&rdquo;).</p>' +
+            '<p style="margin:0 0 12px 0;color:#475569;font-size:0.92em;"><strong>Key pattern:</strong> Path&nbsp;D rates exceed Path&nbsp;C in Sports (49.2 vs 16.1) and Crypto (38.0 vs 6.2). Politics/Geopolitics reverses (Path&nbsp;C 29.5%, Path&nbsp;D 14.4%) &mdash; high-salience contracts are routed through DVM voiding rather than parallel re-resolution.</p>' +
             '<div class="rmap-legend"><span class="rmap-legend-label">Legend:</span>' + legendStops + '<span class="rmap-legend-note">&nbsp;&nbsp;n &lt; 30 marked with *</span></div>' +
             '<table class="rmap-heatmap">' +
-                '<thead><tr><th></th>' + buckets.map(function(b) { return '<th class="rmap-col-label">' + escapeHtml(b) + '</th>'; }).join('') + '<th class="rmap-col-label">All</th></tr></thead>' +
+                '<thead><tr><th></th>' + colHeaders + '<th class="rmap-col-label">All</th></tr></thead>' +
                 '<tbody>' +
-                    rowFor('Request-voiding chain', chainShort['Request-voiding chain']) +
-                    rowFor('Repeated adapter-routed request', chainShort['Repeated adapter-routed request']) +
-                    rowFor('__total__', 'All chains', true) +
+                    rowFor('C', 'Path C (request-voiding)') +
+                    rowFor('D', 'Path D (repeated-request)') +
+                    rowFor('all', 'All chains', true) +
                 '</tbody>' +
             '</table>' +
-            '<p style="margin-top:10px;font-size:0.85em;color:#64748b;font-style:italic;">Read in one glance: a disputed Politics or Crypto contract that lands on a repeated-adapter chain carries a markedly higher revision base-rate than the same category on a request-voiding chain. Small-N cells (*) are not stable point estimates. Computed on the fly from <code>data/disputed_contracts.json</code>.</p>' +
+            '<p style="margin-top:12px;font-size:0.85em;color:#64748b;">Source: paper Table A3, paper draft 2026-05-10. Identified-bucket subtotal: N=1,069 (21.5% revised). Residual bucket (1,048 contracts) covers pop-culture, celebrity, news, and miscellaneous events that did not match a clean keyword bucket; treat residual rates as a heterogeneous-mix average. Within-row gaps between N<sub>all</sub> and N<sub>C</sub>&nbsp;+&nbsp;N<sub>D</sub> in the &ldquo;All&rdquo; row (12 contracts) are single-episode disputed contracts whose dispute event is parsed without a separate proposal episode and sit outside the Path C/Path D split. Data file: <code>data/conditional_revision_paper.json</code>.</p>' +
             '</div>';
     }
 
@@ -311,11 +296,11 @@
             console.warn('risk_map_examples.json load failed:', err);
         });
 
-        // chain_type x category cross-tab — computed client-side
-        fetch('data/disputed_contracts.json').then(r => r.json()).then(dc => {
-            document.getElementById('rates-crosstab').innerHTML = renderCrossTab(dc.rows);
+        // chain_type x category cross-tab — paper Table A3 (Appendix B.3), text-classified buckets
+        fetch('data/conditional_revision_paper.json').then(r => r.json()).then(paper => {
+            document.getElementById('rates-crosstab').innerHTML = renderPaperCrossTab(paper);
         }).catch(function(err) {
-            console.warn('disputed_contracts.json load failed:', err);
+            console.warn('conditional_revision_paper.json load failed:', err);
         });
     }).catch(function(err) {
         console.error('conditional_rates.json load failed:', err);

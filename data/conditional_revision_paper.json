@@ -1,0 +1,21 @@
+{
+  "_provenance": {
+    "source": "Du (2026), 'When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets', Table A3 (Appendix B.3)",
+    "paper_draft_date": "2026-05-10",
+    "data_snapshot": "2026-04-29",
+    "construction": "Buckets built from keyword matches on the question text. Polymarket's own category tags are noisy; the paper uses these text-classified buckets for the chain-type x category cross-tab.",
+    "sample": "Binary-binary disputed subset (N=2,117). Within-row gaps between N_all and N_C + N_D (12 contracts in the 'All' row) reflect single-episode disputed contracts whose dispute event is parsed without a separate proposal episode and sit outside the Path C/Path D split."
+  },
+  "rows": [
+    { "category": "Sports",                "N_all": 411,  "rev_pct_all": 26.3, "N_C": 285,  "rev_pct_C": 16.1, "N_D": 126, "rev_pct_D": 49.2 },
+    { "category": "Politics/Geopolitics",  "N_all": 373,  "rev_pct_all": 22.0, "N_C": 190,  "rev_pct_C": 29.5, "N_D": 181, "rev_pct_D": 14.4 },
+    { "category": "Crypto",                "N_all": 169,  "rev_pct_all": 19.5, "N_C": 97,   "rev_pct_C": 6.2,  "N_D": 71,  "rev_pct_D": 38.0 },
+    { "category": "Weather/Nature",        "N_all": 116,  "rev_pct_all": 6.0,  "N_C": 106,  "rev_pct_C": 6.6,  "N_D": 10,  "rev_pct_D": 0.0 },
+    { "category": "Residual (heterogeneous)", "N_all": 1048, "rev_pct_all": 21.3, "N_C": 566, "rev_pct_C": 11.7, "N_D": 473, "rev_pct_D": 32.6, "is_residual": true }
+  ],
+  "subtotals": {
+    "identified": { "N_all": 1069, "rev_pct_all": 21.5, "N_C": 678,  "rev_pct_C": 16.4, "N_D": 388, "rev_pct_D": 30.9 },
+    "all":        { "N_all": 2117, "rev_pct_all": 21.4, "N_C": 1244, "rev_pct_C": 14.3, "N_D": 861, "rev_pct_D": 31.7 }
+  },
+  "interpretation": "Within the four cleanly-identifiable buckets, Path D revision rates exceed Path C rates in Sports (49.2 vs 16.1) and Crypto (38.0 vs 6.2). Politics/Geopolitics reverses the pattern: Path C revisions (29.5%) outnumber Path D (14.4%), consistent with high-salience political and geopolitical contracts being routed through DVM voiding rather than parallel re-resolution. Weather/Nature has the lowest overall revision rate (6.0%) and zero Path D revisions out of 10, consistent with auto-resolving event types where the underlying datum is unambiguous."
+}
