@@ -34,7 +34,10 @@
         var cls = tier === 'High' ? 'tier-high' :
                   tier === 'Caution' ? 'tier-caution' :
                   tier === 'Test' ? 'tier-test' : 'tier-low';
-        return '<span class="tier-badge ' + cls + '">' + tier + '</span>';
+        var dotCls = tier === 'High' ? 'tier-dot-high' :
+                     tier === 'Caution' ? 'tier-dot-caution' :
+                     tier === 'Test' ? 'tier-dot-test' : 'tier-dot-low';
+        return '<span class="tier-dot ' + dotCls + '"></span><span class="tier-badge ' + cls + '">' + tier + '</span>';
     }
 
     function riskFlagChips(r) {

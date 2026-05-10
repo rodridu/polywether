@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506d">
+    <link rel="stylesheet" href="css/styles.css?v=20260506e">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
 </head>
 <body>
@@ -43,10 +43,10 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-inner">
-            <p class="hero-eyebrow">Prediction-market settlement-risk infrastructure</p>
+            <p class="hero-eyebrow">Settlement risk is trading risk.</p>
             <h1>Settlement Risk Monitor</h1>
             <p class="hero-description">
-                Prediction markets are only as reliable as their resolution rules. We track disputed contracts, settlement chains, rule clarity, and historical revision rates so traders, journalists, and platforms can see when a market price carries settlement risk.
+                Prediction-market prices are only as reliable as the contracts behind them. This site tracks disputed contracts, settlement chains, rule clarity, and historical revision rates &mdash; so traders, journalists, and platforms can see when a price carries settlement risk, not just event risk.
             </p>
 
             <!-- Lookup search -->
@@ -122,64 +122,6 @@
     </section>
 
     <!-- Headline metrics -->
-    <section class="section section-alt">
-        <div class="container">
-            <h2>What this monitor covers</h2>
-            <div class="insights-row">
-                <a class="insight-card insight-card-link" href="explorer.html">
-                    <div class="insight-value" id="stat-total">661,949</div>
-                    <div class="insight-label">Contracts tracked</div>
-                    <div class="insight-context">Polymarket panel via UMA</div>
-                </a>
-                <a class="insight-card insight-card-link" href="explorer.html">
-                    <div class="insight-value" id="stat-disputed">2,221</div>
-                    <div class="insight-label">Disputed contracts analyzed</div>
-                    <div class="insight-context">At least one counter-bond posted</div>
-                </a>
-                <a class="insight-card insight-card-link" href="explorer.html?revised=true">
-                    <div class="insight-value" id="stat-revised">530</div>
-                    <div class="insight-label">Settlement revisions observed</div>
-                    <div class="insight-context"><span id="stat-revrate">24.1%</span> of disputed (with observed final payoff)</div>
-                </a>
-                <a class="insight-card insight-card-link" href="explorer.html?mismatch=candidate">
-                    <div class="insight-value" id="stat-mismatch">94</div>
-                    <div class="insight-label">Flagged for rule/payoff review</div>
-                    <div class="insight-context">Broad candidate mismatches at the row level. Of which: <strong>64</strong> at the category level (paper Table 1 aggregate); <strong>55</strong> at the row level under the stricter <code>stratum = two_benchmark</code> two-pass agreement criterion. <a href="docs.html#benchmark-transparency">Schema &rarr;</a></div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Glossary -->
-    <section class="section">
-        <div class="container container-narrow">
-            <h2>Core definitions</h2>
-            <p style="color:#475569;margin-bottom:18px;">A market price is only useful if the contract says clearly what counts as YES, NO, or INVALID. These are the terms the rest of the site uses.</p>
-            <dl class="glossary">
-                <dt>Settlement risk</dt>
-                <dd>Risk that a market's payoff depends on ambiguous resolution rules, weak sources, or dispute mechanics — not only on the real-world event.</dd>
-
-                <dt>Disputed contract</dt>
-                <dd>A Polymarket / UMA contract where at least one counter-bond was posted (n=2,221 in the panel).</dd>
-
-                <dt>Settlement revision</dt>
-                <dd>The final payoff differs from the first proposed outcome.</dd>
-
-                <dt>Chain type</dt>
-                <dd>The path the contract follows through UMA resolution. Two main types: <em>request-voiding</em> (DVM voids a request, adapter re-files) and <em>repeated adapter-routed request</em> (multiple requests against the same contract without DVM voiding).</dd>
-
-                <dt>Candidate mismatch</dt>
-                <dd>Diagnostic flag: the final payoff appears to disagree with a rule-implied label coded from the recoverable contract text. Not a proven error.</dd>
-
-                <dt>Risk tier</dt>
-                <dd>Screening label (High / Caution / Low) based on rule clarity and historical settlement patterns. Not a prediction that settlement will be wrong.</dd>
-            </dl>
-            <p style="margin-top: 16px;">
-                Liquidity-style monitors (e.g. <a href="https://bellwethermetrics.com/" target="_blank" rel="noopener">Bellwether</a>) ask whether a price is robust enough to cite. This monitor asks a different question: <strong>is the contract clean enough that the price means what users think it means?</strong>
-            </p>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-top">
@@ -196,7 +138,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.17</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.18</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">
                 &copy; 2026 Hongzhen Du
@@ -208,39 +150,13 @@
     </footer>
 
     <script>
-    // ---- number animation ----
-    (function() {
-        function animateValue(el, start, end, duration) {
-            var startTime = null;
-            function step(ts) {
-                if (!startTime) startTime = ts;
-                var p = Math.min((ts - startTime) / duration, 1);
-                p = 1 - Math.pow(1 - p, 3);
-                var val = start + (end - start) * p;
-                el.textContent = Math.floor(val).toLocaleString();
-                if (p < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-        var observed = false;
-        var observer = new IntersectionObserver(function(entries) {
-            if (entries[0].isIntersecting && !observed) {
-                observed = true;
-                animateValue(document.getElementById('stat-total'), 0, 661949, 1400);
-                animateValue(document.getElementById('stat-disputed'), 0, 2221, 1200);
-                animateValue(document.getElementById('stat-revised'), 0, 530, 1000);
-                animateValue(document.getElementById('stat-mismatch'), 0, 94, 800);
-            }
-        }, { threshold: 0.3 });
-        observer.observe(document.querySelector('.insights-row'));
-    })();
-
     // ---- Watchlist (high-risk contracts) ----
     function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
     function tierBadge(tier) {
         var cls = tier === 'High' ? 'tier-high' : tier === 'Caution' ? 'tier-caution' : 'tier-low';
-        return '<span class="tier-badge ' + cls + '">' + tier + '</span>';
+        var dotCls = tier === 'High' ? 'tier-dot-high' : tier === 'Caution' ? 'tier-dot-caution' : 'tier-dot-low';
+        return '<span class="tier-dot ' + dotCls + '"></span><span class="tier-badge ' + cls + '">' + tier + '</span>';
     }
 
     fetch('data/disputed_contracts.json').then(r => r.json()).then(d => {

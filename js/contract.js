@@ -45,7 +45,10 @@
         var tierCls = rec.settlement_risk_tier === 'High' ? 'tier-high'
                     : rec.settlement_risk_tier === 'Caution' ? 'tier-caution'
                     : rec.settlement_risk_tier === 'Test' ? 'tier-test' : 'tier-low';
-        var tierBadge = '<span class="tier-badge tier-badge-large ' + tierCls + '">Settlement risk: ' + escapeHtml(rec.settlement_risk_tier || '—') + '</span>';
+        var tierDotCls = rec.settlement_risk_tier === 'High' ? 'tier-dot-high'
+                       : rec.settlement_risk_tier === 'Caution' ? 'tier-dot-caution'
+                       : rec.settlement_risk_tier === 'Test' ? 'tier-dot-test' : 'tier-dot-low';
+        var tierBadge = '<span class="tier-dot ' + tierDotCls + '"></span><span class="tier-badge tier-badge-large ' + tierCls + '">Settlement risk: ' + escapeHtml(rec.settlement_risk_tier || '—') + '</span>';
         var reasons = (rec.risk_reasons && rec.risk_reasons.length)
             ? '<div class="contract-risk-reasons">' + rec.risk_reasons.map(function(rsn) { return '<span class="contract-risk-reason">' + escapeHtml(rsn) + '</span>'; }).join('') + '</div>'
             : '';
