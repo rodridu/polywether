@@ -3180,6 +3180,25 @@ a.chain-split-card-link:hover {
     .rmap-rate { font-size: 0.95em; }
 }
 
+/* Watchlist reason cell — short label + no wrap break */
+.watchlist-reason {
+    font-size: 0.85em;
+    line-height: 1.4;
+    white-space: normal;
+    max-width: 220px;
+}
+
+/* Explorer riskflag chips: keep on a single horizontal line where possible */
+.exp-col-flags {
+    white-space: normal;
+    line-height: 1.6;
+}
+.exp-col-flags .riskflag {
+    display: inline-block;
+    margin-right: 4px;
+    margin-bottom: 2px;
+}
+
 /* Risk-tier dots — visual scanability */
 .tier-dot {
     display: inline-block;

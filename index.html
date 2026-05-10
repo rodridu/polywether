@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506e">
+    <link rel="stylesheet" href="css/styles.css?v=20260506f">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
 </head>
 <body>
@@ -109,7 +109,8 @@
     <section class="section">
         <div class="container">
             <h2>High settlement-risk contracts <span class="muted" style="font-weight:normal;font-size:0.8em;">— sample of disputed contracts flagged High by the screening tier</span></h2>
-            <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed →</a> <em>5 Polymarket dev/test markets are tagged separately and excluded.</em></p>
+            <p style="color:#475569;margin-bottom:8px;">A contract is flagged <strong>High</strong> if it has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback. <a href="docs.html#risk-tier">How the tier is computed &rarr;</a></p>
+            <p style="color:#64748b;margin-bottom:8px;font-size:0.86em;font-style:italic;">Watchlist excludes 5 Polymarket dev/test markets and sports/esports contracts (which auto-resolve via league box scores and trip the rule mechanically without surfacing real settlement risk). The full High set is reachable via the button below.</p>
             <p class="data-status">
                 <strong>Data status:</strong> historical disputed-contract panel, not live market surveillance. Aggregate refresh runs weekly via <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">GitHub Actions</a>; per-contract data refreshes manually when the paper's analysis pipeline regenerates the panel. <a href="docs.html#refresh">Refresh cadence →</a>
             </p>
@@ -138,7 +139,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.18</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.19</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">
                 &copy; 2026 Hongzhen Du
@@ -159,16 +160,46 @@
         return '<span class="tier-dot ' + dotCls + '"></span><span class="tier-badge ' + cls + '">' + tier + '</span>';
     }
 
+    // Sports/esports auto-resolve via league box scores; rule-text "no named source"
+    // trips on them mechanically without surfacing real settlement risk. Excluding from
+    // the watchlist so the homepage shows non-trivial High-risk contracts.
+    var SPORTS_CATS = new Set(['sports', 'esports']);
+    function isSportsLike(r) {
+        if (SPORTS_CATS.has(String(r.category || '').toLowerCase())) return true;
+        var q = String(r.question_text || '');
+        if (/ vs\.? /i.test(q)) return true;
+        if (/Team Total: O\/U|Games Total: O\/U|^Spread:|Kill Handicap|^Series: |^[A-Z][a-z]+ [A-Z][a-z]+: O\/U/.test(q)) return true;
+        if (/(Bucs|Buccaneers|Panthers|Cowboys|Eagles|Patriots|Jets|Knicks|Lakers|Warriors|Celtics) /i.test(q)) return true;
+        return false;
+    }
+
+    // Short reason labels — prevents 4-line wrap in the Reason column
+    var REASON_SHORT = {
+        'Rule text not recoverable': 'No recoverable rule text',
+        'Rule text present but no named source AND no fallback': 'No source, no fallback',
+        'Broad candidate mismatch flagged': 'Candidate mismatch',
+        'No fallback language': 'No fallback',
+        'No edge-case language': 'No edge cases',
+        'No time-zone marker': 'No time zone',
+    };
+    function shortReasons(reasons) {
+        return (reasons || []).slice(0, 2).map(function(r) { return REASON_SHORT[r] || r; }).join(' · ');
+    }
+
     fetch('data/disputed_contracts.json').then(r => r.json()).then(d => {
-        var high = d.rows.filter(function(r) { return r.settlement_risk_tier === 'High' && r.question_text && !r.is_test; }).slice(0, 10);
-        var html = '<table class="explorer-table watchlist-table"><thead><tr><th>Risk</th><th>Question</th><th>Category</th><th>Reason(s)</th><th>Final</th></tr></thead><tbody>';
+        var high = d.rows.filter(function(r) {
+            return r.settlement_risk_tier === 'High'
+                && r.question_text
+                && !r.is_test
+                && !isSportsLike(r);
+        }).slice(0, 10);
+        var html = '<table class="explorer-table watchlist-table"><thead><tr><th>Risk</th><th>Question</th><th>Category</th><th>Reason</th><th>Final</th></tr></thead><tbody>';
         html += high.map(function(r) {
-            var reasons = (r.risk_reasons || []).slice(0, 2).join(' · ');
             return '<tr class="watch-row" data-id="' + r.id + '">' +
                 '<td>' + tierBadge(r.settlement_risk_tier) + '</td>' +
                 '<td>' + escapeHtml(r.question_text) + '</td>' +
                 '<td class="muted">' + escapeHtml(r.category || '—') + '</td>' +
-                '<td class="muted" style="font-size:0.85em;">' + escapeHtml(reasons) + '</td>' +
+                '<td class="muted watchlist-reason">' + escapeHtml(shortReasons(r.risk_reasons)) + '</td>' +
                 '<td><strong>' + escapeHtml(r.final_payoff || '—') + '</strong></td>' +
                 '</tr>';
         }).join('');

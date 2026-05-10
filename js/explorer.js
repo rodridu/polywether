@@ -41,19 +41,20 @@
     }
 
     function riskFlagChips(r) {
-        // Compact reasons: missing source / fallback / edge / mismatch / multi-episode / no-text
+        // Compact reasons: surface at most 2 chips per row to keep the column readable.
+        // Priority: mismatch > no rule text > no source > no fallback > no edge cases.
+        // Drop "repeated" (chain type already shown in its own column) and "clean".
         var a = r.audit || {};
         var chips = [];
+        if (r.candidate_mismatch) chips.push('<span class="riskflag riskflag-warn">mismatch</span>');
         if (!a.rule_text_present) chips.push('<span class="riskflag riskflag-warn">no rule text</span>');
         else {
             if (!a.named_source_present) chips.push('<span class="riskflag riskflag-warn">no source</span>');
             if (!a.fallback_present) chips.push('<span class="riskflag riskflag-mild">no fallback</span>');
             if (!a.edge_cases_present) chips.push('<span class="riskflag riskflag-mild">no edge cases</span>');
         }
-        if (r.candidate_mismatch) chips.push('<span class="riskflag riskflag-warn">mismatch</span>');
-        if (r.chain_type === 'Repeated adapter-routed request') chips.push('<span class="riskflag riskflag-info">repeated</span>');
-        if (chips.length === 0) chips.push('<span class="riskflag riskflag-ok">clean</span>');
-        return chips.slice(0, 4).join(' ');
+        if (chips.length === 0) return '<span class="muted">&mdash;</span>';
+        return chips.slice(0, 2).join(' ');
     }
 
     function renderRow(r) {
@@ -193,8 +194,29 @@
         });
     }
 
+    // Default sort: rows with question text first, then by tier severity (Mismatch > High > Caution > Low),
+    // then revised first within tier. Pushes the 465 [question text missing] rows to the bottom of the
+    // default view rather than scattering them through the table.
+    function defaultSortKey(r) {
+        var hasQ = r.question_text ? 0 : 1;             // 0 first, 1 last
+        var tierRank = r.candidate_mismatch ? 0
+                     : r.settlement_risk_tier === 'High'    ? 1
+                     : r.settlement_risk_tier === 'Caution' ? 2
+                     : r.settlement_risk_tier === 'Low'     ? 3
+                     : r.settlement_risk_tier === 'Test'    ? 5 : 4;
+        var revisedRank = r.revised ? 0 : 1;
+        return [hasQ, tierRank, revisedRank];
+    }
+    function compareRows(a, b) {
+        var ka = defaultSortKey(a), kb = defaultSortKey(b);
+        for (var i = 0; i < ka.length; i++) {
+            if (ka[i] !== kb[i]) return ka[i] - kb[i];
+        }
+        return 0;
+    }
+
     fetch('data/disputed_contracts.json').then(r => r.json()).then(d => {
-        allRows = d.rows;
+        allRows = d.rows.slice().sort(compareRows);
         wireFilters();
         setActiveChips();
         applyFilters();
