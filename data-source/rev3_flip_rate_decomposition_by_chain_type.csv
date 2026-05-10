@@ -1,8 +1,0 @@
-subset,n_contracts,n_flipped,flip_rate
-All disputed-mapped,2197,530,0.24123805188893946
-    canonical_correction_path,1257,178,0.14160700079554495
-    duplicate_independent_settlement_or_other,940,352,0.37446808510638296
-    P_i1 != 'Other' only,2183,516,0.2363719651855245
-    P_i1 == 'Other' only,14,14,1.0
-    canonical_correction_path AND P_i1 != 'Other',1257,178,0.14160700079554495
-    duplicate_independent AND P_i1 != 'Other',926,338,0.3650107991360691

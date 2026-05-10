@@ -3078,6 +3078,35 @@ a.chain-split-card-link:hover {
     border: 1px solid #cbd5e1;
 }
 
+/* Rule Linter rewrite-card actions */
+.rewrite-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.rewrite-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-tiny {
+    padding: 4px 10px;
+    font-size: 0.78em;
+    line-height: 1.4;
+}
+
+/* Risk Map cross-tab */
+.rates-crosstab-table th, .rates-crosstab-table td {
+    padding: 8px 10px;
+    font-size: 0.9em;
+}
+.rates-crosstab-table th { text-align: left; font-weight: 600; color: var(--gray-700); }
+.rates-crosstab-table .num { text-align: right; }
+.rates-crosstab-total td {
+    border-top: 2px solid var(--gray-300);
+    font-weight: 600;
+    background: #f8fafc;
+}
+
 /* Explorer coverage note */
 .explorer-coverage-note {
     margin-top: 12px;

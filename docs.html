@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Docs &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506c">
+    <link rel="stylesheet" href="css/styles.css?v=20260506d">
     <meta name="description" content="Settlement Risk Monitor data fields, JSON endpoints, refresh cadence, internal tools.">
 </head>
 <body>
@@ -77,6 +77,7 @@
                 <tr><th><code>/data/public_cases.json</code></th><td>7 named cases with status, market matches, and disputed-sample matches. Locate, do not adjudicate.</td></tr>
                 <tr><th><code>/data/chain_examples.json</code></th><td>10 hand-curated example contracts for Chain View, sports-only, with full request-by-request timelines.</td></tr>
                 <tr><th><code>/data/headline_statistics.json</code></th><td>Paper-level headline statistics (richer schema than the funnel summary).</td></tr>
+                <tr><th><code>/data/brier_decomposition.json</code></th><td>Brier-loss decomposition over the priced disputed binary subset. Fields: <code>main</code> (n, mean_brier, share_of_n, share_of_pooled_loss for revised vs confirmed); <code>final_vs_proposal</code> (Brier-vs-final and Brier-vs-proposal by Yes→No / No→Yes flip direction); <code>coverage</code> (priced subset coverage out of 1,443 disputed binary contracts).</td></tr>
                 <tr><th><code>/data/settlement_explorer.duckdb</code></th><td>Stripped DuckDB (10 MB) for in-browser queries via duckdb-wasm. Tables: <code>contracts</code> (2,221 rows), <code>episodes</code> (2,668), <code>funnel</code>, <code>chain_signatures</code>, <code>flip_decomposition</code>.</td></tr>
             </table>
 
@@ -100,6 +101,11 @@ console.log(highRisk.length, 'High-risk contracts');</pre>
 
             <h2 id="internal-tools">Linked tools</h2>
             <p>SQL Lab (<a href="query.html">query.html</a>), Audit (<a href="audit.html">audit.html</a>, nine-flag per-contract checklist), Chain View (<a href="chain.html">chain.html</a>), and Cases (<a href="cases.html">cases.html</a>) are also reachable from the footer. Source repo: <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">github.com/rodridu/polywether</a>.</p>
+
+            <h2 id="sample-frame">Sample frame &amp; the negRisk gap</h2>
+            <p>The disputed-contract panel (n=2,221) is the <strong>condition_id-linked subset</strong> of disputed Polymarket-via-UMA settlement events. Markets without a recoverable <code>condition_id</code> in the rev3 panel are out of scope &mdash; including some that resolve via Polymarket's <strong>negRisk</strong> mechanism (e.g. Paris weather contracts and some prediction-market families that use a negRisk multi-outcome adapter rather than the standard binary <code>condition_id</code> path).</p>
+            <p>If you query the SQL Lab and don't find a Polymarket market you remember (e.g. a Paris-temperature-on-day-X contract), the negRisk linkage is the most likely reason. The site does not currently bridge negRisk-resolved markets back to <code>pm_markets.condition_id</code>. The paper's &sect;3.1 caveat covers this gap; expanding the panel to include negRisk-side identifiers is a separate ingestion track (not in scope for the v0 dashboard).</p>
+            <p style="color:#475569;font-size:0.92em;">Practical effect: the 2,221 disputed-contract figure is a strict undercount of all disputed Polymarket settlements. It is an exact count for the <em>auditable-via-condition_id</em> subpopulation; the negRisk-resolved subset is unmeasured here.</p>
 
             <h2 id="snapshot">Data snapshot &amp; version</h2>
             <p>This site corresponds to:</p>
@@ -175,7 +181,7 @@ console.log(highRisk.length, 'High-risk contracts');</pre>
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.17</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">

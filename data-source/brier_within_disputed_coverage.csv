@@ -1,0 +1,4 @@
+slice,n_total,n_with_trade,coverage
+all_disputed_binary,1443,1080,0.7484407484407485
+confirmed,1106,846,0.7649186256781193
+revised,332,229,0.6897590361445783

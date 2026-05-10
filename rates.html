@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506c">
+    <link rel="stylesheet" href="css/styles.css?v=20260506d">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
 </head>
 <body>
@@ -55,6 +55,7 @@
             <div id="rates-overall" class="rates-overall"></div>
             <div id="rates-notice" class="rates-notice"></div>
             <div id="rates-examples"></div>
+            <div id="rates-crosstab"></div>
             <div id="rates-tables"></div>
             <p style="margin-top: 32px; font-size: 0.9em; color: #64748b; font-style: italic;">
                 Source: <code>data/conditional_rates.json</code>, derived from the same 2,221-disputed-contract panel feeding the Explorer. Rates are sample shares, not estimates with uncertainty intervals — small-N buckets should be read with that in mind.
@@ -77,7 +78,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.17</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
@@ -159,6 +160,67 @@
         return notes;
     }
 
+    // Map raw category strings to readable buckets (mirrors paper Appendix B groupings).
+    function bucketCategory(cat) {
+        if (!cat) return 'uncategorized';
+        var c = cat.toLowerCase();
+        if (c === 'sports' || c === 'esports')    return 'Sports';
+        if (c === 'politics' || c === 'elections' || c === 'geopolitics') return 'Politics / Geopolitics';
+        if (c === 'crypto' || c === 'finance')    return 'Crypto / Finance';
+        if (c === 'weather' || c === 'science' || c === 'nature') return 'Weather / Nature';
+        return 'Other';
+    }
+
+    function renderCrossTab(rows) {
+        // chain_type × category bucket cross-tab
+        var chains = ['Request-voiding chain', 'Repeated adapter-routed request'];
+        var buckets = ['Sports', 'Politics / Geopolitics', 'Crypto / Finance', 'Weather / Nature', 'Other', 'uncategorized'];
+        var stats = {}; // { [chain]: { [bucket]: { n, n_revised, n_mm } } }
+        chains.concat(['__total__']).forEach(function(c) {
+            stats[c] = {};
+            buckets.concat(['__total__']).forEach(function(b) { stats[c][b] = { n: 0, n_revised: 0, n_mm: 0 }; });
+        });
+        rows.forEach(function(r) {
+            if (r.is_test) return;
+            var chain = r.chain_type;
+            if (chains.indexOf(chain) === -1) return;
+            var b = bucketCategory(r.category);
+            [chain, '__total__'].forEach(function(c) {
+                [b, '__total__'].forEach(function(bk) {
+                    stats[c][bk].n += 1;
+                    if (r.revised) stats[c][bk].n_revised += 1;
+                    if (r.candidate_mismatch) stats[c][bk].n_mm += 1;
+                });
+            });
+        });
+
+        function cell(s) {
+            if (!s || !s.n) return '<td class="num muted">&mdash;</td>';
+            var pct = (100 * s.n_revised / s.n).toFixed(1);
+            return '<td class="num mono"><strong>' + pct + '%</strong> <span class="muted">(' + s.n_revised + '/' + s.n + ')</span></td>';
+        }
+        function rowFor(chain, label) {
+            return '<tr><th>' + label + '</th>' +
+                buckets.map(function(b) { return cell(stats[chain][b]); }).join('') +
+                cell(stats[chain].__total__) +
+                '</tr>';
+        }
+
+        return '<div class="rates-block">' +
+            '<h2>Conditional revision rate by chain type &times; category</h2>' +
+            '<p style="margin:0 0 14px 0;color:#64748b;font-size:0.92em;">Cells show <strong>revision rate</strong> (revised / disputed). Same disputed sample as the bucket tables below; this view crosses chain mechanism with category to make the conditional risk visible at a glance.</p>' +
+            '<table class="explorer-table rates-crosstab-table">' +
+                '<thead><tr><th></th>' + buckets.map(function(b) { return '<th class="num">' + escapeHtml(b) + '</th>'; }).join('') + '<th class="num">All</th></tr></thead>' +
+                '<tbody>' +
+                    rowFor('Request-voiding chain', 'Request-voiding') +
+                    rowFor('Repeated adapter-routed request', 'Repeated adapter') +
+                    '<tr class="rates-crosstab-total">' + rowFor('__total__', 'All chains').slice(4) +
+                '</tbody>' +
+            '</table>' +
+            '<p style="margin-top:10px;font-size:0.85em;color:#64748b;font-style:italic;">Read: a disputed Polymarket politics contract that ends up on a repeated-adapter chain has a higher base-rate of revision than one on a request-voiding chain. Small-N cells (n &lt; 30) should not be treated as stable point estimates. Computed on the fly from <code>data/disputed_contracts.json</code>.</p>' +
+            '</div>';
+    }
+
     function renderExamples(ex) {
         if (!ex || !ex.examples || !ex.examples.length) return '';
         var byChain = {};
@@ -217,6 +279,13 @@
             document.getElementById('rates-examples').innerHTML = renderExamples(ex);
         }).catch(function(err) {
             console.warn('risk_map_examples.json load failed:', err);
+        });
+
+        // chain_type x category cross-tab — computed client-side
+        fetch('data/disputed_contracts.json').then(r => r.json()).then(dc => {
+            document.getElementById('rates-crosstab').innerHTML = renderCrossTab(dc.rows);
+        }).catch(function(err) {
+            console.warn('disputed_contracts.json load failed:', err);
         });
     }).catch(function(err) {
         console.error('conditional_rates.json load failed:', err);

@@ -1,0 +1,60 @@
+{
+  "sample_frame": "priced disputed binary subset (markets with at least one trade in the [-30d, 0d) window relative to settlement; condition_id-linked subset of the 2,221 disputed-contract panel)",
+  "main": {
+    "n_priced_disputed": 1075,
+    "mean_brier_final": 0.0911686888951899,
+    "revised": {
+      "n": 229,
+      "mean_brier_final": 0.3107714573403728,
+      "share_of_n": 0.21302325581395348,
+      "share_of_pooled_loss": 0.726143465031076
+    },
+    "confirmed": {
+      "n": 846,
+      "mean_brier_final": 0.03172538632551287,
+      "share_of_n": 0.7869767441860465,
+      "share_of_pooled_loss": 0.27385653496892526
+    }
+  },
+  "final_vs_proposal": [
+    {
+      "bucket": "all_revised_binary_priced",
+      "n": 220,
+      "brier_vs_final": 0.31811262542485136,
+      "brier_vs_proposal": 0.5014717808213021
+    },
+    {
+      "bucket": "Yes_to_No",
+      "n": 126,
+      "brier_vs_final": 0.3210894611877767,
+      "brier_vs_proposal": 0.49203785068596484
+    },
+    {
+      "bucket": "No_to_Yes",
+      "n": 94,
+      "brier_vs_final": 0.3141223987639089,
+      "brier_vs_proposal": 0.5141172616410092
+    }
+  ],
+  "coverage": [
+    {
+      "slice": "all_disputed_binary",
+      "n_total": 1443,
+      "n_with_trade": 1080,
+      "coverage": 0.7484407484407485
+    },
+    {
+      "slice": "confirmed",
+      "n_total": 1106,
+      "n_with_trade": 846,
+      "coverage": 0.7649186256781193
+    },
+    {
+      "slice": "revised",
+      "n_total": 332,
+      "n_with_trade": 229,
+      "coverage": 0.6897590361445783
+    }
+  ],
+  "methodology_note": "Brier score computed against the final settled outcome over the [-30d, 0d) trading window. Revised contracts (n=229) carry mean Brier 0.31; confirmed contracts (n=846) carry mean Brier 0.03. The pooled-loss decomposition shows revised contracts contribute 72.6% of total Brier loss despite being 21.3% of the priced sample."
+}

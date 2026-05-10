@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Rule Linter &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506c">
+    <link rel="stylesheet" href="css/styles.css?v=20260506d">
     <meta name="description" content="Paste prediction-market rule text. Get a rule-clarity screen — named source, fallback, edge cases, time zone, invalid rules.">
 </head>
 <body>
@@ -89,7 +89,13 @@
                     This is not a legal rewrite. It is a checklist-style resolution template based on missing fields detected above. Bracketed placeholders mark fields the linter could not find — fill them in.
                 </p>
                 <div class="rewrite-card">
-                    <h4>Cleaner resolution criteria</h4>
+                    <div class="rewrite-card-header">
+                        <h4>Cleaner resolution criteria</h4>
+                        <div class="rewrite-card-actions">
+                            <button type="button" class="btn btn-secondary btn-tiny" id="rewrite-copy-btn">Copy</button>
+                            <button type="button" class="btn btn-secondary btn-tiny" id="rewrite-download-btn">Download .md</button>
+                        </div>
+                    </div>
                     <pre id="suggestedRewrite">Run the linter above to generate a rewrite template based on missing fields.</pre>
                 </div>
                 <p style="margin-top:12px;font-size:0.9em;color:var(--gray-600);">
@@ -126,7 +132,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.17</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
@@ -315,6 +321,44 @@
         document.getElementById('rules-input').value =
             'This market resolves YES if Israel conducts a military ground operation crossing into Lebanese territory before March 31, 2025. Otherwise resolves NO. Source: news reports.';
     }
+
+    // Wire copy + download buttons for the rewrite block.
+    document.getElementById('rewrite-copy-btn').addEventListener('click', function() {
+        var txt = document.getElementById('suggestedRewrite').textContent;
+        navigator.clipboard.writeText(txt).then(function() {
+            var btn = document.getElementById('rewrite-copy-btn');
+            var orig = btn.textContent;
+            btn.textContent = 'Copied ✓';
+            setTimeout(function() { btn.textContent = orig; }, 1500);
+        });
+    });
+    document.getElementById('rewrite-download-btn').addEventListener('click', function() {
+        var rewrite = document.getElementById('suggestedRewrite').textContent;
+        var q = document.getElementById('q-input').value.trim() || '(no question)';
+        var rules = document.getElementById('rules-input').value.trim() || '(no rules pasted)';
+        var flags = Array.from(document.querySelectorAll('#analyze-flags li')).map(function(li) {
+            return '- ' + li.textContent.trim();
+        }).join('\n') || '(linter not run)';
+        var md =
+            '# Settlement Risk Monitor — Rule Linter output\n\n' +
+            '**Generated:** ' + new Date().toISOString() + '\n\n' +
+            '**Source:** https://rodridu.github.io/polywether/analyze.html\n\n' +
+            '## Pasted market\n\n' +
+            '**Question:** ' + q + '\n\n' +
+            '### Resolution rules\n\n```\n' + rules + '\n```\n\n' +
+            '## Linter flags\n\n' + flags + '\n\n' +
+            '## Suggested rewrite (template)\n\n```\n' + rewrite + '\n```\n\n' +
+            '---\n*Heuristic regex screen, not a legal review. See https://rodridu.github.io/polywether/research.html#limitations for caveats.*\n';
+        var blob = new Blob([md], { type: 'text/markdown' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'rule-linter-' + (new Date().toISOString().slice(0,10)) + '.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
 
     // Allow ?q=... &rules=... prefill from Lookup miss
     (function() {

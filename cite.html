@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Cite check &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260506c">
+    <link rel="stylesheet" href="css/styles.css?v=20260506d">
     <meta name="description" content="Should you cite this prediction-market price as a probability? Check whether the contract behind the price is clean enough for the number to mean what readers think it means.">
 </head>
 <body>
@@ -104,7 +104,28 @@
                     <p>Repeated adapter-routed requests revise <strong>37%</strong> of the time. Request-voiding chains revise <strong>14%</strong>. Same disputed sample; same observation; the mechanism path matters.</p>
                     <p class="muted">When citing, name the category and indicate uncertainty: <em>"Polymarket put the chance at X%, on a contract whose category historically revises ~37% of disputes."</em></p>
                 </li>
+                <li>
+                    <h3>⑦ How much scoring risk does this category carry?</h3>
+                    <p>Within the priced disputed sample (markets with at least one trade in the [&minus;30d, 0d) window before settlement), <strong>revised contracts are 21.3% of contracts but account for 72.6% of pooled Brier loss</strong>. Confirmed contracts (78.7%) carry only 27.4% of pooled loss.</p>
+                    <p class="muted">A price on a contract that may revise carries disproportionate scoring risk. Translation for a journalist: a single revised contract degrades a forecaster's pooled accuracy more than three confirmed contracts. Cite the category-level revision rate (Q⑥), not just the price. Source: <code>brier_within_disputed_main.csv</code>; n=1,075 priced disputed binary contracts; mean Brier vs final settled outcome.</p>
+                </li>
             </ol>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Brier-loss decomposition (priced disputed sample)</h2>
+            <p style="color:#475569;margin-bottom:14px;">Within-disputed Brier scores against the final settled outcome, computed over the [&minus;30d, 0d) trading window. The slice is the condition_id-linked subset of disputed contracts that also had at least one trade in the trade window.</p>
+            <table class="research-funnel-table">
+                <thead><tr><th>Slice</th><th class="num">n</th><th class="num">Share of n</th><th class="num">Mean Brier (vs final)</th><th class="num">Share of pooled loss</th></tr></thead>
+                <tbody>
+                    <tr><td>All priced disputed</td><td class="num mono">1,075</td><td class="num mono">100.0%</td><td class="num mono">0.091</td><td class="num mono">100.0%</td></tr>
+                    <tr><td><strong>Revised</strong></td><td class="num mono">229</td><td class="num mono"><strong>21.3%</strong></td><td class="num mono"><strong>0.311</strong></td><td class="num mono"><strong>72.6%</strong></td></tr>
+                    <tr><td>Confirmed (not revised)</td><td class="num mono">846</td><td class="num mono">78.7%</td><td class="num mono">0.032</td><td class="num mono">27.4%</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:12px;font-size:0.85em;color:#64748b;">Source: <code>data/brier_decomposition.json</code>, derived from <code>brier_within_disputed_main.csv</code>. Pooled-loss share = (n × mean_brier_final) / total. Coverage caveat: the priced sample is 75% of the 1,443 disputed binary contracts in the sample frame; the other 25% have no trade in the [&minus;30d, 0d) window. See <a href="docs.html#snapshot">data snapshot</a> for the snapshot date and panel window.</p>
         </div>
     </section>
 
@@ -146,7 +167,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.15</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+            <div class="footer-build">Build: <code>3.17</code> &middot; updated <code>2026-05-06</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
