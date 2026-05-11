@@ -9,7 +9,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Cases &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260510a">
+    <link rel="stylesheet" href="css/styles.css?v=20260510b">
     <meta name="description" content="How public prediction-market controversies enter the settlement-data funnel. Locate, do not adjudicate.">
 </head>
 <body>
@@ -85,7 +85,7 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-        <div class="footer-build">Build: <code>3.20</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
+        <div class="footer-build">Build: <code>3.21</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
         <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
@@ -146,6 +146,57 @@
         "Government shutdown 2025":  "Pre-specify cutoff date + time zone + funding-lapse vs agency-closure rule."
     };
 
+    // Per-case paper-bucket annotation: which paper Table A3 category does this case fall into?
+    // (Manual mapping; paper text-classified buckets.)
+    var CASE_BUCKETS = {
+        "Zelenskyy suit":            "Politics/Geopolitics",
+        "Venezuela / Maduro":        "Politics/Geopolitics",
+        "Iran / Khamenei":           "Politics/Geopolitics",
+        "Trump Bitcoin reserve":     "Politics/Geopolitics",
+        "Tesla robotaxi":            "Crypto",                // crypto/tech category
+        "Lebanon ground incursion":  "Politics/Geopolitics",
+        "Government shutdown 2025":  "Politics/Geopolitics"
+    };
+
+    // Paper Table A3 (Appendix B.3) — base rates per bucket × path.
+    // Source: data/conditional_revision_paper.json.
+    var PAPER_RATES = {
+        "Sports":               { N_all:411, all:26.3, N_C:285,  C:16.1, N_D:126, D:49.2 },
+        "Politics/Geopolitics": { N_all:373, all:22.0, N_C:190,  C:29.5, N_D:181, D:14.4 },
+        "Crypto":               { N_all:169, all:19.5, N_C:97,   C:6.2,  N_D:71,  D:38.0 },
+        "Weather/Nature":       { N_all:116, all:6.0,  N_C:106,  C:6.6,  N_D:10,  D:0.0  }
+    };
+
+    function bucketAnnotation(label, canonical) {
+        var bucket = CASE_BUCKETS[label];
+        if (!bucket || !PAPER_RATES[bucket]) return '';
+        var p = PAPER_RATES[bucket];
+        // If the case has canonical matches, surface their chain-type mix
+        var chainCounts = { 'Request-voiding chain': 0, 'Repeated adapter-routed request': 0, 'other': 0 };
+        (canonical || []).forEach(function(m) {
+            var ct = m.chain_type || 'other';
+            if (ct in chainCounts) chainCounts[ct] += 1;
+            else chainCounts.other += 1;
+        });
+        var nC = chainCounts['Request-voiding chain'];
+        var nD = chainCounts['Repeated adapter-routed request'];
+        var pathSummary = '';
+        if (nC + nD > 0) {
+            pathSummary = ' &middot; matched ' + (nC ? nC + ' on Path C' : '') + (nC && nD ? ', ' : '') + (nD ? nD + ' on Path D' : '');
+        }
+        return '<p class="case-bucket-annot">' +
+            '<strong>Paper Table A3 cell:</strong> ' + escapeHtml(bucket) + '. ' +
+            'Base rates &mdash; ' +
+            '<span class="case-bucket-rate">Path&nbsp;C ' + p.C.toFixed(1) + '%</span> ' +
+            '<span class="muted">(n=' + p.N_C + ')</span>' +
+            ' / ' +
+            '<span class="case-bucket-rate">Path&nbsp;D ' + p.D.toFixed(1) + '%</span> ' +
+            '<span class="muted">(n=' + p.N_D + ')</span>' +
+            ' / overall ' + p.all.toFixed(1) + '% (n=' + p.N_all + ').' +
+            pathSummary +
+            '</p>';
+    }
+
     function renderSummary(cases) {
         var rows = cases.map(function(c) {
             var unique = dedupMatches(c.matches || []);
@@ -194,6 +245,7 @@
                         m.revised = !!rec.revised;
                         m.candidate_mismatch = !!rec.candidate_mismatch;
                         m.settlement_risk_tier = rec.settlement_risk_tier;
+                        m.chain_type = rec.chain_type;
                     }
                 });
             });
@@ -230,6 +282,7 @@
                     '</header>' +
                     (c.why_matters ? '<p class="case-locator-why"><strong>Why it matters:</strong> ' + escapeHtml(c.why_matters) + '</p>' : '') +
                     (lesson ? '<p class="case-locator-lesson"><strong>Lesson for contract design:</strong> ' + escapeHtml(lesson) + '</p>' : '') +
+                    bucketAnnotation(c.label, canonical) +
                     '<div class="case-locator-counts">' +
                         '<span><strong>' + unique.length + '</strong> unique market matches</span>' +
                         '<span><strong>' + canonical.length + '</strong> in disputed sample</span>' +
