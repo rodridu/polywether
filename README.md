@@ -11,8 +11,8 @@ The site reconstructs the multi-stage on-chain settlement process for
 resolved through UMA's optimistic oracle (November 2022 — April 2026), and
 documents three facts:
 
-1. **Trade-feed coverage.** In the matched `pm_trades` extract used for
-   pre-proposal scoring, market prices exist for 0.34% of terminal binary
+1. **Trade-feed coverage.** In the standard Polymarket trade feed used for
+   pre-proposal scoring, trade prices exist for 0.34% of terminal binary
    contracts, almost exclusively the disputed subsample.
 2. **Settlement composition.** Within the priced disputed sample, revised
    contracts are 20.6% of contracts but account for ~72% of pooled Brier
@@ -46,7 +46,7 @@ and is preliminary pending independent blinded re-coding.
 | `chain.html` | Hand-curated request-by-request timelines for 10 example contracts |
 | `audit.html` | 9-flag per-contract auditability checklist |
 | `query.html` | In-browser SQL via `duckdb-wasm` on a stripped 10 MB DuckDB |
-| `about.html` | Slim coverage / non-claims / data-source / researcher block |
+| `about.html` | About this monitor — researcher, affiliation, acknowledgment |
 
 ## Data
 
