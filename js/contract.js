@@ -227,7 +227,7 @@
         if (rec.audit && !rec.audit.edge_cases_present) missing.push('edge-case language');
         if (rec.audit && !rec.audit.rule_text_present) missing.push('any recoverable rule text');
         var designNote = missing.length
-            ? 'Missing fields: <strong>' + missing.map(escapeHtml).join(', ') + '</strong>. Each maps to a <a href="analyze.html">Rule Linter</a> field; <a href="blueprints.html">contract templates</a> show longer-form examples by market type.'
+            ? 'Missing fields: <strong>' + missing.map(escapeHtml).join(', ') + '</strong>. Each maps to a <a href="analyze.html">Rule Check</a> field; <a href="blueprints.html">contract templates</a> show longer-form examples by market type.'
             : 'All standard clarity fields detected. The contract still ended up disputed, which is itself a signal worth studying.';
 
         return '<section class="contract-section"><h2>Interpretation notes</h2>' +
@@ -244,7 +244,7 @@
             document.getElementById('contract-title').textContent = 'Contract not found';
             document.getElementById('contract-meta').textContent = 'No disputed contract matches the requested id.';
             document.getElementById('contract-body').innerHTML =
-                '<p>Try <a href="explorer.html">Analyze</a> for the full panel, or paste rule text directly into the <a href="analyze.html">Rule Linter</a> if the market is live or outside the disputed-contract sample.</p>';
+                '<p>Try <a href="explorer.html">Analyze</a> for the full panel, or paste rule text directly into the <a href="analyze.html">Rule Check</a> if the market is live or outside the disputed-contract sample.</p>';
             return;
         }
 

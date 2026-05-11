@@ -38,7 +38,7 @@ and is preliminary pending independent blinded re-coding.
 | `contract.html` | Per-contract evidence-first detail (top diagnostic card → settlement chain → evidence → audit → base rates → interpretation notes) |
 | `rates.html` | **Risk Map** — paper Table A3 heatmap (chain type × text-classified category) |
 | `cases.html` | **Cases** — named public controversies located in the panel; "Locate, do not adjudicate" |
-| `analyze.html` | **Rule Linter** — paste rule text, get a 7-field clarity screen + suggested rewrite |
+| `analyze.html` | **Rule Check** — paste rule text, get a 7-field clarity screen + suggested rewrite |
 | `cite.html` | **Cite check** — 7-question scorecard for journalists, with Brier-loss decomposition |
 | `research.html` | **Research & Data** — paper landing + sample funnel + progressive-disclosure sections |
 | `docs.html` | Field schema, JSON endpoints, replication checklist, benchmark transparency, snapshot version |
