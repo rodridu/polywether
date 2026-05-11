@@ -1,70 +1,104 @@
-# polywether — Settlement Explorer
+# Settlement Risk Monitor
 
-Static research dashboard on settlement-state construction in disputed
-Polymarket contracts resolved through UMA's Optimistic Oracle.
+Static research dashboard companion to the working paper:
 
-Companion to the working paper *"Settlement-State Construction in
-Prediction-Market Contracts."*
+> **"When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets."**
+> Hongzhen Du, Kellogg School of Management, Northwestern University.
+> Working paper, 2026.
 
-**Live site:** https://rodridu.github.io/polywether/ (after Pages enabled)
+The site reconstructs the multi-stage on-chain settlement process for
+**661,949** condition-identifier-linked Polymarket settlement conditions
+resolved through UMA's optimistic oracle (November 2022 — April 2026), and
+documents three facts:
+
+1. **Trade-feed coverage.** In the matched `pm_trades` extract used for
+   pre-proposal scoring, market prices exist for 0.34% of terminal binary
+   contracts, almost exclusively the disputed subsample.
+2. **Settlement composition.** Within the priced disputed sample, revised
+   contracts are 20.6% of contracts but account for ~72% of pooled Brier
+   loss. Mean Brier 0.318 (revised) vs 0.032 (confirmed).
+3. **Chain-type taxonomy.** Among 2,197 disputed contracts with an
+   observed final payoff, 530 (24.1%) revise. 352 of those run through
+   Path D (parallel repeated-request), 178 through Path C (DVM
+   request-voiding). Fully observable on-chain; absent from the
+   settlement description traders see.
+
+A diagnostic benchmark flags **64** candidate rule-divergent revisions
+concentrated in Path C. The audit list is in the replication package
+and is preliminary pending independent blinded re-coding.
+
+**Live site:** https://rodridu.github.io/polywether/
 
 ## Pages
 
-- `index.html` — **Funnel.** 661,949 → 2,221 → 530 (24.1%) → 352 / 178 / 94 ladder + framing
-- `explorer.html` — **Contract Explorer.** Filterable table of all 2,221 disputed contracts
-- `chain.html` — **Chain View.** Request-by-request timelines for 10 hand-curated examples (5 voiding + 5 repeated)
-- `audit.html` — **Settlement Auditability.** 8-item transparent checklist, aggregate bars, per-contract picker
-- `cases.html` — **Public Case Locator.** 7 named cases with "Locate, do not adjudicate" banner
-- `query.html` — **Live SQL Query.** duckdb-wasm + 10 MB stripped DuckDB; in-browser SQL on `contracts` / `episodes` / `funnel` / `chain_signatures`
-- `about.html` — Scope, headline facts, non-claims, limitations
-- `legacy/research.html` — Older "governance value-add" framing, banner-flagged as superseded
+| Path | Purpose |
+|---|---|
+| `index.html` | Hero search, audience cards, High-risk watchlist |
+| `explorer.html` | **Analyze** — filterable table of all 2,221 disputed contracts |
+| `contract.html` | Per-contract evidence-first detail (top diagnostic card → settlement chain → evidence → audit → base rates → interpretation notes) |
+| `rates.html` | **Risk Map** — paper Table A3 heatmap (chain type × text-classified category) |
+| `cases.html` | **Cases** — named public controversies located in the panel; "Locate, do not adjudicate" |
+| `analyze.html` | **Rule Linter** — paste rule text, get a 7-field clarity screen + suggested rewrite |
+| `cite.html` | **Cite check** — 7-question scorecard for journalists, with Brier-loss decomposition |
+| `research.html` | **Research & Data** — paper landing + sample funnel + progressive-disclosure sections |
+| `docs.html` | Field schema, JSON endpoints, replication checklist, benchmark transparency, snapshot version |
+| `blueprints.html` | **Templates** — 5 reference contract designs (shutdown, military, arrest, product launch, sports) |
+| `chain.html` | Hand-curated request-by-request timelines for 10 example contracts |
+| `audit.html` | 9-flag per-contract auditability checklist |
+| `query.html` | In-browser SQL via `duckdb-wasm` on a stripped 10 MB DuckDB |
+| `about.html` | Slim coverage / non-claims / data-source / researcher block |
 
 ## Data
 
-`data/` contains the JSON datasets the dashboard loads. Source is `oracle_gov/`
-(the paper's research repo, not in this repo). Refresh by running the pipelines.
+`data/` is committed to the repo and served as a static API.
 
-| File | Rows | Notes |
+| File | Rows | Purpose |
 |---|---|---|
-| `settlement_funnel.json` | 9 steps | Paper Table 1 ladder |
-| `disputed_contracts.json` | 2,221 | Reader-facing field names + 8-item audit flags |
-| `chain_examples.json` | 10 | Hand-curated, sports-only, both chain types |
-| `chain_signatures.json` | 23 sig + 7 summary | revision_rate not flip_rate |
-| `candidate_mismatches.json` | 94 candidate / 64 agreed (category-level) | Diagnostic, not error count |
+| `disputed_contracts.json` | 2,221 | Per-contract record: id, question_text, category, first_proposal, final_payoff, revised, chain_type, candidate_mismatch, settlement_risk_tier, audit{ rule_text_present, named_source_present, fallback_present, edge_cases_present, ... } |
+| `settlement_funnel.json` | 9 steps | 661,949 → 2,221 → 2,197 → 530 → 352/178 → 64 |
+| `chain_signatures.json` | 23 sig + 3 chain-type summary | Aggregate counts and revision rates per chain pattern |
+| `candidate_mismatches.json` | 94 row-level entries | Per-row stratum (55 two_benchmark / 39 frozen), G_i_source, operative_proposed/final, mechanical_final_correct_a1, legacy_final_correct, mismatch_agreed. Paper headline is the 64-case agreed subset (63 in Path C, 1 in Path D) |
+| `conditional_revision_paper.json` | 5 buckets × Path C/D | Paper Table A3 (Appendix B.3) text-classified buckets: Sports / Politics-Geopolitics / Crypto / Weather-Nature / Residual |
+| `brier_decomposition.json` | 1 main + 4 cells | Paper Table 4 binary-binary cells (N=1,066): revised 20.6% / 72% pooled-loss share; mean Brier 0.318 (revised) vs 0.032 (confirmed) |
 | `public_cases.json` | 7 cases | Locator only — no adjudication |
-| `headline_statistics.json` | scalar | Refreshed from analysis_output |
+| `risk_map_examples.json` | 4 | Hand-picked (revised + clean) × (Path C + Path D) for the Risk Map "Bucket examples" cards |
+| `chain_examples.json` | 10 | Sports-only, both chain types, request-by-request timelines |
+| `headline_statistics.json` | scalar | Paper-level headline statistics (richer schema than the funnel) |
 | `settlement_explorer.duckdb` | 10 MB | Tables: `contracts` (2,221), `episodes` (2,668), `funnel`, `chain_signatures`, `flip_decomposition` |
+
+## Replication
+
+Every headline number on the site traces to a single source file or
+query. See [`docs.html#replication`](https://rodridu.github.io/polywether/docs.html#replication)
+for the per-number map, [`docs.html#benchmark-transparency`](https://rodridu.github.io/polywether/docs.html#benchmark-transparency)
+for the LLM-coding protocol, and [`docs.html#snapshot`](https://rodridu.github.io/polywether/docs.html#snapshot)
+for the data-snapshot version.
+
+Source CSVs live under [`data-source/`](data-source/) and feed both
+the aggregate-JSON refresh workflow and the local pipeline scripts.
 
 ## Refresh data
 
-Two refresh paths, by what changed:
+Two paths, by what changed.
 
 ### A. Aggregate refresh (auto, weekly + on push)
 
-The aggregate JSONs (`settlement_funnel`, `chain_signatures`, `candidate_mismatches`)
-regenerate automatically via the GitHub Actions workflow
+Aggregate JSONs (`settlement_funnel`, `chain_signatures`,
+`candidate_mismatches`) regenerate automatically via
 [`.github/workflows/refresh-aggregates.yml`](.github/workflows/refresh-aggregates.yml).
 
-Triggers:
-- **Weekly cron:** Mondays 8am UTC
-- **On push:** any change to `data-source/**` or the workflow itself
-- **Manual:** the *Run workflow* button on the Actions tab
+Triggers: weekly cron (Mondays 8am UTC), on push to `data-source/**`,
+or manual via the *Run workflow* button.
 
-The workflow runs `pipelines/refresh_aggregates.py`, which reads the small
-source CSVs in `data-source/` and writes the regenerated JSONs to `data/`.
-If anything changed, it commits as `github-actions[bot]`.
-
-To push fresh source data:
 ```bash
 cp /path/to/oracle_gov/analysis_output/rev3_*.csv data-source/
-# (skip rev3_contract_level_table.csv — 87 MB, not needed for aggregates)
 git add data-source/
 git commit -m "Refresh source CSVs"
 git push
 # workflow runs automatically; site updates within ~1 min
 ```
 
-### B. Per-contract / DuckDB refresh (manual, when disputed panel grows)
+### B. Per-contract / DuckDB refresh (manual, when the paper's disputed panel grows)
 
 These need the production DuckDB (19 GB), so they don't fit in a workflow.
 Run locally:
@@ -72,40 +106,58 @@ Run locally:
 ```bash
 python pipelines/build_settlement_explorer_data.py
 python pipelines/build_settlement_explorer_duckdb.py
-git add data/disputed_contracts.json data/chain_examples.json data/settlement_explorer.duckdb data/headline_statistics.json
+git add data/disputed_contracts.json data/chain_examples.json \
+        data/settlement_explorer.duckdb data/headline_statistics.json
 git commit -m "Refresh per-contract data + DuckDB"
 git push
 ```
 
-Both scripts read from `oracle_gov/data/oraclepm.duckdb` (production research DB)
-and `oracle_gov/analysis_output/rev3_*.csv`. Output paths are hard-coded; edit
-the `Path(...)` constants at the top of each script if the paper repo is elsewhere.
+Both scripts read from `oracle_gov/data/oraclepm.duckdb` and
+`oracle_gov/analysis_output/rev3_*.csv`. Output paths are hard-coded;
+edit the `Path(...)` constants at the top of each script if the paper
+repo is elsewhere.
 
-`build_settlement_explorer_data.py` also writes a data-audit memo to
-`oracle_gov/scripts/paper/data_audit_memo.md` documenting paper-consistency
-checks, join coverage, public-label mappings, and per-flag distributions.
+## Limitations carried into the dashboard
 
-## Limitations
+- **Sample frame.** The disputed-contract panel is the
+  condition-identifier-linked subset of Polymarket markets. The
+  negRisk-umbrella family (high-frequency auto-resolved daily-temperature
+  and per-game sports markets that share one umbrella event across many
+  per-outcome rows) is underrepresented. All rates are linked-panel
+  rates; the chain-type and revision analyses are conditional on the
+  linked settlement-condition panel.
 
-- **Question-text coverage is 79.1%** (1,756 / 2,221). 465 condition_ids appear in
-  the rev3 settlement panel but have no recoverable question text on the
-  Polymarket side (likely Kalshi-only or deprecated). Affected rows show
-  `[question text missing]` in the Explorer; chain type and final payoff are
-  still observed.
-- **Auditability flags 1–4** (rule text / named source / fallback / edge cases)
-  are heuristic regex over a noisy text corpus — they tag whether the relevant
-  language *appears*, not whether the contract was correctly designed.
-- **Public Case Locator** uses keyword matching on `pm_markets.question`. Three
-  of seven cases (Venezuela / Iran-Khamenei / Lebanon) match the market panel
-  but not the disputed-analysis sample — likely because the relevant contract
-  was excluded from the paper's sample-construction rules or the public dispute
-  attached to a Kalshi-side market not visible here.
+- **Question-text coverage is 79.1%** (1,756 / 2,221). The other 465
+  condition_ids are visible in the rev3 settlement panel but absent from
+  Polymarket-side metadata (typically off-Polymarket UMA requests,
+  condition_id schema drift, or metadata purged before the snapshot).
+  Affected rows show `[question text missing]` in the Explorer; chain
+  type and final payoff are still observed.
 
-## License & affiliation
+- **Auditability flags** for rule text / named source / fallback /
+  edge cases are heuristic regex over a noisy text corpus — they tag
+  whether the relevant language *appears*, not whether the contract
+  was correctly designed.
 
-Hongzhen Du, Northwestern University. Companion to the paper "Settlement-State
-Construction in Prediction-Market Contracts."
+- **Settlement-risk tier** is a screening flag, not a prediction. It
+  identifies contracts whose payoff depends on discretionary or
+  ambiguous interpretation. It does not predict whether the final
+  payoff is correct.
 
-The Bellwether project (Andrew Hall, Stanford GSB / Hoover Institution; Elliot
-Paschal) is referenced as a complementary infrastructure layer; this repo is
-not affiliated with Bellwether.
+- **Cases page** uses keyword matching on `pm_markets.question`. Three
+  of seven curated cases match the market panel but not the
+  disputed-analysis sample.
+
+## Affiliation
+
+Hongzhen Du, Kellogg School of Management, Northwestern University.
+
+The Bellwether project (Andrew Hall, Stanford GSB / Hoover Institution;
+Elliot Paschal) is referenced as a complementary infrastructure layer
+(price robustness vs settlement robustness). This repo is independent
+and not affiliated with Bellwether.
+
+## License
+
+Code: MIT. Data: paper draft and replication package retain the
+licensing terms in the paper's distribution.
