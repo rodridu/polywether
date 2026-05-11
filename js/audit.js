@@ -28,6 +28,12 @@
         if (s === null || s === undefined) return '';
         return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
+    function cleanQuestionText(q) {
+        if (!q) return q;
+        var m = q.match(/^q:\s*title:\s*(.+?),\s*description:/i);
+        if (m) return m[1].trim();
+        return q;
+    }
 
     function renderAggregate() {
         var box = document.getElementById('audit-aggregate');
@@ -68,7 +74,7 @@
         var html =
             '<div class="audit-card-header">' +
                 '<div class="audit-card-id mono">id ' + r.id + '</div>' +
-                '<h3 class="audit-card-question">' + (r.question_text ? escapeHtml(r.question_text) : '<span class="muted-italic">[question text missing]</span>') + '</h3>' +
+                '<h3 class="audit-card-question">' + (r.question_text ? escapeHtml(cleanQuestionText(r.question_text)) : '<span class="muted-italic">[question text missing]</span>') + '</h3>' +
                 '<div class="audit-card-meta">' +
                     escapeHtml(r.category || 'uncategorized') + ' &middot; ' +
                     'first proposal <strong>' + escapeHtml(r.first_proposal || '—') + '</strong> &middot; ' +
@@ -97,13 +103,13 @@
                 var q = input.value.toLowerCase().trim();
                 if (q.length < 2) { box.innerHTML = ''; return; }
                 var matches = allRows.filter(function(r) {
-                    var hay = ((r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
+                    var hay = (cleanQuestionText(r.question_text || '') + ' ' + (r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
                     return hay.indexOf(q) !== -1;
                 }).slice(0, 8);
                 box.innerHTML = matches.map(function(r) {
                     return '<button class="audit-suggest" data-id="' + r.id + '">' +
                         '<span class="mono">' + r.id + '</span> ' +
-                        '<span>' + escapeHtml(r.question_text || '[question text missing]') + '</span>' +
+                        '<span>' + escapeHtml(cleanQuestionText(r.question_text) || '[question text missing]') + '</span>' +
                         '</button>';
                 }).join('');
                 box.querySelectorAll('.audit-suggest').forEach(function(b) {

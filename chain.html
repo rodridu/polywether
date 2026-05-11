@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Chain View &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260510b">
+    <link rel="stylesheet" href="css/styles.css?v=20260510c">
     <meta name="description" content="Per-contract settlement chain timelines for disputed Polymarket-UMA contracts.">
 </head>
 <body>
@@ -70,11 +70,7 @@
 
     <footer class="footer">
         <div class="footer-top">
-            <div class="footer-brand">
-                <div class="footer-title">Settlement Risk Monitor</div>
-                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
-            </div>
-                                    <nav class="footer-nav">
+                                                <nav class="footer-nav">
                 <a href="docs.html">Docs</a>
                 <a href="query.html">SQL Lab</a>
                 <a href="cite.html">Cite</a>
@@ -83,7 +79,6 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.21</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">&copy; 2026 Hongzhen Du</div>
             <div class="footer-sources">
@@ -110,6 +105,12 @@
     function escapeHtml(s) {
         if (s === null || s === undefined) return '';
         return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function cleanQuestionText(q) {
+        if (!q) return q;
+        var m = q.match(/^q:\s*title:\s*(.+?),\s*description:/i);
+        if (m) return m[1].trim();
+        return q;
     }
     function chip(label, cls) { return '<span class="chip ' + (cls||'') + '">' + escapeHtml(label) + '</span>'; }
 
@@ -143,7 +144,7 @@
         return '<article class="chain-card" data-chain-type="' + ex.chain_type + '">' +
             '<header class="chain-card-header">' +
               '<div class="chain-card-id">id ' + ex.id + '</div>' +
-              '<h3 class="chain-card-question">' + (ex.question_text || '[question text missing]') + '</h3>' +
+              '<h3 class="chain-card-question">' + escapeHtml(cleanQuestionText(ex.question_text) || '[question text missing]') + '</h3>' +
               '<div class="chain-card-meta">' + typeBadge + ' &middot; ' + (ex.category || 'uncategorized') + ' &middot; ' + ex.n_episodes + ' episodes</div>' +
               '<div class="chain-card-meta" style="margin-top:6px;"><a href="contract.html?id=' + encodeURIComponent(ex.id) + '">Open contract detail →</a> &middot; <a href="' + allHref + '">Show all ' + ex.chain_type.toLowerCase() + ' contracts in Explorer →</a></div>' +
             '</header>' +

@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260510b">
+    <link rel="stylesheet" href="css/styles.css?v=20260510c">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
 </head>
 <body>
@@ -126,11 +126,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-top">
-            <div class="footer-brand">
-                <div class="footer-title">Settlement Risk Monitor</div>
-                <div class="footer-tagline">Hongzhen Du &middot; Northwestern University</div>
-            </div>
-                                    <nav class="footer-nav">
+                                                <nav class="footer-nav">
                 <a href="docs.html">Docs</a>
                 <a href="query.html">SQL Lab</a>
                 <a href="cite.html">Cite</a>
@@ -139,7 +135,6 @@
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">GitHub</a>
             </nav>
         </div>
-            <div class="footer-build">Build: <code>3.21</code> &middot; updated <code>2026-05-10</code> &middot; <a href="https://github.com/rodridu/polywether/commits/main" target="_blank" rel="noopener">commit history</a></div>
 <div class="footer-bottom">
             <div class="footer-legal">
                 &copy; 2026 Hongzhen Du
@@ -158,6 +153,16 @@
         var cls = tier === 'High' ? 'tier-high' : tier === 'Caution' ? 'tier-caution' : 'tier-low';
         var dotCls = tier === 'High' ? 'tier-dot-high' : tier === 'Caution' ? 'tier-dot-caution' : 'tier-dot-low';
         return '<span class="tier-dot ' + dotCls + '"></span><span class="tier-badge ' + cls + '">' + tier + '</span>';
+    }
+
+    // Some rows have only an ancillary blob in question_text:
+    // "q: title: <real>, description: ..., res_data: p1:0, p2:1...".
+    // Extract the inner title field if the blob marker is present.
+    function cleanQuestionText(q) {
+        if (!q) return q;
+        var m = q.match(/^q:\s*title:\s*(.+?),\s*description:/i);
+        if (m) return m[1].trim();
+        return q;
     }
 
     // Sports/esports auto-resolve via league box scores; rule-text "no named source"
@@ -197,7 +202,7 @@
         html += high.map(function(r) {
             return '<tr class="watch-row" data-id="' + r.id + '">' +
                 '<td>' + tierBadge(r.settlement_risk_tier) + '</td>' +
-                '<td>' + escapeHtml(r.question_text) + '</td>' +
+                '<td>' + escapeHtml(cleanQuestionText(r.question_text)) + '</td>' +
                 '<td class="muted">' + escapeHtml(r.category || '—') + '</td>' +
                 '<td class="muted watchlist-reason">' + escapeHtml(shortReasons(r.risk_reasons)) + '</td>' +
                 '<td><strong>' + escapeHtml(r.final_payoff || '—') + '</strong></td>' +
@@ -232,7 +237,7 @@
             box.innerHTML = matches.map(function(r) {
                 return '<a class="lookup-suggest" href="contract.html?id=' + encodeURIComponent(r.id) + '">' +
                     '<span class="mono">' + r.id + '</span> ' +
-                    '<span>' + escapeHtml(r.question_text || '[question text missing]') + '</span>' +
+                    '<span>' + escapeHtml(cleanQuestionText(r.question_text) || '[question text missing]') + '</span>' +
                     '</a>';
             }).join('');
         });

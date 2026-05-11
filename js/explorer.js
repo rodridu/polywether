@@ -30,6 +30,16 @@
         });
     }
 
+    // Some rows have only an ancillary-blob in question_text:
+    // "q: title: <real title>, description: ..., res_data: p1:0, p2:1, p3:0.5, ..."
+    // Extract the inner title field if the row begins with the blob marker.
+    function cleanQuestionText(q) {
+        if (!q) return q;
+        var m = q.match(/^q:\s*title:\s*(.+?),\s*description:/i);
+        if (m) return m[1].trim();
+        return q;
+    }
+
     function tierBadge(tier) {
         var cls = tier === 'High' ? 'tier-high' :
                   tier === 'Caution' ? 'tier-caution' :
@@ -59,7 +69,7 @@
 
     function renderRow(r) {
         var qHtml = r.question_text
-            ? escapeHtml(r.question_text)
+            ? escapeHtml(cleanQuestionText(r.question_text))
             : '<span class="muted-italic">[question text missing]</span>';
         var revisedChip = r.revised ? chip('yes', 'chip chip-warn') : chip('no', 'chip chip-ok');
         var chainChip = r.chain_type === 'Request-voiding chain'
@@ -95,7 +105,7 @@
             if (filters.src === 'present' && !(r.audit && r.audit.named_source_present)) return false;
             if (filters.src === 'missing' && r.audit && r.audit.named_source_present) return false;
             if (s) {
-                var hay = ((r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
+                var hay = (cleanQuestionText(r.question_text || '') + ' ' + (r.question_text || '') + ' ' + (r.category || '') + ' ' + r.id).toLowerCase();
                 if (hay.indexOf(s) === -1) return false;
             }
             return true;

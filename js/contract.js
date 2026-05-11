@@ -22,6 +22,14 @@
     }
     function chip(label, cls) { return '<span class="chip ' + (cls||'') + '">' + escapeHtml(label) + '</span>'; }
 
+    // Strip ancillary-blob marker from question_text if present.
+    function cleanQuestionText(q) {
+        if (!q) return q;
+        var m = q.match(/^q:\s*title:\s*(.+?),\s*description:/i);
+        if (m) return m[1].trim();
+        return q;
+    }
+
     // Classify the contract for the top diagnostic card.
     function classify(rec) {
         if (rec.is_test) return { key: 'test', label: 'Polymarket dev/test market', cls: 'cls-test', desc: 'Detected via JSON-blob ancillary; excluded from headline analysis.' };
@@ -241,7 +249,7 @@
         }
 
         // Hero — question + tier badge in meta line.
-        document.getElementById('contract-title').textContent = rec.question_text || '[question text missing]';
+        document.getElementById('contract-title').textContent = cleanQuestionText(rec.question_text) || '[question text missing]';
         var heroMeta = '<span class="mono">id ' + rec.id + '</span> &middot; ' + escapeHtml(rec.category || 'uncategorized') + ' &middot; ' + escapeHtml(rec.chain_type);
         document.getElementById('contract-meta').innerHTML = heroMeta;
 
