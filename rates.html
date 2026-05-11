@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511a">
+    <link rel="stylesheet" href="css/styles.css?v=20260511b">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
 </head>
 <body>
@@ -269,19 +269,27 @@
         var notices = deriveNotices(d);
         if (notices.length) {
             document.getElementById('rates-notice').innerHTML =
-                '<div class="rates-notice-card">' +
-                    '<h3>What to notice</h3>' +
+                '<details class="rates-notice-details">' +
+                    '<summary><strong>Notes on these rates</strong> <span class="muted">(small-sample caveat + mismatch concentration)</span></summary>' +
                     '<ul class="rates-notice-list">' +
                         notices.map(function(n) { return '<li>' + n + '</li>'; }).join('') +
                     '</ul>' +
-                '</div>';
+                '</details>';
         }
 
-        var html = '';
+        var tablesHtml = '';
         ['by_chain_type', 'by_category', 'by_named_source', 'by_fallback', 'by_first_proposal'].forEach(function(k) {
-            if (d[k]) html += renderTable(d[k]);
+            if (d[k]) tablesHtml += renderTable(d[k]);
         });
-        document.getElementById('rates-tables').innerHTML = html;
+        document.getElementById('rates-tables').innerHTML =
+            '<details class="rates-extra-tables">' +
+                '<summary><strong>Show single-dimension breakdowns</strong> ' +
+                '<span class="muted">(by chain type / category / named-source / fallback / first proposal)</span></summary>' +
+                '<p class="muted" style="margin: 8px 0 14px 0; font-size: 0.9em;">' +
+                'These are the same disputed sample summarized one dimension at a time. The heatmap above already crosses chain type with category; the breakdowns below cover the remaining slices.' +
+                '</p>' +
+                tablesHtml +
+            '</details>';
 
         // Bucket examples — one revised + one clean per chain type
         fetch('data/risk_map_examples.json').then(r => r.json()).then(ex => {

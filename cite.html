@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Cite check &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511a">
+    <link rel="stylesheet" href="css/styles.css?v=20260511b">
     <meta name="description" content="Should you cite this prediction-market price as a probability? Check whether the contract behind the price is clean enough for the number to mean what readers think it means.">
 </head>
 <body>
@@ -73,43 +73,57 @@
             <h2>The 6-question check</h2>
             <p style="color:#475569;margin-bottom:24px;">Before quoting a prediction-market probability in a story, run a market through these six questions. We pull what we can from the panel; you fill in the rest.</p>
 
-            <ol class="cite-checklist">
-                <li>
-                    <h3>① Is the resolution rule recoverable?</h3>
-                    <p>Question text + description + UMA ancillary data, ideally all three. If only the question is recoverable, the contract may resolve under terms readers can't see.</p>
-                    <p class="muted"><strong>From the panel:</strong> 79.1% of disputed contracts have any recoverable rule text. The other 21% are essentially un-auditable from the buyer side.</p>
-                </li>
-                <li>
-                    <h3>② Does the rule name an external source?</h3>
-                    <p>"Resolves according to {ESPN / OMB / Reuters / official certification}". Without a named source, the resolution depends on whoever is asked.</p>
-                    <p class="muted"><strong>From the panel:</strong> contracts with rule text but no named source revise <strong>45%</strong> of the time among disputed cases. With a named source, the rate drops to <strong>18%</strong>.</p>
-                </li>
-                <li>
-                    <h3>③ Does the rule specify a fallback?</h3>
-                    <p>What happens if the primary source is unavailable, delayed, or itself disputed? "If the official source has not announced by {date}, AP wire confirmation suffices."</p>
-                    <p class="muted"><strong>From the panel:</strong> only 49% of disputed contracts have any detectable fallback language.</p>
-                </li>
-                <li>
-                    <h3>④ Does the rule handle edge cases?</h3>
-                    <p>Cancellation, postponement, ties, partial events, time-zone ambiguity. Edge-case silence shifts decisions to the oracle ex post.</p>
-                    <p class="muted"><strong>From the panel:</strong> only 24% of disputed contracts have detectable edge-case language.</p>
-                </li>
-                <li>
-                    <h3>⑤ Has this contract already been disputed or revised?</h3>
-                    <p>If the chain shows a prior dispute, repeated adapter-routed request, or DVM voiding, the price may already reflect settlement-risk discounting rather than pure event probability.</p>
-                    <p class="muted"><strong>From the panel:</strong> 24.1% of disputed contracts revise from first proposal to final payoff. <a href="rates.html">Conditional rates →</a></p>
-                </li>
-                <li>
-                    <h3>⑥ Is this contract in a category with high historical revision?</h3>
-                    <p>Repeated adapter-routed requests revise <strong>37%</strong> of the time. Request-voiding chains revise <strong>14%</strong>. Same disputed sample; same observation; the mechanism path matters.</p>
-                    <p class="muted">When citing, name the category and indicate uncertainty: <em>"Polymarket put the chance at X%, on a contract whose category historically revises ~37% of disputes."</em></p>
-                </li>
-                <li>
-                    <h3>⑦ How much scoring risk does this category carry?</h3>
-                    <p>Within the binary-binary priced disputed subset (first proposal in {Yes, No}, final payoff in {Yes, No}, at least one trade in the [&minus;30d, 0d) window before settlement), <strong>revised contracts are 20.6% of contracts but account for 72% of pooled Brier loss</strong>. Confirmed contracts (79.4%) carry only 28% of pooled loss.</p>
-                    <p class="muted">A price on a contract that may revise carries disproportionate scoring risk. Translation for a journalist: a single revised contract degrades a forecaster's pooled accuracy more than three confirmed contracts. Cite the category-level revision rate (Q⑥), not just the price. Source: paper Table 4 &amp; &sect;4.2 (priced disputed binary-binary subset; mean Brier vs final settled outcome).</p>
-                </li>
-            </ol>
+            <ul class="cite-checklist">
+                <details class="cite-q" open>
+                    <summary><span class="cite-q-num">1</span><span class="cite-q-title">Is the resolution rule recoverable?</span></summary>
+                    <div class="cite-q-body">
+                        <p>Question text + description + UMA ancillary data, ideally all three. If only the question is recoverable, the contract may resolve under terms readers can't see.</p>
+                        <p class="muted">Panel: 79.1% of disputed contracts have recoverable rule text; the other 21% are un-auditable from the buyer side.</p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">2</span><span class="cite-q-title">Does the rule name an external source?</span></summary>
+                    <div class="cite-q-body">
+                        <p>"Resolves according to {ESPN / OMB / Reuters / official certification}". Without a named source, the resolution depends on whoever is asked.</p>
+                        <p class="muted">Panel: no named source &rarr; 45% revise; with a named source &rarr; 18%.</p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">3</span><span class="cite-q-title">Does the rule specify a fallback?</span></summary>
+                    <div class="cite-q-body">
+                        <p>What happens if the primary source is unavailable, delayed, or itself disputed? "If the official source has not announced by {date}, AP wire confirmation suffices."</p>
+                        <p class="muted">Panel: 49% of disputed contracts have detectable fallback language.</p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">4</span><span class="cite-q-title">Does the rule handle edge cases?</span></summary>
+                    <div class="cite-q-body">
+                        <p>Cancellation, postponement, ties, partial events, time-zone ambiguity. Edge-case silence shifts decisions to the oracle ex post.</p>
+                        <p class="muted">Panel: 24% of disputed contracts have detectable edge-case language.</p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">5</span><span class="cite-q-title">Has this contract already been disputed or revised?</span></summary>
+                    <div class="cite-q-body">
+                        <p>If the chain shows a prior dispute, repeated adapter-routed request, or DVM voiding, the price may already reflect settlement-risk discounting rather than pure event probability.</p>
+                        <p class="muted">Panel: 24.1% of disputed contracts revise from first proposal to final payoff. <a href="rates.html">Conditional rates &rarr;</a></p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">6</span><span class="cite-q-title">Is this contract in a category with high historical revision?</span></summary>
+                    <div class="cite-q-body">
+                        <p>Repeated adapter-routed requests revise <strong>37%</strong> of the time. Request-voiding chains revise <strong>14%</strong>. Same disputed sample; the mechanism path matters.</p>
+                        <p class="muted">When citing, name the category: <em>"Polymarket put the chance at X%, on a contract whose category historically revises ~37% of disputes."</em></p>
+                    </div>
+                </details>
+                <details class="cite-q">
+                    <summary><span class="cite-q-num">7</span><span class="cite-q-title">How much scoring risk does this category carry?</span></summary>
+                    <div class="cite-q-body">
+                        <p>Within the binary-binary priced disputed subset, <strong>revised contracts are 20.6% of contracts but account for 72% of pooled Brier loss</strong>. Confirmed contracts (79.4%) carry only 28%.</p>
+                        <p class="muted">A single revised contract degrades a forecaster's pooled accuracy more than three confirmed contracts. Cite the category-level revision rate (Q6), not just the price. Source: paper Table 4 &amp; &sect;4.2.</p>
+                    </div>
+                </details>
+            </ul>
         </div>
     </section>
 

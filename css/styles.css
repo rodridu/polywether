@@ -3303,6 +3303,138 @@ a.chain-split-card-link:hover {
 .tier-dot-low      { background: #16a34a; }
 .tier-dot-test     { background: var(--gray-400); }
 
+/* Homepage watchlist meta + analyze.html caveat accordion */
+.homepage-meta, .analyze-caveat {
+    margin: 12px 0 18px 0;
+    border-top: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 6px 0;
+}
+.homepage-meta > summary,
+.analyze-caveat > summary {
+    cursor: pointer;
+    padding: 8px 0;
+    font-size: 0.88em;
+    color: var(--gray-600);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.homepage-meta > summary::-webkit-details-marker,
+.analyze-caveat > summary::-webkit-details-marker { display: none; }
+.homepage-meta > summary::before,
+.analyze-caveat > summary::before {
+    content: '+';
+    font-family: var(--font-mono);
+    color: var(--gray-500);
+    width: 14px;
+}
+.homepage-meta[open] > summary::before,
+.analyze-caveat[open] > summary::before { content: '−'; }
+.homepage-meta-list {
+    list-style: none;
+    padding: 0 0 0 22px;
+    margin: 4px 0 8px 0;
+    font-size: 0.88em;
+    line-height: 1.6;
+    color: var(--gray-700);
+}
+.homepage-meta-list li { margin-bottom: 6px; }
+.analyze-caveat ul {
+    padding: 0 0 0 22px;
+    margin: 4px 0 8px 0;
+    font-size: 0.92em;
+    line-height: 1.7;
+    color: var(--gray-700);
+}
+
+/* Risk Map extra-tables + notice accordions */
+.rates-extra-tables, .rates-notice-details {
+    margin: 18px 0;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 12px;
+}
+.rates-extra-tables > summary,
+.rates-notice-details > summary {
+    cursor: pointer;
+    padding: 8px 0;
+    color: var(--gray-700);
+    font-size: 0.95em;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rates-extra-tables > summary::-webkit-details-marker,
+.rates-notice-details > summary::-webkit-details-marker { display: none; }
+.rates-extra-tables > summary::before,
+.rates-notice-details > summary::before {
+    content: '+';
+    font-family: var(--font-mono);
+    color: var(--gray-500);
+    width: 14px;
+    flex-shrink: 0;
+}
+.rates-extra-tables[open] > summary::before,
+.rates-notice-details[open] > summary::before { content: '−'; }
+.rates-extra-tables > summary:hover,
+.rates-notice-details > summary:hover { color: #1d4ed8; }
+
+/* Cite-check Q1-Q7 accordion */
+.cite-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: cite-q;
+}
+.cite-q {
+    border-top: 1px solid var(--gray-200);
+    padding: 6px 0;
+}
+.cite-q:last-child { border-bottom: 1px solid var(--gray-200); }
+.cite-q > summary {
+    cursor: pointer;
+    padding: 12px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    list-style: none;
+    color: var(--gray-900);
+}
+.cite-q > summary::-webkit-details-marker { display: none; }
+.cite-q > summary::before {
+    content: '+';
+    font-family: var(--font-mono);
+    color: var(--gray-500);
+    width: 14px;
+    flex-shrink: 0;
+    font-size: 1.1em;
+}
+.cite-q[open] > summary::before { content: '−'; }
+.cite-q-num {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    color: var(--gray-500);
+    font-size: 1.05em;
+    flex-shrink: 0;
+    width: 24px;
+}
+.cite-q-title {
+    flex: 1;
+    font-size: 1.0em;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+.cite-q > summary:hover .cite-q-title { color: #1d4ed8; }
+.cite-q-body {
+    padding: 4px 0 14px 50px;
+    color: var(--gray-800);
+    max-width: 78ch;
+}
+.cite-q-body p { line-height: 1.55; }
+.cite-q-body p:first-child { margin-top: 0; }
+
 /* Explorer coverage note */
 .explorer-coverage-note {
     margin-top: 12px;
