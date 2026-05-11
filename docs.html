@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Docs &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260510c">
+    <link rel="stylesheet" href="css/styles.css?v=20260511a">
     <meta name="description" content="Settlement Risk Monitor data fields, JSON endpoints, refresh cadence, internal tools.">
 </head>
 <body>
@@ -69,7 +69,7 @@
             <p>All data files live under <code>/data/</code> and are committed to the repo. Treat them as a static API: paths and field names are stable; refresh cadence is documented below.</p>
 
             <table class="blueprint-table">
-                <tr><th><code>/data/disputed_contracts.json</code></th><td>One row per disputed contract (n=2,221). Reader-facing fields: <code>id</code>, <code>raw_condition_id</code>, <code>slug</code>, <code>question_text</code>, <code>description</code>, <code>ancillary_text</code>, <code>category</code>, <code>first_proposal</code>, <code>final_payoff</code>, <code>revised</code>, <code>multi_episode</code>, <code>chain_type</code>, <code>candidate_mismatch</code>, <code>settlement_risk_tier</code>, <code>risk_reasons</code>, <code>first_proposal_time</code>, <code>final_settlement_time</code>, <code>audit{ rule_text_present, description_present, ancillary_present, named_source_present, fallback_present, edge_cases_present, final_payoff_observed, multi_episode, candidate_mismatch }</code></td></tr>
+                <tr><th><code>/data/disputed_contracts.json</code></th><td>One row per disputed contract; 2,221 rows total. Reader-facing fields: <code>id</code>, <code>raw_condition_id</code>, <code>slug</code>, <code>question_text</code>, <code>description</code>, <code>ancillary_text</code>, <code>category</code>, <code>first_proposal</code>, <code>final_payoff</code>, <code>revised</code>, <code>multi_episode</code>, <code>chain_type</code>, <code>candidate_mismatch</code>, <code>settlement_risk_tier</code>, <code>risk_reasons</code>, <code>first_proposal_time</code>, <code>final_settlement_time</code>, <code>audit{ rule_text_present, description_present, ancillary_present, named_source_present, fallback_present, edge_cases_present, final_payoff_observed, multi_episode, candidate_mismatch }</code></td></tr>
                 <tr><th><code>/data/settlement_funnel.json</code></th><td>9-step funnel ladder + summary numbers (paper Table 1).</td></tr>
                 <tr><th><code>/data/chain_signatures.json</code></th><td>23 raw chain-pattern aggregates + 3-row chain_type_summary.</td></tr>
                 <tr><th><code>/data/candidate_mismatches.json</code></th><td>94 broad mismatches at the row level (<code>classification == 'uncorrected_oracle_error'</code>). Per-row fields now expose <code>stratum</code> (55 <code>two_benchmark</code>, 39 <code>frozen</code>), <code>mismatch_agreed</code> (= <code>stratum == 'two_benchmark'</code>), <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>. Paper Table 1's "64 agreed" is a category-level aggregate (different measure).</td></tr>
@@ -103,7 +103,7 @@ console.log(highRisk.length, 'High-risk contracts');</pre>
             <p>SQL Lab (<a href="query.html">query.html</a>), Audit (<a href="audit.html">audit.html</a>, nine-flag per-contract checklist), Chain View (<a href="chain.html">chain.html</a>), and Cases (<a href="cases.html">cases.html</a>) are also reachable from the footer. Source repo: <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener">github.com/rodridu/polywether</a>.</p>
 
             <h2 id="sample-frame">Sample frame &amp; the negRisk gap</h2>
-            <p>The disputed-contract panel (n=2,221) is the <strong>condition_id-linked subset</strong> of disputed Polymarket-via-UMA settlement events. Markets without a recoverable <code>condition_id</code> in the rev3 panel are out of scope &mdash; including some that resolve via Polymarket's <strong>negRisk</strong> mechanism (e.g. Paris weather contracts and some prediction-market families that use a negRisk multi-outcome adapter rather than the standard binary <code>condition_id</code> path).</p>
+            <p>The disputed-contract panel is the <strong>condition_id-linked subset</strong> of disputed Polymarket-via-UMA settlement events. Markets without a recoverable <code>condition_id</code> in the rev3 panel are out of scope &mdash; including some that resolve via Polymarket's <strong>negRisk</strong> mechanism (e.g. Paris weather contracts and some prediction-market families that use a negRisk multi-outcome adapter rather than the standard binary <code>condition_id</code> path).</p>
             <p>If you query the SQL Lab and don't find a Polymarket market you remember (e.g. a Paris-temperature-on-day-X contract), the negRisk linkage is the most likely reason. The site does not currently bridge negRisk-resolved markets back to <code>pm_markets.condition_id</code>. The paper's &sect;3.1 caveat covers this gap; expanding the panel to include negRisk-side identifiers is a separate ingestion track (not in scope for the v0 dashboard).</p>
             <p style="color:#475569;font-size:0.92em;">Practical effect: the 2,221 disputed-contract figure is a strict undercount of all disputed Polymarket settlements. It is an exact count for the <em>auditable-via-condition_id</em> subpopulation; the negRisk-resolved subset is unmeasured here.</p>
 
@@ -143,7 +143,7 @@ console.log(highRisk.length, 'High-risk contracts');</pre>
                 <li><code>id</code>, <code>raw_condition_id</code>, <code>question_text</code>, <code>category</code></li>
                 <li><code>first_proposal</code> (<code>P_i1</code>), <code>final_payoff</code> (<code>S_i</code>), <code>coded_benchmark</code> (<code>G_i_label</code>)</li>
                 <li><code>operative_proposed</code>, <code>operative_final</code></li>
-                <li><code>stratum</code> — <code>two_benchmark</code> if both passes independently coded this specific row (n=55); <code>frozen</code> if assignment carried forward from a single pass (n=39).</li>
+                <li><code>stratum</code> — <code>two_benchmark</code> if both passes independently coded this specific row; <code>frozen</code> if assignment carried forward from a single pass. (Counts: 55 two_benchmark, 39 frozen.)</li>
                 <li><code>G_i_source</code></li>
                 <li><code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code> — replication-grade per-row correctness flags from the paper's reconciliation pipeline.</li>
                 <li><code>mismatch_agreed</code> — boolean equivalent to <code>(stratum == 'two_benchmark')</code>. <strong>Per-row, 55 of 94 are agreed.</strong></li>

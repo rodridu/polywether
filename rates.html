@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260510c">
+    <link rel="stylesheet" href="css/styles.css?v=20260511a">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
 </head>
 <body>
@@ -138,7 +138,7 @@
             var mmSorted = ns.slice().sort(function(a,b){ return b.candidate_mismatch_rate - a.candidate_mismatch_rate; });
             var top = mmSorted[0];
             if (top.candidate_mismatch_rate > 0) {
-                notes.push('Broad candidate mismatches concentrate in <strong>' + escapeHtml(top.key) + '</strong> contracts (<strong>' + fmtPct(top.candidate_mismatch_rate) + '</strong> mismatch rate, n=' + top.n_disputed + ').');
+                notes.push('Broad candidate mismatches concentrate in <strong>' + escapeHtml(top.key) + '</strong> contracts (<strong>' + fmtPct(top.candidate_mismatch_rate) + '</strong> mismatch rate).');
             }
         }
 
@@ -146,10 +146,10 @@
         var smallN = [];
         ['by_category','by_first_proposal'].forEach(function(k) {
             var bad = (d[k] && d[k].items || []).filter(function(it) { return it.n_disputed < MIN_N; });
-            bad.forEach(function(it) { smallN.push(it.key + ' (n=' + it.n_disputed + ')'); });
+            bad.forEach(function(it) { smallN.push(it.key); });
         });
         if (smallN.length) {
-            notes.push('<strong>Small-N caveat.</strong> The following buckets have n &lt; ' + MIN_N + ' and should not be treated as stable rates: ' + smallN.slice(0,8).map(escapeHtml).join(', ') + (smallN.length > 8 ? ', …' : '') + '.');
+            notes.push('<strong>Small-sample caveat.</strong> The following buckets have fewer than ' + MIN_N + ' contracts and should not be treated as stable rates: ' + smallN.slice(0,8).map(escapeHtml).join(', ') + (smallN.length > 8 ? ', …' : '') + '.');
         }
 
         return notes;
@@ -183,9 +183,8 @@
             var smallN = n < 30;
             var bg = cellColor(rate, n);
             var fg = textColor(rate, n);
-            return '<td class="rmap-cell' + (smallN ? ' rmap-cell-small' : '') + '" style="background:' + bg + ';color:' + fg + ';" title="rate ' + rate_pct.toFixed(1) + '% over n=' + n + '">' +
-                '<div class="rmap-rate">' + rate_pct.toFixed(1) + '%</div>' +
-                '<div class="rmap-n">n=' + n + (smallN ? ' *' : '') + '</div>' +
+            return '<td class="rmap-cell' + (smallN ? ' rmap-cell-small' : '') + '" style="background:' + bg + ';color:' + fg + ';" title="' + rate_pct.toFixed(1) + '% over ' + n + ' contracts">' +
+                '<div class="rmap-rate">' + rate_pct.toFixed(1) + '%' + (smallN ? ' <span class="rmap-small-mark">*</span>' : '') + '</div>' +
                 '</td>';
         }
 
@@ -218,7 +217,7 @@
             '<h2>Where settlement risk concentrates</h2>' +
             '<p style="margin:0 0 4px 0;color:#475569;font-size:0.94em;">Revision rate by realized chain type &times; category, on the binary-binary disputed subset (N=2,117). Buckets are text-classified per paper Appendix B.3 from keyword matches on the question text; Polymarket\'s own <code>category</code> tag is noisy (many sports contracts tagged &ldquo;Other&rdquo;).</p>' +
             '<p style="margin:0 0 12px 0;color:#475569;font-size:0.92em;"><strong>Key pattern:</strong> Path&nbsp;D rates exceed Path&nbsp;C in Sports (49.2 vs 16.1) and Crypto (38.0 vs 6.2). Politics/Geopolitics reverses (Path&nbsp;C 29.5%, Path&nbsp;D 14.4%) &mdash; high-salience contracts are routed through DVM voiding rather than parallel re-resolution.</p>' +
-            '<div class="rmap-legend"><span class="rmap-legend-label">Legend:</span>' + legendStops + '<span class="rmap-legend-note">&nbsp;&nbsp;n &lt; 30 marked with *</span></div>' +
+            '<div class="rmap-legend"><span class="rmap-legend-label">Legend:</span>' + legendStops + '<span class="rmap-legend-note">&nbsp;&nbsp;cells with fewer than 30 contracts marked with *</span></div>' +
             '<table class="rmap-heatmap">' +
                 '<thead><tr><th></th>' + colHeaders + '<th class="rmap-col-label">All</th></tr></thead>' +
                 '<tbody>' +

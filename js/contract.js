@@ -167,8 +167,8 @@
             if (!r || r.n === 0) return '';
             return '<div class="base-rate-row">' +
                 '<span class="base-rate-label">' + label + '</span>' +
-                '<span class="base-rate-stat"><strong>' + (100*r.revision_rate).toFixed(1) + '%</strong> revised <span class="muted">(' + r.n_revised + ' / ' + r.n + ')</span></span>' +
-                '<span class="base-rate-stat"><strong>' + (100*r.mismatch_rate).toFixed(1) + '%</strong> broad mismatch <span class="muted">(' + r.n_mismatch + ' / ' + r.n + ')</span></span>' +
+                '<span class="base-rate-stat"><strong>' + (100*r.revision_rate).toFixed(1) + '%</strong> revised</span>' +
+                '<span class="base-rate-stat"><strong>' + (100*r.mismatch_rate).toFixed(1) + '%</strong> broad mismatch</span>' +
                 '</div>';
         }
         return '<section class="contract-section"><h2>Markets like this</h2>' +
@@ -210,7 +210,7 @@
                 ? 'Final payoff <strong>differed</strong> from first proposal. The mechanism rewrote the answer at least once.'
                 : 'First proposal and final payoff agreed. Settlement was clean despite the dispute.') +
             (rates.same_chain_category && rates.same_chain_category.n
-                ? ' Among contracts in the same chain type and category, <strong>' + (100*rates.same_chain_category.revision_rate).toFixed(0) + '%</strong> revised (' + rates.same_chain_category.n_revised + '/' + rates.same_chain_category.n + ').'
+                ? ' Among contracts in the same chain type and category, <strong>' + (100*rates.same_chain_category.revision_rate).toFixed(0) + '%</strong> revised.'
                 : ' Bucket too small for stable base rates.') +
             ' Read the price as conditional on the resolution mechanism, not as unconditional event probability. Not buy/sell guidance.';
 
