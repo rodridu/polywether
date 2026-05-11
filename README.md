@@ -148,14 +148,29 @@ repo is elsewhere.
   of seven curated cases match the market panel but not the
   disputed-analysis sample.
 
+## Acknowledgment
+
+The site scaffolding (page structure, CSS conventions, static-data /
+JSON-endpoint pattern, vanilla-JS rendering) is adapted from the
+**Bellwether** project's open-source platform code
+([elliotjames-paschal/bellwether-platform](https://github.com/elliotjames-paschal/bellwether-platform)),
+built by Andrew B. Hall (Stanford GSB / Hoover Institution) and
+Elliot Paschal. Bellwether tracks **price robustness** in prediction
+markets; this site is a separate research artifact tracking
+**settlement robustness** for disputed Polymarket-UMA contracts.
+The paper positions the two as complementary infrastructure layers
+on the same broader question of "what does a market price mean."
+
+The substantive content (paper, data pipeline, candidate-mismatch
+benchmark, paper Table A3 cross-tab, rule-linter regex, settlement-risk
+tier rule) is independent work by the author. Any errors in the
+adaptation are mine.
+
 ## Affiliation
 
 Hongzhen Du, Kellogg School of Management, Northwestern University.
-
-The Bellwether project (Andrew Hall, Stanford GSB / Hoover Institution;
-Elliot Paschal) is referenced as a complementary infrastructure layer
-(price robustness vs settlement robustness). This repo is independent
-and not affiliated with Bellwether.
+Independent and not formally affiliated with Bellwether or the Hoover
+Institution.
 
 ## License
 
