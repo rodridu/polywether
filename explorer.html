@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Analyze a market &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511b">
+    <link rel="stylesheet" href="css/styles.css?v=20260511c">
     <meta name="description" content="Filterable table of 2,221 disputed Polymarket-UMA contracts.">
 </head>
 <body>
@@ -94,6 +94,12 @@
             </div>
 
             <!-- Filters (collapsed by default — paste-first UX) -->
+            
+<noscript>
+<p style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 14px;font-size:0.92em;line-height:1.55;color:#78350f;">
+This page renders settlement data client-side from JSON. JavaScript appears to be disabled. The underlying data is available as static files in the <a href="https://github.com/rodridu/polywether/tree/main/data">repository's <code>data/</code> directory</a>; the paper's full disputed-contract panel is in the replication package.
+</p>
+</noscript>
             <details class="explorer-filters-wrap">
                 <summary>Browse all 2,221 disputed contracts (filters)</summary>
             <div class="explorer-filters">
@@ -160,7 +166,7 @@
                         <th class="exp-col-mm">Mismatch</th>
                     </tr>
                 </thead>
-                <tbody id="explorer-tbody"></tbody>
+                <tbody id="explorer-tbody"><tr id="loading-row"><td colspan="10" style="text-align:center;color:#64748b;padding:24px;">Loading 2,221 disputed contracts...</td></tr></tbody>
             </table>
 
             <div id="explorer-pagination" class="explorer-pagination"></div>

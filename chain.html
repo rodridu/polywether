@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Chain View &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511b">
+    <link rel="stylesheet" href="css/styles.css?v=20260511c">
     <meta name="description" content="Per-contract settlement chain timelines for disputed Polymarket-UMA contracts.">
 </head>
 <body>
@@ -58,9 +58,15 @@
                 <button class="chain-tab-btn" data-filter="Repeated adapter-routed request">Repeated adapter-routed request</button>
             </div>
 
+            
+<noscript>
+<p style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 14px;font-size:0.92em;line-height:1.55;color:#78350f;">
+This page renders settlement data client-side from JSON. JavaScript appears to be disabled. The underlying data is available as static files in the <a href="https://github.com/rodridu/polywether/tree/main/data">repository's <code>data/</code> directory</a>; the paper's full disputed-contract panel is in the replication package.
+</p>
+</noscript>
             <div id="chain-stats" class="chain-stats-banner"></div>
 
-            <div id="chain-list"></div>
+            <div id="chain-list"><p id="loading-msg" style="color:#64748b;padding:24px;text-align:center;">Loading example settlement chains...</p></div>
 
             <p style="margin-top: 32px; font-size: 0.88em; color: #64748b; font-style: italic;">
                 Selection rule: contracts in the disputed sample (D=1) with at least two episodes, sports category only (low public-controversy risk), proposed and final outcomes both observed. Hand-curated to span both chain types.

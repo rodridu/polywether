@@ -2,7 +2,7 @@
 
 Static research dashboard companion to the working paper:
 
-> **"When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets."**
+> **"When Resolution Isn't Settlement: Payoff Measurement in Prediction Markets."**
 > Hongzhen Du, Kellogg School of Management, Northwestern University.
 > Working paper, 2026.
 
