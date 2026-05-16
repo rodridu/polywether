@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Docs &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260516a">
+    <link rel="stylesheet" href="css/styles.css?v=20260516b">
     <meta name="description" content="Settlement Risk Monitor data fields, JSON endpoints, refresh cadence, internal tools.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -55,15 +55,18 @@
         <div class="container container-narrow">
 
             <h2 id="risk-tier">Settlement-risk tier</h2>
-            <p>The screening tier on each disputed contract is a rules-based v0. Computed from existing audit flags + chain-type×category revision rates:</p>
+            <p style="background:#fffbeb;border-left:3px solid #f59e0b;padding:10px 14px;color:#78350f;font-size:0.92em;">
+                <strong>Dashboard construct, not a paper result.</strong> The companion paper has no risk-tier classification. This is a v0 screening heuristic built for the site only. One of its inputs (the candidate-mismatch flag) is the rule-implied-label diagnostic that the paper <a href="#benchmark-transparency">explicitly excludes from its main analyses</a>. Read the tier as a triage signal, never as a prediction that a settlement was wrong.
+            </p>
+            <p>The tier is rules-based, computed from audit flags + chain-type×category revision rates:</p>
             <table class="blueprint-table">
-                <tr><th>High</th><td>Broad candidate mismatch flagged, OR rule text not recoverable, OR (rule text present but no named source AND no fallback). 611 of 2,221 contracts (27.5%).</td></tr>
+                <tr><th>High</th><td>Rule text not recoverable, OR (rule text present but no named source AND no fallback), OR flagged by the superseded candidate-mismatch screen. 611 of 2,221 contracts (27.5%). The candidate-mismatch contribution is the paper-excluded diagnostic; a tier built without it would flag fewer contracts.</td></tr>
                 <tr><th>Caution</th><td>No fallback language, OR no edge-case language, OR same chain-type × category bucket has revision rate above the sample median. 1,513 of 2,221 (68%).</td></tr>
                 <tr><th>Low</th><td>Source, fallback, edge-case language all present, and bucket revision rate at or below sample median. 92 of 2,221 (4%).</td></tr>
                 <tr><th>Test</th><td>Polymarket dev/test market detected via JSON-blob ancillary data (e.g. <code>{"earlyExpiration":1,"q":{"title":"Test propose only…"}}</code>). 5 of 2,221. Excluded from the High watchlist + default Lookup view; filterable via the explicit Test chip.</td></tr>
             </table>
             <p style="margin-top:12px;color:#475569;">
-                The tier is a <strong>screening flag</strong>, not a prediction of correct/incorrect settlement. It says: <em>the payoff depends on discretionary or ambiguous interpretation rather than a clean event-to-label mapping.</em>
+                The tier says: <em>the payoff depends on discretionary or ambiguous interpretation rather than a clean event-to-label mapping.</em> It is not in the paper and should not be cited as a paper finding.
             </p>
 
             <h2 id="data-files">Static JSON endpoints</h2>
