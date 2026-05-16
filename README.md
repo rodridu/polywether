@@ -2,30 +2,39 @@
 
 Static research dashboard companion to the working paper:
 
-> **"When Resolution Isn't Settlement: Payoff Measurement in Prediction Markets."**
+> **"How Prediction Markets Resolve: Evidence from Polymarket."**
 > Hongzhen Du, Kellogg School of Management, Northwestern University.
 > Working paper, 2026.
 
-The site reconstructs the multi-stage on-chain settlement process for
-**661,949** condition-identifier-linked Polymarket settlement conditions
-resolved through UMA's optimistic oracle (November 2022 — April 2026), and
-documents three facts:
+The site is the companion dashboard to a study of the contract-level
+settlement process behind **305,766** resolved Polymarket-UMA contracts
+(November 2022 — April 2026, drawn from a 661,949-condition full
+settlement panel). Three findings:
 
-1. **Trade-feed coverage.** In the standard Polymarket trade feed used for
-   pre-proposal scoring, trade prices exist for 0.34% of terminal binary
-   contracts, almost exclusively the disputed subsample.
-2. **Settlement composition.** Within the priced disputed sample, revised
-   contracts are 20.6% of contracts but account for ~72% of pooled Brier
-   loss. Mean Brier 0.318 (revised) vs 0.032 (confirmed).
-3. **Chain-type taxonomy.** Among 2,197 disputed contracts with an
-   observed final payoff, 530 (24.1%) revise. 352 of those run through
-   Path D (parallel repeated-request), 178 through Path C (DVM
-   request-voiding). Fully observable on-chain; absent from the
-   settlement description traders see.
+1. **Contract text predicts disputes.** On 305,766 resolved contracts,
+   listing-time language is associated with later dispute incidence.
+   Explicit cancellation language: 0.25% dispute rate vs 0.88% without
+   (lift 0.28). Multiple-source / "consensus of credible reporting"
+   language: 1.36% vs 0.39% (lift 3.50). Reduced-form, not causal.
+2. **Text also predicts the enforcement channel.** Conditional on
+   dispute (N=1,480), contract text is associated with whether the
+   dispute resolves through automatic correction (Path D) or jury
+   adjudication (Path C).
+3. **Pooling distorts forecast scores.** Of 2,221 disputed contracts,
+   530 (23.9%) revise. In the priced disputed sample (N=1,066), revised
+   contracts are ~21% of contracts but 30–75% of pooled Brier loss
+   depending on price aggregation (~72% under last-trade pricing).
+   Mean Brier 0.318 (revised) vs 0.032 (confirmed).
 
-A diagnostic benchmark flags **64** candidate rule-divergent revisions
-concentrated in Path C. The audit list is in the replication package
-and is preliminary pending independent blinded re-coding.
+Settlement-path taxonomy: Path C (DVM-voided adjudication) — 1,266
+disputed, 178 revised, 14.1%; Path D (non-voided automatic re-request)
+— 940 disputed, 352 revised, 37.4%.
+
+An earlier draft coded rule-implied labels to flag "candidate
+mismatches." That diagnostic layer is **excluded from the paper's main
+analyses** (Appendix B.3) pending independent validation. The
+`candidate_mismatch` flag in the data is a screening signal only, not a
+paper result.
 
 **Live site:** https://rodridu.github.io/polywether/
 
@@ -36,7 +45,7 @@ and is preliminary pending independent blinded re-coding.
 | `index.html` | Hero search, audience cards, High-risk watchlist |
 | `explorer.html` | **Analyze** — filterable table of all 2,221 disputed contracts |
 | `contract.html` | Per-contract evidence-first detail (top diagnostic card → settlement chain → evidence → audit → base rates → interpretation notes) |
-| `rates.html` | **Risk Map** — paper Table A3 heatmap (chain type × text-classified category) |
+| `rates.html` | **Risk Map** — conditional revision-rate heatmap by chain type × category (panel-derived) |
 | `cases.html` | **Cases** — named public controversies located in the panel; "Locate, do not adjudicate" |
 | `analyze.html` | **Rule Check** — paste rule text, get a 7-field clarity screen + suggested rewrite |
 | `cite.html` | **Cite check** — 7-question scorecard for journalists, with Brier-loss decomposition |
@@ -55,11 +64,11 @@ and is preliminary pending independent blinded re-coding.
 | File | Rows | Purpose |
 |---|---|---|
 | `disputed_contracts.json` | 2,221 | Per-contract record: id, question_text, category, first_proposal, final_payoff, revised, chain_type, candidate_mismatch, settlement_risk_tier, audit{ rule_text_present, named_source_present, fallback_present, edge_cases_present, ... } |
-| `settlement_funnel.json` | 9 steps | 661,949 → 2,221 → 2,197 → 530 → 352/178 → 64 |
+| `settlement_funnel.json` | sample-reconciliation layers | 661,949 panel → 606,475 terminal → 305,766 resolved-with-text → 2,221 disputed → 1,480 / 888 / 1,066 sub-samples |
 | `chain_signatures.json` | 23 sig + 3 chain-type summary | Aggregate counts and revision rates per chain pattern |
-| `candidate_mismatches.json` | 94 row-level entries | Per-row stratum (55 two_benchmark / 39 frozen), G_i_source, operative_proposed/final, mechanical_final_correct_a1, legacy_final_correct, mismatch_agreed. Paper headline is the 64-case agreed subset (63 in Path C, 1 in Path D) |
-| `conditional_revision_paper.json` | 5 buckets × Path C/D | Paper Table A3 (Appendix B.3) text-classified buckets: Sports / Politics-Geopolitics / Crypto / Weather-Nature / Residual |
-| `brier_decomposition.json` | 1 main + 4 cells | Paper Table 4 binary-binary cells (N=1,066): revised 20.6% / 72% pooled-loss share; mean Brier 0.318 (revised) vs 0.032 (confirmed) |
+| `candidate_mismatches.json` | 94 row-level entries | Diagnostic rule-implied-label coding. **Excluded from the paper's main analyses** (Appendix B.3) pending independent validation. Screening signal only — not a paper result |
+| `conditional_revision_paper.json` | 5 buckets × Path C/D | Panel-derived chain-type × text-classified-category revision rates (Sports / Politics-Geopolitics / Crypto / Weather-Nature / Residual). Derived from the disputed panel, not a table in the current paper draft |
+| `brier_decomposition.json` | 1 main + 4 cells | Paper Table 8 binary-binary cells (N=1,066): revised ~21% of sample, 30–75% of pooled Brier loss by price method (~72% last-trade); mean Brier 0.318 (revised) vs 0.032 (confirmed) |
 | `public_cases.json` | 7 cases | Locator only — no adjudication |
 | `risk_map_examples.json` | 4 | Hand-picked (revised + clean) × (Path C + Path D) for the Risk Map "Bucket examples" cards |
 | `chain_examples.json` | 10 | Sports-only, both chain types, request-by-request timelines |

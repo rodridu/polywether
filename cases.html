@@ -9,7 +9,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Cases &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511d">
+    <link rel="stylesheet" href="css/styles.css?v=20260516a">
     <meta name="description" content="How public prediction-market controversies enter the settlement-data funnel. Locate, do not adjudicate.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -148,7 +148,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
         "Government shutdown 2025":  "Pre-specify cutoff date + time zone + funding-lapse vs agency-closure rule."
     };
 
-    // Per-case paper-bucket annotation: which paper Table A3 category does this case fall into?
+    // Per-case bucket annotation: which text-classified category does this case fall into?
     // (Manual mapping; paper text-classified buckets.)
     var CASE_BUCKETS = {
         "Zelenskyy suit":            "Politics/Geopolitics",
@@ -160,7 +160,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
         "Government shutdown 2025":  "Politics/Geopolitics"
     };
 
-    // Paper Table A3 (Appendix B.3) — base rates per bucket × path.
+    // Panel-derived base rates per text-classified category x path (dashboard view, not a paper table).
     // Source: data/conditional_revision_paper.json.
     var PAPER_RATES = {
         "Sports":               { N_all:411, all:26.3, N_C:285,  C:16.1, N_D:126, D:49.2 },
@@ -187,7 +187,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
             pathSummary = ' &middot; matched ' + (nC ? nC + ' on Path C' : '') + (nC && nD ? ', ' : '') + (nD ? nD + ' on Path D' : '');
         }
         return '<p class="case-bucket-annot">' +
-            '<strong>Paper Table A3 cell:</strong> ' + escapeHtml(bucket) + '. ' +
+            '<strong>Category base rate (panel-derived):</strong> ' + escapeHtml(bucket) + '. ' +
             'Base rates &mdash; ' +
             '<span class="case-bucket-rate">Path&nbsp;C ' + p.C.toFixed(1) + '%</span>' +
             ' / ' +

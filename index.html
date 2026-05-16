@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Settlement Risk Monitor &mdash; Polymarket / UMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511d">
+    <link rel="stylesheet" href="css/styles.css?v=20260516a">
     <meta name="description" content="Settlement Risk Monitor — track how prediction-market contracts move from rules to final payoffs. Identify ambiguous rules, dispute-prone designs, and settlement paths before they become trading risk.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -87,10 +87,10 @@
             <details class="homepage-meta">
                 <summary><span class="muted">More on this watchlist &mdash; filter, refresh cadence, site version</span></summary>
                 <ul class="homepage-meta-list">
-                    <li><strong>What's flagged High:</strong> contract has a broad candidate mismatch, OR no recoverable rule text, OR rule text but neither a named source nor a fallback.</li>
+                    <li><strong>What's flagged High:</strong> contract has no recoverable rule text, OR rule text but neither a named source nor a fallback, OR is flagged by the superseded candidate-mismatch screen (a diagnostic signal only, <a href="docs.html#benchmark-transparency">excluded from the paper's main analyses</a>).</li>
                     <li><strong>Excluded:</strong> 5 Polymarket dev/test markets and sports/esports contracts (which auto-resolve via league box scores). Full High set reachable via the button below.</li>
                     <li><strong>Refresh:</strong> aggregate JSONs regenerate weekly via <a href="https://github.com/rodridu/polywether/actions" target="_blank" rel="noopener">GitHub Actions</a>; per-contract data refreshes manually. <a href="docs.html#refresh">Cadence &rarr;</a></li>
-                    <li><strong>Site version:</strong> paper draft <code>2026-05-11</code> &middot; data snapshot <code>2026-04-29</code> &middot; panel through <code>2026-04-22</code>. <a href="docs.html#snapshot">Snapshot &rarr;</a> &middot; <a href="docs.html#replication">Replication &rarr;</a></li>
+                    <li><strong>Site version:</strong> paper draft <code>2026-05-16</code> &middot; data snapshot <code>2026-04-29</code> &middot; panel through <code>2026-04-22</code>. <a href="docs.html#snapshot">Snapshot &rarr;</a> &middot; <a href="docs.html#replication">Replication &rarr;</a></li>
                 </ul>
             </details>
             <div id="watchlist-table"></div>

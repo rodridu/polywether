@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Risk Map &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511d">
+    <link rel="stylesheet" href="css/styles.css?v=20260516a">
     <meta name="description" content="Conditional revision and candidate-mismatch rates by category, chain type, source presence, fallback presence.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -176,7 +176,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
         return rate >= 0.32 ? '#fff' : 'var(--gray-900)';
     }
 
-    // Render the heatmap from paper Table A3 (binary-binary disputed subset, n=2,117).
+    // Render the chain-type x category revision heatmap (panel-derived, binary-binary disputed subset).
     // Columns: Sports / Politics-Geopolitics / Crypto / Weather-Nature / Residual / All.
     // Rows: Path C (request-voiding) / Path D (repeated-request) / All chains.
     function renderPaperCrossTab(paperData) {
@@ -222,7 +222,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
 
         return '<div class="rates-block">' +
             '<h2>Where settlement risk concentrates</h2>' +
-            '<p style="margin:0 0 4px 0;color:#475569;font-size:0.94em;">Revision rate by realized chain type &times; category, on the binary-binary disputed subset (N=2,117). Buckets are text-classified per paper Appendix B.3 from keyword matches on the question text; Polymarket\'s own <code>category</code> tag is noisy (many sports contracts tagged &ldquo;Other&rdquo;).</p>' +
+            '<p style="margin:0 0 4px 0;color:#475569;font-size:0.94em;">Revision rate by realized chain type &times; category, on the binary-binary disputed subset. Buckets are text-classified from keyword matches on the question text (Polymarket\'s own <code>category</code> tag is noisy &mdash; many sports contracts tagged &ldquo;Other&rdquo;). Panel-derived; this cross-tab is a dashboard view, not a table in the current paper draft.</p>' +
             '<p style="margin:0 0 12px 0;color:#475569;font-size:0.92em;"><strong>Key pattern:</strong> Path&nbsp;D rates exceed Path&nbsp;C in Sports (49.2 vs 16.1) and Crypto (38.0 vs 6.2). Politics/Geopolitics reverses (Path&nbsp;C 29.5%, Path&nbsp;D 14.4%) &mdash; high-salience contracts are routed through DVM voiding rather than parallel re-resolution.</p>' +
             '<div class="rmap-legend"><span class="rmap-legend-label">Legend:</span>' + legendStops + '<span class="rmap-legend-note">&nbsp;&nbsp;cells with fewer than 30 contracts marked with *</span></div>' +
             '<table class="rmap-heatmap">' +
@@ -233,7 +233,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
                     rowFor('all', 'All chains', true) +
                 '</tbody>' +
             '</table>' +
-            '<p style="margin-top:12px;font-size:0.85em;color:#64748b;">Source: paper Table A3, paper draft 2026-05-11. Identified-bucket subtotal: N=1,069 (21.5% revised). Residual bucket (1,048 contracts) covers pop-culture, celebrity, news, and miscellaneous events that did not match a clean keyword bucket; treat residual rates as a heterogeneous-mix average. Within-row gaps between N<sub>all</sub> and N<sub>C</sub>&nbsp;+&nbsp;N<sub>D</sub> in the &ldquo;All&rdquo; row (12 contracts) are single-episode disputed contracts whose dispute event is parsed without a separate proposal episode and sit outside the Path C/Path D split. Data file: <code>data/conditional_revision_paper.json</code>.</p>' +
+            '<p style="margin-top:12px;font-size:0.85em;color:#64748b;">Panel-derived view, computed from the disputed-contract sample &mdash; not a table in the current paper draft (which reports the Path&nbsp;C / Path&nbsp;D split and the Table&nbsp;4 contract-text dispute associations, not a chain&times;category cross-tab). Residual bucket covers pop-culture, news, and miscellaneous events that did not match a clean keyword bucket; treat residual rates as a heterogeneous-mix average. Data file: <code>data/conditional_revision_paper.json</code>.</p>' +
             '</div>';
     }
 
@@ -305,7 +305,7 @@ This page renders settlement data client-side from JSON. JavaScript appears to b
             console.warn('risk_map_examples.json load failed:', err);
         });
 
-        // chain_type x category cross-tab — paper Table A3 (Appendix B.3), text-classified buckets
+        // chain_type x category cross-tab — panel-derived, text-classified buckets (dashboard view, not a paper table)
         fetch('data/conditional_revision_paper.json').then(r => r.json()).then(paper => {
             document.getElementById('rates-crosstab').innerHTML = renderPaperCrossTab(paper);
         }).catch(function(err) {

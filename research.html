@@ -9,7 +9,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Research &amp; Data &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260511d">
+    <link rel="stylesheet" href="css/styles.css?v=20260516a">
     <meta name="description" content="Working paper, sample funnel, methodology, benchmark transparency, replication checklist, and limitations for the Settlement Risk Monitor.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -46,19 +46,19 @@
     <section class="hero hero-compact">
         <div class="hero-inner research-hero-inner">
             <p class="hero-eyebrow">Working paper</p>
-            <h1>When Resolution Isn't Settlement: Payoff Measurement in Prediction Markets</h1>
-            <p class="research-byline">Hongzhen Du &middot; Northwestern University &middot; Draft <code>2026-05-11</code></p>
+            <h1>How Prediction Markets Resolve: Evidence from Polymarket</h1>
+            <p class="research-byline">Hongzhen Du &middot; Northwestern University &middot; Draft <code>2026-05-16</code></p>
             <p class="hero-description">
-                Reconstructs how disputed Polymarket contracts move from first proposal to final payoff. Distinguishes world facts <em>W</em>, rule-implied label <em>G</em>, and settlement state <em>S</em>. The headline finding is a coverage-selection result: standard accuracy evaluations score market prices on the disputed subsample, where revised contracts (20.6% of priced sample) account for 72% of pooled Brier loss.
+                Reconstructs the contract-level settlement process for <strong>305,766</strong> resolved Polymarket-UMA contracts. Distinguishes the <em>event</em> that occurs, the written <em>rule</em> that defines what counts, and the settlement <em>label</em> the mechanism produces. Three findings: (1) listing-time contract language predicts later disputes &mdash; explicit cancellation language associates with fewer disputes (0.25% vs 0.88%), vague multi-source language with more (1.36% vs 0.39%); (2) conditional on dispute, contract text predicts whether settlement runs through automatic correction (Path D) or jury adjudication (Path C); (3) pooling revised and confirmed contracts distorts forecast scores &mdash; revised contracts are ~21% of the priced disputed sample but 30&ndash;75% of pooled Brier loss.
             </p>
             <div class="research-hero-actions">
                 <a href="https://github.com/rodridu/polywether/blob/main/data-source/" target="_blank" rel="noopener" class="btn btn-primary">PDF &amp; replication package &rarr;</a>
                 <a href="https://github.com/rodridu/polywether" target="_blank" rel="noopener" class="btn btn-secondary">Data repository &rarr;</a>
                 <button type="button" class="btn btn-secondary" id="cite-copy-btn">Copy citation</button>
             </div>
-            <p class="research-cite-inline" id="cite-text">Du, Hongzhen. &ldquo;When Resolution Isn't Settlement: Payoff Measurement in Prediction Markets.&rdquo; Working paper, Northwestern University, 2026.</p>
+            <p class="research-cite-inline" id="cite-text">Du, Hongzhen. &ldquo;How Prediction Markets Resolve: Evidence from Polymarket.&rdquo; Working paper, Northwestern University, 2026.</p>
             <p class="research-version-strip">
-                Paper draft <code>2026-05-11</code> &middot; data snapshot <code>2026-04-29</code> &middot; panel through <code>2026-04-22</code> &middot; build <code>3.21</code>
+                Paper draft <code>2026-05-16</code> &middot; data snapshot <code>2026-04-29</code> &middot; panel through <code>2026-04-22</code> &middot; build <code>3.21</code>
             </p>
         </div>
     </section>
@@ -66,27 +66,27 @@
     <!-- Sample funnel — the canonical at-a-glance element. Visible by default. -->
     <section class="section">
         <div class="container container-research">
-            <h2 id="funnel">Sample funnel</h2>
-            <p class="research-prose-narrow">From the full Polymarket-via-UMA panel down to the analysis sample. Each row is a disjoint filter applied to the row above. See <a href="docs.html#replication">Replication checklist</a> for the SQL.</p>
+            <h2 id="funnel">Sample reconciliation</h2>
+            <p class="research-prose-narrow">Construction layers (paper Appendix B, Table 10). The headline universe is the 305,766 resolved contracts with usable text metadata; the 661,949-condition full panel and the disputed sub-samples are reported for context. Each test uses the sub-sample with the observables it needs &mdash; the price samples overlap rather than nest.</p>
             <table class="research-funnel-table">
                 <thead>
                     <tr>
-                        <th>Step</th>
-                        <th>Description</th>
-                        <th class="num">Count</th>
-                        <th class="num">% of prior</th>
+                        <th>Layer</th>
+                        <th class="num">N</th>
+                        <th>Source</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>1</td><td>All settlement conditions in panel</td><td class="num mono">661,949</td><td class="num mono">&mdash;</td></tr>
-                    <tr><td>2</td><td>Conditions with at least one counter-bond posted</td><td class="num mono">2,221</td><td class="num mono">0.34%</td></tr>
-                    <tr><td>3</td><td>Disputed contracts with observed final payoff state</td><td class="num mono">2,197</td><td class="num mono">98.9%</td></tr>
-                    <tr><td>4</td><td>Final payoff differs from first proposal (revised)</td><td class="num mono">530</td><td class="num mono">24.1%</td></tr>
-                    <tr><td>5a</td><td>&hellip; via repeated-request chains (Path D)</td><td class="num mono">352</td><td class="num mono">66% of 530</td></tr>
-                    <tr><td>5b</td><td>&hellip; via DVM request-voiding chains (Path C)</td><td class="num mono">178</td><td class="num mono">34% of 530</td></tr>
-                    <tr><td>6</td><td>Candidate rule-divergent revisions (paper headline)</td><td class="num mono">64</td><td class="num mono">63 in Path C, 1 in Path D</td></tr>
+                    <tr><td>UMA OOv2 settlement conditions (full panel)</td><td class="num mono">661,949</td><td>OOv2 subgraph, first-episode dedup</td></tr>
+                    <tr><td>Terminal settlement-state records</td><td class="num mono">606,475</td><td>Filter to settled / resolved</td></tr>
+                    <tr><td><strong>Resolved, linked to Polymarket + non-empty description</strong></td><td class="num mono"><strong>305,766</strong></td><td>&sect;3 dispute-incidence universe</td></tr>
+                    <tr><td>Disputed contracts (full settlement panel)</td><td class="num mono">2,221</td><td>Path / chain classification</td></tr>
+                    <tr><td>Disputed within resolved-with-text universe</td><td class="num mono">1,480</td><td>&sect;3 dispute rate; &sect;4 channel LPM</td></tr>
+                    <tr><td>Disputed + post-proposal pre-dispute trade</td><td class="num mono">888</td><td>&sect;5.1 disagreement regression</td></tr>
+                    <tr><td>Disputed + pre-proposal Yes-token trade</td><td class="num mono">1,066</td><td>&sect;5.3 Brier scoring</td></tr>
                 </tbody>
             </table>
+            <p class="research-prose-narrow" style="margin-top:14px;">Of the 2,221 disputed contracts, <strong>530 (23.9%) revise</strong> &mdash; the final payoff differs from the first proposal. Path&nbsp;C (DVM-voided adjudication): 1,266 disputed, 178 revised, 14.1% revision rate. Path&nbsp;D (non-voided automatic re-request): 940 disputed, 352 revised, 37.4%.</p>
         </div>
     </section>
 
@@ -98,10 +98,10 @@
                 <summary><h2>Working paper &mdash; contribution</h2></summary>
                 <div class="research-section-body">
                     <p>
-                        Prediction-market prices are usually interpreted as beliefs about events. But payoffs depend on a contractual mapping from world facts to a settlement label. The paper distinguishes three objects: realized world facts <em>W</em>, the rule-implied label <em>G</em> under the contract's text and source hierarchy, and the settlement state <em>S</em> delivered by the mechanism. It reconstructs this mapping for disputed Polymarket contracts resolved through UMA.
+                        A state-contingent contract does not pay directly on a world event. It pays on a final payoff label produced by a settlement institution. Three objects are distinct: the <em>event</em> that occurs, the written <em>rule</em> that defines what counts, and the settlement <em>process</em> that applies the rule and produces the label &mdash; the <em>event&ndash;rule&ndash;label distinction</em>. Disputes arise at the seams between them.
                     </p>
                     <p>
-                        The unit of analysis is a disputed contract. The dependent variable is whether the final payoff state <em>S</em> equals the first proposed outcome <em>P&#8321;</em>. The contribution is descriptive: it documents the mechanism path from <em>P&#8321;</em> to <em>S</em>, and a candidate-mismatch layer that flags rows where <em>S</em> may not equal <em>G</em>.
+                        The paper is the first systematic reconstruction of the contract-level settlement paths that produce final payoff labels on Polymarket-UMA. The contribution is descriptive and reduced-form: it documents which listing-time contract terms associate with later dispute and with the enforcement channel used to resolve it, and shows that pooling revised and confirmed contracts distorts forecast-accuracy scores. It does not adjudicate whether any settled label is correct.
                     </p>
                 </div>
             </details>
@@ -122,19 +122,19 @@
             </details>
 
             <details class="research-section">
-                <summary><h2>Benchmark transparency &mdash; the 64 cases</h2></summary>
+                <summary><h2>Headline result &mdash; contract text and dispute risk</h2></summary>
                 <div class="research-section-body">
                     <p>
-                        The candidate-mismatch layer is a diagnostic, not a population error estimate. Two LLM-coded passes from different model families are applied to contract text, named sources, and public evidence on the disputed contracts with a determinate binary rule-implied label. Both passes are blind to the realized settlement state.
+                        The paper's main evidence (Table 4, N = 305,766 resolved contracts) is that settlement stress is partly predictable from contract language observed at listing, before trading begins. Seven text features are extracted by regex from the question and resolution rules.
                     </p>
                     <p>
-                        <strong>The paper headline is 64 cases where both coding passes agree that the contract's settled label diverges from the rule-implied label coded from its own text.</strong> Of those 64, <strong>63 sit in Path C</strong> (request-voiding chains) and <strong>1 in Path D</strong> (repeated-request chains). The Path C concentration is descriptive rather than causal: it shows where candidate mismatches concentrate, not why they arise.
+                        <strong>Explicit cancellation language is the strongest negative predictor:</strong> a 0.25% dispute rate with the feature vs 0.88% without (lift 0.28; within-category logit AME &minus;0.56 pp). <strong>Multiple-source / &ldquo;consensus of credible reporting&rdquo; language is the strongest positive predictor:</strong> 1.36% vs 0.39% (lift 3.50; AME +0.22 pp). The cancellation result survives leave-one-category-out and holds outside sports; it is a reduced-form contract-design screen, not a causal effect of adding a clause.
                     </p>
                     <p>
-                        The pipeline also produces a broader pass-1-only count of 94 rows (<code>classification == 'uncorrected_oracle_error'</code>) before reconciliation; <code>candidate_mismatches.json</code> exposes all 94 with per-row stratum (55 <code>two_benchmark</code>, 39 <code>frozen</code>), <code>G_i_source</code>, <code>operative_proposed</code>, <code>operative_final</code>, <code>mechanical_final_correct_a1</code>, <code>legacy_final_correct</code>. Use the paper's 64 as the headline; use the broader 94 only when explicitly auditing the pre-reconciliation pass.
+                        Conditional on dispute (Table 6, N = 1,480), contract text also predicts the enforcement channel: subjective-event language associates with the automatic-correction channel (Path D), single-named-source disputes with jury adjudication (Path C).
                     </p>
                     <p>
-                        Independent blinded re-coding by external coders is the natural next step and is not yet complete (paper &sect;7.3). Treat the 64 as a concrete audit list pending replication. The audit list is distributed in the paper's replication package; see <a href="docs.html#benchmark-transparency">Docs &rarr; Benchmark validation transparency</a> for the full schema.
+                        An earlier draft coded rule-implied labels to flag &ldquo;candidate mismatches.&rdquo; That diagnostic layer is <strong>explicitly excluded from the paper's main analyses</strong> (Appendix B.3) because it requires independent validation beyond the paper's scope. The <code>candidate_mismatch</code> flag on the dashboard is a screening signal only, not a paper result; do not cite it as a finding.
                     </p>
                 </div>
             </details>
@@ -189,7 +189,7 @@
                     <p class="research-prose-narrow">The nav bar links every tool. Listed here for completeness.</p>
                     <ul class="research-list">
                         <li><a href="explorer.html">Analyze</a> &mdash; per-contract lookup</li>
-                        <li><a href="rates.html">Risk Map</a> &mdash; conditional revision rates (paper Table A3)</li>
+                        <li><a href="rates.html">Risk Map</a> &mdash; conditional revision rates by chain type &amp; category</li>
                         <li><a href="analyze.html">Rule Check</a> &mdash; rule-text screen for live markets</li>
                         <li><a href="cite.html">Cite</a> &mdash; 7-question cite-safety check for journalists</li>
                         <li><a href="cases.html">Cases</a> &mdash; public controversies in the panel</li>

@@ -1,7 +1,7 @@
 {
   "_provenance": {
-    "source": "Du (2026), 'When Facts Aren't Payoffs: The Resolution-Settlement Gap in Prediction Markets', Table A3 (Appendix B.3)",
-    "paper_draft_date": "2026-05-10",
+    "source": "Panel-derived chain-type x text-classified-category revision rates. Computed from the disputed-contract sample for the dashboard; NOT a table in the current paper draft (Du 2026, 'How Prediction Markets Resolve: Evidence from Polymarket').",
+    "paper_draft_date": "2026-05-16",
     "data_snapshot": "2026-04-29",
     "construction": "Buckets built from keyword matches on the question text. Polymarket's own category tags are noisy; the paper uses these text-classified buckets for the chain-type x category cross-tab.",
     "sample": "Binary-binary disputed subset (N=2,117). Within-row gaps between N_all and N_C + N_D (12 contracts in the 'All' row) reflect single-episode disputed contracts whose dispute event is parsed without a separate proposal episode and sit outside the Path C/Path D split."
