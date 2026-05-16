@@ -1,0 +1,517 @@
+{
+  "disclaimer": "This page reports where named cases sit in the settlement-data funnel. It does not adjudicate the underlying real-world outcome. Locate, do not adjudicate.",
+  "n_cases": 7,
+  "cases": [
+    {
+      "label": "Zelenskyy suit",
+      "why_matters": "Did Zelenskyy wear a suit? — semantic-boundary ambiguity over what counts as a suit; paper's appendix flags this as excluded due to definitional ambiguity.",
+      "n_market_matches": 8,
+      "n_disputed_matches": 2,
+      "status": "Located in disputed sample",
+      "matches": [
+        {
+          "id": "fbf8a6c4",
+          "question": "Zelenskyy puts on a suit by Friday?",
+          "slug": "zelenskyy-puts-on-a-suit",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "f97362bb",
+          "question": "Will Zelensky wear suit next Trump meeting?",
+          "slug": "will-zelensky-wear-suit-next-trump-meeting",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2c132f1e",
+          "question": "Will Zelenskyy wear a suit before June?",
+          "slug": "will-zelenskyy-wear-a-suit-before-june",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "a1114116",
+          "question": "Will Zelenskyy wear a suit before July?",
+          "slug": "will-zelenskyy-wear-a-suit-before-july",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "7fc2595f",
+          "question": "Will Trump say \"Suit\" during Zelensky events on August 18?",
+          "slug": "will-trump-say-suit-during-zelensky-events-on-august-18-621",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "bc34b542",
+          "question": "Will anyone say \"Zelenskyy\" or \"Suit\" during South Park's prediction market episode?",
+          "slug": "will-anyone-say-zelenskyy-or-suit-during-south-parks-prediction-market-episode-689-914-542",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "ad285950",
+          "question": "Zelenskyy wears a suit and tie during next Trump meeting?",
+          "slug": "zelenskyy-wears-a-suit-and-tie-during-next-trump-meeting",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "fbf8a6c4",
+          "question": "Zelenskyy puts on a suit by Friday?",
+          "slug": "zelenskyy-puts-on-a-suit",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Venezuela / Maduro",
+      "why_matters": "Disputes around the 2024 Venezuelan election outcome and the U.S. military-engagement / Maduro-custody markets; paper covers as Appendix-D candidate mismatch.",
+      "n_market_matches": 8,
+      "n_disputed_matches": 0,
+      "status": "Located in market panel only (not disputed)",
+      "matches": [
+        {
+          "id": "b24080fb",
+          "question": "Venezuela oil production >1 million barrels/day by Q1 2024?",
+          "slug": "venezuela-oil-production-1-million-barrelsday-by-q1-2024",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "4c623dab",
+          "question": "Will Venezuela invade Guyana in 2023?",
+          "slug": "will-venezuela-invade-guyana-in-2023",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2d467afb",
+          "question": "Will Venezuela invade Guyana before February?",
+          "slug": "will-venezuela-invade-guyana-before-february",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "1fe12033",
+          "question": "Will Venezuela invade Guyana in February?",
+          "slug": "will-venezuela-invade-guyana-in-february",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "12630309",
+          "question": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
+          "slug": "will-nicolas-maduro-win-the-2024-venezuela-presidential-election",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "21cf08e8",
+          "question": "Will Antonio Ecarri Angola Win the 2024 Venezuela presidential election?",
+          "slug": "will-antonio-ecarri-angola-win-the-2024-venezuela-presidential-election",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2ec98210",
+          "question": "Will Javier Bertucci Win the 2024 Venezuela presidential election?",
+          "slug": "will-javier-bertucci-win-the-2024-venezuela-presidential-election",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "a5c8222e",
+          "question": "Will another candidate Win the 2024 Venezuela presidential election?",
+          "slug": "will-another-candidate-win-the-2024-venezuela-presidential-election-ites",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Iran / Khamenei",
+      "why_matters": "Did the Israeli strikes count as 'jets striking Iran'? Khamenei-related markets; paper's Appendix D flags candidate mismatch on at least one.",
+      "n_market_matches": 8,
+      "n_disputed_matches": 0,
+      "status": "Located in market panel only (not disputed)",
+      "matches": [
+        {
+          "id": "0d5b624a",
+          "question": "Will Ali Khamenei remain Supreme Leader of Iran through 2022?",
+          "slug": "will-ali-khamenei-remain-supreme-leader-of-iran-through-2022",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2c0c90f6",
+          "question": "Will Iran qualify from Group B?",
+          "slug": "will-iran-qualify-from-group-b",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "8c41d38f",
+          "question": "Will Iran win the 2022 World Cup?",
+          "slug": "will-iran-win-the-2022-world-cup",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "b5dfdaf3",
+          "question": "World Cup 2022: Monday - Will England beat Iran?",
+          "slug": "world-cup-2022-monday-will-england-beat-iran",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "123c8100",
+          "question": "World Cup: Friday - Will Wales beat Iran?",
+          "slug": "world-cup-2022-friday-will-wales-beat-iran",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "c5e51d76",
+          "question": "World Cup: Tuesday - Will United States beat Iran?",
+          "slug": "world-cup-tuesday-will-united-states-beat-iran",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "30288534",
+          "question": "Will Ali Khamenei remain Supreme Leader of Iran through June 30, 2023?",
+          "slug": "will-ali-khamenei-remain-supreme-leader-of-iran-through-june-30-2023",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "f40e7545",
+          "question": "Iran in possession of nuclear weapons by EoY?",
+          "slug": "iran-in-possession-of-nuclear-weapons-by-eoy",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Trump Bitcoin reserve",
+      "why_matters": "Will Trump establish a strategic Bitcoin reserve? Paper-level exclusion: contract-design ambiguity over what counts as 'establishing a reserve.'",
+      "n_market_matches": 8,
+      "n_disputed_matches": 1,
+      "status": "Located in disputed sample",
+      "matches": [
+        {
+          "id": "2488fc86",
+          "question": "Will Trump say \"Bitcoin\" during his CNN town hall?",
+          "slug": "will-trump-say-bitcoin-during-his-cnn-town-hall",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "b175b113",
+          "question": "Will Trump say \"Crypto\" or \"Bitcoin\" during the debate?",
+          "slug": "will-trump-say-crypto-or-bitcoin-during-the-debate",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "530af3ff",
+          "question": "Trump to speak at Bitcoin 2024 conference?",
+          "slug": "trump-to-speak-at-bitcoin-2024-conference",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "af0a3b55",
+          "question": "Trump says \"mog\" at Bitcoin Conference?",
+          "slug": "trump-says-mog-at-bitcoin-conference",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "62c1745a",
+          "question": "US government Bitcoin reserves in 2024?",
+          "slug": "us-government-bitcoin-reserves-in-2024",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "dc3acd6b",
+          "question": "Will Trump say \"crypto/Bitcoin\" during RNC speech?",
+          "slug": "will-trump-say-cryptobitcoin-during-rnc-speech",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "dcc87c75",
+          "question": "Will Trump announce strategic Bitcoin reserve?",
+          "slug": "trump-to-announce-strategic-bitcoin-reserve-in-july",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "4e09c45c",
+          "question": "Will Trump say \"Bitcoin\" 5+ times during his Bitcoin Conference speech?",
+          "slug": "will-trump-say-bitcoin-5-times-during-his-bitcoin-conference-speech",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Tesla robotaxi",
+      "why_matters": "Did Tesla launch a robotaxi? Brand-vs-functional ambiguity; paper-level excluded.",
+      "n_market_matches": 8,
+      "n_disputed_matches": 5,
+      "status": "Located in disputed sample",
+      "matches": [
+        {
+          "id": "97c1d979",
+          "question": "Tesla Robotaxi unveiling delayed?",
+          "slug": "robotaxi-launch-delayed",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "dbd25209",
+          "question": "Will Tesla launch robotaxis in California in 2025?",
+          "slug": "will-tesla-launch-robotaxis-in-california-in-2025",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "3b85b6b1",
+          "question": "Will Tesla launch a driverless Robotaxi service before July?",
+          "slug": "will-tesla-launch-a-driverless-robtotaxi-service-before-july",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "969e9aa2",
+          "question": "Will Tesla launch a driverless Robotaxi service in 2025?",
+          "slug": "will-tesla-launch-a-driverless-robtotaxi-service-in-2025",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "4e057a13",
+          "question": "Will Tesla launch a driverless Robotaxi service before August?",
+          "slug": "will-tesla-launch-a-driverless-robotaxi-service-before-august",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2a773d15",
+          "question": "Will Tesla launch a driverless Robotaxi service by August 31?",
+          "slug": "will-tesla-launch-a-driverless-robotaxi-service-by-august-31",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2d396fb1",
+          "question": "Will Tesla launch a driverless Robotaxi service by June 30, 2026?",
+          "slug": "will-tesla-launch-a-driverless-robotaxi-service-by-june-30-2026",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "d22b5d78",
+          "question": "Will Tesla launch a driverless Robotaxi service by October 31?",
+          "slug": "will-tesla-launch-a-driverless-robotaxi-service-by-october-31",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Lebanon ground incursion",
+      "why_matters": "Did Israel conduct a ground incursion into Lebanon? Bellwether's blueprints page cites this as an oracle failure where DVM voted against widely-reported reality.",
+      "n_market_matches": 8,
+      "n_disputed_matches": 0,
+      "status": "Located in market panel only (not disputed)",
+      "matches": [
+        {
+          "id": "2030589e",
+          "question": "Will Israel invade Lebanon by January 20?",
+          "slug": "will-israel-invade-lebanon-by-january-20",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "11132c82",
+          "question": "Will Israel invade Lebanon before March?",
+          "slug": "will-israel-invade-lebanon-before-march",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "7591fffb",
+          "question": "Will Israel invade Lebanon before April?",
+          "slug": "will-israel-invade-lebanon-before-april",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "c1dbfab5",
+          "question": "Will Israel invade Lebanon before May?",
+          "slug": "will-israel-invade-lebanon-before-may",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "405f3453",
+          "question": "Will Israel invade Lebanon before September?",
+          "slug": "will-israel-invade-lebanon-before-september",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "e6a66d4e",
+          "question": "Will Israel invade Lebanon by Friday?",
+          "slug": "will-israel-invade-lebanon-by-friday",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "c9cd51cc",
+          "question": "US military action against Hezbollah in Lebanon by Monday?",
+          "slug": "us-military-action-against-hezbollah-in-lebanon-by-monday",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "e1948ab0",
+          "question": "Will Israel invade Lebanon by Friday?",
+          "slug": "will-israel-invade-lebanon-by-friday-aug-9",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    },
+    {
+      "label": "Government shutdown 2025",
+      "why_matters": "Did the U.S. government shut down? Bellwether cites this as a rule-change failure (cutoff date inserted after trading began).",
+      "n_market_matches": 8,
+      "n_disputed_matches": 3,
+      "status": "Located in disputed sample",
+      "matches": [
+        {
+          "id": "0e300abc",
+          "question": "Will there be a US government shutdown by October 2?",
+          "slug": "will-there-be-a-us-government-shutdown-by-october-2",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "465b6525",
+          "question": "Will there be a US government shutdown by November 19?",
+          "slug": "will-there-be-a-us-government-shutdown-by-november-19",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "edff045c",
+          "question": "Will there be a US government shutdown by Jan 20?",
+          "slug": "will-there-be-a-us-government-shutdown-by-jan-20",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "2005c5a2",
+          "question": "US government shutdown by Mar 9?",
+          "slug": "will-there-be-a-us-government-shutdown-by-mar-9",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "eaed9672",
+          "question": "Will there be a US government shutdown by Mar 23?",
+          "slug": "will-there-be-a-us-government-shutdown-by-mar-23",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "368c3651",
+          "question": "US gov shutdown/lapse on Mar 23?",
+          "slug": "us-gov-shutdownlapse-on-mar-23",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "5f36aaab",
+          "question": "Will there be a US Government shutdown? ",
+          "slug": "us-government-shutdown-before-2025",
+          "in_disputed_panel": true,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        },
+        {
+          "id": "a26f1529",
+          "question": "US government shutdown in 2025?",
+          "slug": "us-government-shutdown-in-2025",
+          "in_disputed_panel": false,
+          "candidate_mismatch": false,
+          "mismatch_agreed": null
+        }
+      ]
+    }
+  ]
+}
