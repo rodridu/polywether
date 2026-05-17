@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Cite check &mdash; Settlement Risk Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20260516a">
+    <link rel="stylesheet" href="css/styles.css?v=20260517a">
     <meta name="description" content="Should you cite this prediction-market price as a probability? Check whether the contract behind the price is clean enough for the number to mean what readers think it means.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -107,20 +107,20 @@
                     <summary><span class="cite-q-num">5</span><span class="cite-q-title">Has this contract already been disputed or revised?</span></summary>
                     <div class="cite-q-body">
                         <p>If the chain shows a prior dispute, repeated adapter-routed request, or DVM voiding, the price may already reflect settlement-risk discounting rather than pure event probability.</p>
-                        <p class="muted">Panel: 24.1% of disputed contracts revise from first proposal to final payoff. <a href="rates.html">Conditional rates &rarr;</a></p>
+                        <p class="muted">Panel: 23.9% of disputed contracts revise from first proposal to final payoff (530 of 2,221). <a href="rates.html">Conditional rates &rarr;</a></p>
                     </div>
                 </details>
                 <details class="cite-q">
                     <summary><span class="cite-q-num">6</span><span class="cite-q-title">Is this contract in a category with high historical revision?</span></summary>
                     <div class="cite-q-body">
-                        <p>Repeated adapter-routed requests revise <strong>37%</strong> of the time. Request-voiding chains revise <strong>14%</strong>. Same disputed sample; the mechanism path matters.</p>
-                        <p class="muted">When citing, name the category: <em>"Polymarket put the chance at X%, on a contract whose category historically revises ~37% of disputes."</em></p>
+                        <p>Path&nbsp;D (non-voided automatic re-request) revises <strong>37.4%</strong> of the time. Path&nbsp;C (DVM-voided adjudication) revises <strong>14.1%</strong>. Same disputed sample; the settlement-path mechanism matters (paper Table 1).</p>
+                        <p class="muted">When citing, name the chain type: <em>"Polymarket put the chance at X%, on a contract whose settlement path historically revises ~37% of disputes."</em></p>
                     </div>
                 </details>
                 <details class="cite-q">
                     <summary><span class="cite-q-num">7</span><span class="cite-q-title">How much scoring risk does this category carry?</span></summary>
                     <div class="cite-q-body">
-                        <p>Within the binary-binary priced disputed subset, <strong>revised contracts are 20.6% of contracts but account for 72% of pooled Brier loss</strong>. Confirmed contracts (79.4%) carry only 28%.</p>
+                        <p>Within the binary-binary priced disputed subset, <strong>revised contracts are ~21% of contracts but account for 30&ndash;75% of pooled Brier loss depending on price aggregation</strong> (72% under last-trade pricing; the table below uses the last-trade specification). Confirmed contracts carry the remainder.</p>
                         <p class="muted">A single revised contract degrades a forecaster's pooled accuracy more than three confirmed contracts. Cite the category-level revision rate (Q6), not just the price. Source: paper Table 4 &amp; &sect;4.2.</p>
                     </div>
                 </details>
