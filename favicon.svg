@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-label="Polywether favicon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-label="Settlement risk monitor favicon">
   <rect width="16" height="16" rx="3" fill="#111827"/>
-  <path d="M4.2 13.2V2.8H8.7C11.1 2.8 12.7 4.2 12.7 6.3C12.7 8.5 11.1 9.9 8.7 9.9H7.1" fill="none" stroke="#F8FAFC" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="9.1" cy="6.35" r="1.45" fill="#22D3EE"/>
+  <path d="M8 2.2L13.8 8L8 13.8L2.2 8Z" fill="none" stroke="#F8FAFC" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M5.15 3.9L10.85 12.1" stroke="#F59E0B" stroke-width="2.15" stroke-linecap="round"/>
 </svg>

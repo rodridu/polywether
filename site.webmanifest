@@ -1,6 +1,6 @@
 {
-  "name": "Polywether Settlement Explorer",
-  "short_name": "Polywether",
+  "name": "Settlement Risk Monitor",
+  "short_name": "SettleRisk",
   "icons": [
     {
       "src": "icon-192.png",
