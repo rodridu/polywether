@@ -1,5 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#ffffff"/>
-  <circle cx="11" cy="16" r="5" fill="#dc2626"/>
-  <circle cx="21" cy="16" r="5" fill="#f59e0b" fill-opacity="0.85"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Polywether settlement path favicon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171327"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="104" fill="url(#bg)"/>
+
+  <!-- settlement path -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#softShadow)">
+    <path d="M122 270 C170 246 198 224 240 204" stroke="#E5E7EB" stroke-width="36"/>
+    <path d="M278 198 C332 174 358 132 402 98" stroke="#22D3EE" stroke-width="36"/>
+    <path d="M278 238 C326 266 348 322 394 380" stroke="#A78BFA" stroke-width="36" opacity="0.86"/>
+  </g>
+
+  <!-- proposal node -->
+  <circle cx="110" cy="276" r="48" fill="#0B1120" stroke="#E5E7EB" stroke-width="24"/>
+
+  <!-- dispute/oracle node -->
+  <path d="M256 148 L340 232 L256 316 L172 232 Z" fill="#4C1D95" stroke="#F8FAFC" stroke-width="24"/>
+
+  <!-- terminal settlement states -->
+  <circle cx="410" cy="92" r="50" fill="#0891B2" stroke="#ECFEFF" stroke-width="22"/>
+  <rect x="354" y="330" width="104" height="104" rx="30" fill="#6D28D9" stroke="#F5F3FF" stroke-width="22"/>
+
+  <!-- small final-mark: visible at 32px+, harmless at 16px -->
+  <path d="M391 92 L407 108 L434 72" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
